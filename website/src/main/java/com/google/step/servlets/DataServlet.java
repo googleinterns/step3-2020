@@ -37,6 +37,17 @@ public class DataServlet extends HttpServlet {
 
   @Override
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
-    
+    DatastoreServiceFactory.getDatastoreService().put(getOrgEntityFrom(request));
+    response.sendRedirect("/index.html");
+  }
+
+  private Entity getOrgEntityFrom(HttpServletRequest request) {
+    Entity newOrganization = new Entity("Organization");
+    newOrganization.setProperty("name", request.getParameter("orgName"));
+    newOrganization.setProperty("webLink", request.getParameter("webLink"));
+    newOrganization.setProperty("donateLink", request.getParameter("donateLink"));
+    newOrganization.setProperty("about", request.getParameter("about"));
+
+    return newOrganization;
   }
 }
