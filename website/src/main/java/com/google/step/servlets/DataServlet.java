@@ -14,6 +14,11 @@
 
 package com.google.step.servlets;
 
+import com.google.appengine.api.datastore.DatastoreService;
+import com.google.appengine.api.datastore.DatastoreServiceFactory;
+import com.google.appengine.api.datastore.Key;
+import com.google.appengine.api.datastore.KeyFactory;
+import com.google.appengine.api.datastore.Entity;
 import java.io.IOException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -28,5 +33,21 @@ public class DataServlet extends HttpServlet {
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
     response.setContentType("text/html;");
     response.getWriter().println("<h1>Hello world!</h1>");
+  }
+
+  @Override
+  public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    DatastoreServiceFactory.getDatastoreService().put(getOrgEntityFrom(request));
+    response.sendRedirect("/index.html");
+  }
+
+  private Entity getOrgEntityFrom(HttpServletRequest request) {
+    Entity newOrganization = new Entity("Organization");
+    newOrganization.setProperty("name", request.getParameter("orgName"));
+    newOrganization.setProperty("webLink", request.getParameter("webLink"));
+    newOrganization.setProperty("donateLink", request.getParameter("donateLink"));
+    newOrganization.setProperty("about", request.getParameter("about"));
+
+    return newOrganization;
   }
 }
