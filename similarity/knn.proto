@@ -1,0 +1,14 @@
+syntax = "proto3";
+
+package similarity;
+
+message Organizations {
+  message Organization {
+    string name = 1;
+    message Neighbor {
+      string name = 1;
+    }
+    repeated Neighbor neighbors = 2; 
+  }
+  repeated Organization orgs = 1;
+}
