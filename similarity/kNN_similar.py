@@ -1,3 +1,6 @@
+from google.protobuf.json_format import MessageToJson
+import json
+import knn_pb2
 import nltk
 from nltk.corpus import stopwords
 import numpy as np
@@ -63,9 +66,22 @@ def main():
   # K-Nearest Neighbors (k = 4)
   model = knn(vectorized)
   prediction = model.kneighbors(vectorized, 4, return_distance=False)
+  orgs = knn_pb2.Organizations()
   for i in range(df.shape[0]):
     print(df['Organization'][i], ': ', df['Organization'][prediction[i][1]], ', ',
         df['Organization'][prediction[i][2]], ', ', df['Organization'][prediction[i][3]])
+    org = orgs.orgs.add()
+    org.name = df['Organization'][i]
+    neighbor1 = org.neighbors.add()
+    neighbor1.name = df['Organization'][prediction[i][1]]
+    neighbor2 = org.neighbors.add()
+    neighbor2.name = df['Organization'][prediction[i][2]]
+    neighbor3 = org.neighbors.add()
+    neighbor3.name = df['Organization'][prediction[i][3]]
+  with open('neighbors.txt', 'wb') as out_file:
+    out_file.write(orgs.SerializeToString())
+  with open("neighbors.json", 'w') as json_file:
+    json_file.write(MessageToJson(orgs))
   
 
 if __name__ == '__main__':

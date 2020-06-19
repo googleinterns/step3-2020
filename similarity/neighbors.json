@@ -1,0 +1,704 @@
+{
+  "orgs": [
+    {
+      "name": "TED",
+      "neighbors": [
+        {
+          "name": "NPR"
+        },
+        {
+          "name": "Human Rights Campaign"
+        },
+        {
+          "name": "Public Broadcasting System (PBS)"
+        }
+      ]
+    },
+    {
+      "name": "The Humane Society",
+      "neighbors": [
+        {
+          "name": "ASPCA"
+        },
+        {
+          "name": "Best Friends Animal Society"
+        },
+        {
+          "name": "Defenders of Wildlife"
+        }
+      ]
+    },
+    {
+      "name": "Smithsonian",
+      "neighbors": [
+        {
+          "name": "New York Public Library"
+        },
+        {
+          "name": "Boy Scouts of America"
+        },
+        {
+          "name": "National Multiple Sclerosis Society"
+        }
+      ]
+    },
+    {
+      "name": "Monterey Bay Aquarium",
+      "neighbors": [
+        {
+          "name": "Livestrong"
+        },
+        {
+          "name": "National Parks Conservation Association"
+        },
+        {
+          "name": "San Diego Zoo"
+        }
+      ]
+    },
+    {
+      "name": "Wounded Warrior Project",
+      "neighbors": [
+        {
+          "name": "Livestrong"
+        },
+        {
+          "name": "Public Broadcasting System (PBS)"
+        },
+        {
+          "name": "Monterey Bay Aquarium"
+        }
+      ]
+    },
+    {
+      "name": "Best Friends Animal Society",
+      "neighbors": [
+        {
+          "name": "The Humane Society"
+        },
+        {
+          "name": "Cleveland Clinic"
+        },
+        {
+          "name": "Defenders of Wildlife"
+        }
+      ]
+    },
+    {
+      "name": "Kiva",
+      "neighbors": [
+        {
+          "name": "Oxfam"
+        },
+        {
+          "name": "Heifer International"
+        },
+        {
+          "name": "Livestrong"
+        }
+      ]
+    },
+    {
+      "name": "Livestrong",
+      "neighbors": [
+        {
+          "name": "American Diabetes Association"
+        },
+        {
+          "name": "Wounded Warrior Project"
+        },
+        {
+          "name": "National Multiple Sclerosis Society"
+        }
+      ]
+    },
+    {
+      "name": "Invisible Children",
+      "neighbors": [
+        {
+          "name": "Save the Children"
+        },
+        {
+          "name": "Heifer International"
+        },
+        {
+          "name": "National Wildlife Federation"
+        }
+      ]
+    },
+    {
+      "name": "Public Broadcasting System (PBS)",
+      "neighbors": [
+        {
+          "name": "NPR"
+        },
+        {
+          "name": "Oxfam"
+        },
+        {
+          "name": "National Parks Conservation Association"
+        }
+      ]
+    },
+    {
+      "name": "USO",
+      "neighbors": [
+        {
+          "name": "CARE"
+        },
+        {
+          "name": "Feeding America"
+        },
+        {
+          "name": "Leukemia & Lymphoma Society"
+        }
+      ]
+    },
+    {
+      "name": "Human Rights Campaign",
+      "neighbors": [
+        {
+          "name": "The U.S. Fund for UNICEF"
+        },
+        {
+          "name": "Amnesty International"
+        },
+        {
+          "name": "Save the Children"
+        }
+      ]
+    },
+    {
+      "name": "National Wildlife Federation",
+      "neighbors": [
+        {
+          "name": "National Parks Conservation Association"
+        },
+        {
+          "name": "Defenders of Wildlife"
+        },
+        {
+          "name": "Audubon"
+        }
+      ]
+    },
+    {
+      "name": "Oxfam",
+      "neighbors": [
+        {
+          "name": "Heifer International"
+        },
+        {
+          "name": "Kiva"
+        },
+        {
+          "name": "Public Broadcasting System (PBS)"
+        }
+      ]
+    },
+    {
+      "name": "charity water",
+      "neighbors": [
+        {
+          "name": "Doctors without Borders (M\u00e9decins Sans Fronti\u00e8res)"
+        },
+        {
+          "name": "Livestrong"
+        },
+        {
+          "name": "Kiva"
+        }
+      ]
+    },
+    {
+      "name": "American Heart Association",
+      "neighbors": [
+        {
+          "name": "American Diabetes Association"
+        },
+        {
+          "name": "Save the Children"
+        },
+        {
+          "name": "National Parks Conservation Association"
+        }
+      ]
+    },
+    {
+      "name": "Environmental Defense Fund",
+      "neighbors": [
+        {
+          "name": "The Nature Conservancy"
+        },
+        {
+          "name": "Defenders of Wildlife"
+        },
+        {
+          "name": "The U.S. Fund for UNICEF"
+        }
+      ]
+    },
+    {
+      "name": "New York Public Library",
+      "neighbors": [
+        {
+          "name": "Smithsonian"
+        },
+        {
+          "name": "Livestrong"
+        },
+        {
+          "name": "In Touch Ministries"
+        }
+      ]
+    },
+    {
+      "name": "The Nature Conservancy",
+      "neighbors": [
+        {
+          "name": "Environmental Defense Fund"
+        },
+        {
+          "name": "Audubon"
+        },
+        {
+          "name": "AARP"
+        }
+      ]
+    },
+    {
+      "name": "CARE",
+      "neighbors": [
+        {
+          "name": "Cleveland Clinic"
+        },
+        {
+          "name": "Heifer International"
+        },
+        {
+          "name": "USO"
+        }
+      ]
+    },
+    {
+      "name": "National Parks Conservation Association",
+      "neighbors": [
+        {
+          "name": "National Wildlife Federation"
+        },
+        {
+          "name": "National Multiple Sclerosis Society"
+        },
+        {
+          "name": "Monterey Bay Aquarium"
+        }
+      ]
+    },
+    {
+      "name": "JDRF",
+      "neighbors": [
+        {
+          "name": "American Diabetes Association"
+        },
+        {
+          "name": "National Multiple Sclerosis Society"
+        },
+        {
+          "name": "The Rotary Foundation"
+        }
+      ]
+    },
+    {
+      "name": "Heifer International",
+      "neighbors": [
+        {
+          "name": "Feeding America"
+        },
+        {
+          "name": "CARE"
+        },
+        {
+          "name": "Oxfam"
+        }
+      ]
+    },
+    {
+      "name": "ASPCA",
+      "neighbors": [
+        {
+          "name": "The Humane Society"
+        },
+        {
+          "name": "Cleveland Clinic"
+        },
+        {
+          "name": "Defenders of Wildlife"
+        }
+      ]
+    },
+    {
+      "name": "Defenders of Wildlife",
+      "neighbors": [
+        {
+          "name": "San Diego Zoo"
+        },
+        {
+          "name": "National Wildlife Federation"
+        },
+        {
+          "name": "Audubon"
+        }
+      ]
+    },
+    {
+      "name": "Amnesty International",
+      "neighbors": [
+        {
+          "name": "Habitat for Humanity International"
+        },
+        {
+          "name": "Heifer International"
+        },
+        {
+          "name": "Human Rights Campaign"
+        }
+      ]
+    },
+    {
+      "name": "Creative Commons",
+      "neighbors": [
+        {
+          "name": "National Multiple Sclerosis Society"
+        },
+        {
+          "name": "Boy Scouts of America"
+        },
+        {
+          "name": "Make-A-Wish"
+        }
+      ]
+    },
+    {
+      "name": "March of Dimes",
+      "neighbors": [
+        {
+          "name": "Mayo Clinic"
+        },
+        {
+          "name": "Cleveland Clinic"
+        },
+        {
+          "name": "JDRF"
+        }
+      ]
+    },
+    {
+      "name": "American Diabetes Association",
+      "neighbors": [
+        {
+          "name": "JDRF"
+        },
+        {
+          "name": "Livestrong"
+        },
+        {
+          "name": "American Heart Association"
+        }
+      ]
+    },
+    {
+      "name": "Habitat for Humanity International",
+      "neighbors": [
+        {
+          "name": "Amnesty International"
+        },
+        {
+          "name": "Heifer International"
+        },
+        {
+          "name": "Audubon"
+        }
+      ]
+    },
+    {
+      "name": "In Touch Ministries",
+      "neighbors": [
+        {
+          "name": "Teach for America"
+        },
+        {
+          "name": "New York Public Library"
+        },
+        {
+          "name": "AARP"
+        }
+      ]
+    },
+    {
+      "name": "Cleveland Clinic",
+      "neighbors": [
+        {
+          "name": "CARE"
+        },
+        {
+          "name": "Mayo Clinic"
+        },
+        {
+          "name": "Best Friends Animal Society"
+        }
+      ]
+    },
+    {
+      "name": "The U.S. Fund for UNICEF",
+      "neighbors": [
+        {
+          "name": "Human Rights Campaign"
+        },
+        {
+          "name": "Save the Children"
+        },
+        {
+          "name": "Make-A-Wish"
+        }
+      ]
+    },
+    {
+      "name": "Leukemia & Lymphoma Society",
+      "neighbors": [
+        {
+          "name": "AARP"
+        },
+        {
+          "name": "American Diabetes Association"
+        },
+        {
+          "name": "National Multiple Sclerosis Society"
+        }
+      ]
+    },
+    {
+      "name": "Teach for America",
+      "neighbors": [
+        {
+          "name": "Heifer International"
+        },
+        {
+          "name": "In Touch Ministries"
+        },
+        {
+          "name": "The Rotary Foundation"
+        }
+      ]
+    },
+    {
+      "name": "Save the Children",
+      "neighbors": [
+        {
+          "name": "The U.S. Fund for UNICEF"
+        },
+        {
+          "name": "Invisible Children"
+        },
+        {
+          "name": "National Wildlife Federation"
+        }
+      ]
+    },
+    {
+      "name": "San Diego Zoo",
+      "neighbors": [
+        {
+          "name": "Defenders of Wildlife"
+        },
+        {
+          "name": "Ducks Unlimited"
+        },
+        {
+          "name": "Monterey Bay Aquarium"
+        }
+      ]
+    },
+    {
+      "name": "Ducks Unlimited",
+      "neighbors": [
+        {
+          "name": "Audubon"
+        },
+        {
+          "name": "National Wildlife Federation"
+        },
+        {
+          "name": "San Diego Zoo"
+        }
+      ]
+    },
+    {
+      "name": "Make-A-Wish",
+      "neighbors": [
+        {
+          "name": "The U.S. Fund for UNICEF"
+        },
+        {
+          "name": "Save the Children"
+        },
+        {
+          "name": "Invisible Children"
+        }
+      ]
+    },
+    {
+      "name": "American Red Cross",
+      "neighbors": [
+        {
+          "name": "American Heart Association"
+        },
+        {
+          "name": "American Diabetes Association"
+        },
+        {
+          "name": "Human Rights Campaign"
+        }
+      ]
+    },
+    {
+      "name": "National Multiple Sclerosis Society",
+      "neighbors": [
+        {
+          "name": "American Diabetes Association"
+        },
+        {
+          "name": "Livestrong"
+        },
+        {
+          "name": "JDRF"
+        }
+      ]
+    },
+    {
+      "name": "Doctors without Borders (M\u00e9decins Sans Fronti\u00e8res)",
+      "neighbors": [
+        {
+          "name": "charity water"
+        },
+        {
+          "name": "Make-A-Wish"
+        },
+        {
+          "name": "Susan G Komen for the Cure"
+        }
+      ]
+    },
+    {
+      "name": "Feeding America",
+      "neighbors": [
+        {
+          "name": "Heifer International"
+        },
+        {
+          "name": "USO"
+        },
+        {
+          "name": "Invisible Children"
+        }
+      ]
+    },
+    {
+      "name": "Susan G Komen for the Cure",
+      "neighbors": [
+        {
+          "name": "Livestrong"
+        },
+        {
+          "name": "Mayo Clinic"
+        },
+        {
+          "name": "Save the Children"
+        }
+      ]
+    },
+    {
+      "name": "Audubon",
+      "neighbors": [
+        {
+          "name": "Ducks Unlimited"
+        },
+        {
+          "name": "Defenders of Wildlife"
+        },
+        {
+          "name": "National Wildlife Federation"
+        }
+      ]
+    },
+    {
+      "name": "Mayo Clinic",
+      "neighbors": [
+        {
+          "name": "Cleveland Clinic"
+        },
+        {
+          "name": "March of Dimes"
+        },
+        {
+          "name": "Susan G Komen for the Cure"
+        }
+      ]
+    },
+    {
+      "name": "The Rotary Foundation",
+      "neighbors": [
+        {
+          "name": "JDRF"
+        },
+        {
+          "name": "Mayo Clinic"
+        },
+        {
+          "name": "Teach for America"
+        }
+      ]
+    },
+    {
+      "name": "AARP",
+      "neighbors": [
+        {
+          "name": "Leukemia & Lymphoma Society"
+        },
+        {
+          "name": "Oxfam"
+        },
+        {
+          "name": "The Nature Conservancy"
+        }
+      ]
+    },
+    {
+      "name": "Boy Scouts of America",
+      "neighbors": [
+        {
+          "name": "Ducks Unlimited"
+        },
+        {
+          "name": "Feeding America"
+        },
+        {
+          "name": "USO"
+        }
+      ]
+    },
+    {
+      "name": "NPR",
+      "neighbors": [
+        {
+          "name": "TED"
+        },
+        {
+          "name": "Public Broadcasting System (PBS)"
+        },
+        {
+          "name": "Oxfam"
+        }
+      ]
+    }
+  ]
+}

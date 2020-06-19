@@ -2,3 +2,5 @@ venv/
 .cache/
 __pycache__/
 target/
+get-pip.py
+protobuf-3.12.3/
