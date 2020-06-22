@@ -17,7 +17,7 @@ public class PredictionServlet extends HttpServlet {
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
     int index = Integer.parseInt(request.getParameter("org_index"));
-    String path = "../../../../../../../../neighbors";
+    String path = "../../../neighbors";
     List<Organizations.Organization> orgs = readProtobuf(path + ".txt");
     List<String> neighbors = getNeighbors(orgs, index);
     // Send the JSON as the response
