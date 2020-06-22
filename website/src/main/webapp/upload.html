@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="style.css">
+    <script src="script.js"></script>
+  </head>
+  <body id="body">
+    <form id="uploadForm" action="/data" method="post">
+    	<label for="orgName">Organization Title:</label><br></br>
+      <input type="text" id="orgName" name="orgName" required><br></br>
+      <label for="webLink">Website Link:</label><br></br>
+      <input type="url" id="webLink" name="webLink" required><br></br>
+      <label for="donateLink">Donation Link:</label><br></br>
+      <input type="url" id="donateLink" name="donateLink"><br></br>
+      <label for="about">About Section:</label><br></br>
+      <textarea id="about" name="about" rows="6" cols="45"></textarea><br></br>
+      <input id="submit" type="submit">
+    </form>
+  </body>
+</html>
