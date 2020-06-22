@@ -8,9 +8,22 @@ function findSimilarOrgs() {
   var indexQuery = updateQueryString('org_index', orgIndex);
   var queryString = '/predict?' + indexQuery;
   fetch(queryString).then(response => response.json()).then(text => {
+    const relatedDiv = document.getElementById("related-section")
+    relatedDiv.innerHTML='';
     console.log(text);
-    // TODO: add text to website
+    text.forEach((orgName)=> {
+      relatedDiv.appendChild(getOrgAsList(orgName));
+    });
   })
+}
+
+/**
+  * Creates list element from org name
+ */
+function getOrgAsHTML(orgName) {
+  const orgElement = document.createElement('li');
+  orgElement.innerText = orgName;
+  return orgElement;
 }
 
 /**
