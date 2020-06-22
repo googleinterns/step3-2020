@@ -2,6 +2,9 @@ syntax = "proto3";
 
 package similarity;
 
+option java_package = "com.google.step.similarity";
+option java_outer_classname = "OrganizationsProtos";
+
 message Organizations {
   message Organization {
     string name = 1;
