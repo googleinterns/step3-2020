@@ -21,11 +21,6 @@ public final class OrganizationInfoTest {
     helper.setUp();
   }
 
-  @After
-  public void tearDown() {
-    helper.tearDown();
-  }
-
   @Test
   public void ConstructorTest() {
     Entity entity = new Entity("Test");
