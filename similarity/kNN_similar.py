@@ -71,16 +71,16 @@ def main():
     print(df['Organization'][i], ': ', df['Organization'][prediction[i][1]], ', ',
         df['Organization'][prediction[i][2]], ', ', df['Organization'][prediction[i][3]])
     org = orgs.orgs.add()
-    org.name = df['Organization'][i]
+    org.id = i
     neighbor1 = org.neighbors.add()
-    neighbor1.name = df['Organization'][prediction[i][1]]
+    neighbor1.id = prediction[i][1]
     neighbor2 = org.neighbors.add()
-    neighbor2.name = df['Organization'][prediction[i][2]]
+    neighbor2.id = prediction[i][2]
     neighbor3 = org.neighbors.add()
-    neighbor3.name = df['Organization'][prediction[i][3]]
-  with open('neighbors.txt', 'wb') as out_file:
+    neighbor3.id = prediction[i][3]
+  with open('../neighbors.txt', 'wb') as out_file:
     out_file.write(orgs.SerializeToString())
-  with open("neighbors.json", 'w') as json_file:
+  with open("../neighbors.json", 'w') as json_file:
     json_file.write(MessageToJson(orgs))
   
 

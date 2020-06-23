@@ -3,3 +3,12 @@
   margin-right: auto;
   width: 650px;
 }
+
+#existing-organizations {
+  list-style-type: none;
+}
+
+
+#related-section {
+  list-style-type: none;
+}
