@@ -27,6 +27,9 @@ def fill_knn(df, sorted):
         nn_index = sorted.iloc[col_i - 1][-2] + 1
         closest_user = df.columns.values[nn_index]
         preference = df[closest_user][row_i]
+        if not preference:
+          second_closest = df.columns.values[sorted.iloc[col_i - 1][-3] + 1]
+          preference = df[second_closest][row_i]
         result.at[row_i, df.columns.values[col_i]] = preference
   return result
 
@@ -38,7 +41,7 @@ def main():
   # find k most similar users
   sorted = sort_index(corr)
   # (fill in NANs with most similar orgs)
-  # k = 1
+  # k = 2
   result = fill_knn(df, sorted)
   print(result)
   # or matrix decomposition
