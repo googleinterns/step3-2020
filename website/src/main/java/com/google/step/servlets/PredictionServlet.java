@@ -4,7 +4,6 @@ import com.google.gson.Gson;
 import com.google.step.similarity.OrganizationsProtos.Organizations;
 import com.opencsv.*;
 import java.io.*;
-import java.lang.ClassLoader;
 import java.util.ArrayList;
 import java.util.List;
 import javax.servlet.annotation.WebServlet;
