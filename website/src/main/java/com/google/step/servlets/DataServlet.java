@@ -16,9 +16,13 @@ package com.google.step.servlets;
 
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
+import com.google.appengine.api.datastore.Entity;
+import com.google.appengine.api.datastore.FetchOptions;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
-import com.google.appengine.api.datastore.Entity;
+import com.google.appengine.api.datastore.PreparedQuery;
+import com.google.appengine.api.datastore.Query;
+import com.google.step.data.OrganizationInfo;
 import java.io.IOException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -37,17 +41,17 @@ public class DataServlet extends HttpServlet {
 
   @Override
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
-    DatastoreServiceFactory.getDatastoreService().put(getOrgEntityFrom(request));
-    response.sendRedirect("/index.html");
-  }
-
-  private Entity getOrgEntityFrom(HttpServletRequest request) {
-    Entity newOrganization = new Entity("Organization");
-    newOrganization.setProperty("name", request.getParameter("orgName"));
-    newOrganization.setProperty("webLink", request.getParameter("webLink"));
-    newOrganization.setProperty("donateLink", request.getParameter("donateLink"));
-    newOrganization.setProperty("about", request.getParameter("about"));
-
-    return newOrganization;
+    OrganizationInfo submission = OrganizationInfo.createInstanceFrom(request);
+    DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+    datastore.prepare(submission.getQueryForDuplicates()).asList(FetchOptions.Builder.withDefaults()).forEach((duplicate -> {
+      submission.merge(duplicate);
+      datastore.delete(duplicate.getKey());
+    }));
+    if (submission.isValid()) {
+      datastore.put(submission.getEntity());
+      response.sendRedirect("/index.html");
+    } else {
+      response.sendRedirect("/");
+    }
   }
 }
