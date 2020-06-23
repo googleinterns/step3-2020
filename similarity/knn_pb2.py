@@ -18,8 +18,8 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   name='knn.proto',
   package='similarity',
   syntax='proto3',
-  serialized_options=None,
-  serialized_pb=_b('\n\tknn.proto\x12\nsimilarity\"\xc1\x01\n\rOrganizations\x12\x34\n\x04orgs\x18\x01 \x03(\x0b\x32&.similarity.Organizations.Organization\x1az\n\x0cOrganization\x12\x0c\n\x04name\x18\x01 \x01(\t\x12\x42\n\tneighbors\x18\x02 \x03(\x0b\x32/.similarity.Organizations.Organization.Neighbor\x1a\x18\n\x08Neighbor\x12\x0c\n\x04name\x18\x01 \x01(\tb\x06proto3')
+  serialized_options=_b('\n\032com.google.step.similarityB\023OrganizationsProtos'),
+  serialized_pb=_b('\n\tknn.proto\x12\nsimilarity\"\xbd\x01\n\rOrganizations\x12\x34\n\x04orgs\x18\x01 \x03(\x0b\x32&.similarity.Organizations.Organization\x1av\n\x0cOrganization\x12\n\n\x02id\x18\x01 \x01(\x05\x12\x42\n\tneighbors\x18\x02 \x03(\x0b\x32/.similarity.Organizations.Organization.Neighbor\x1a\x16\n\x08Neighbor\x12\n\n\x02id\x18\x01 \x01(\x05\x42\x31\n\x1a\x63om.google.step.similarityB\x13OrganizationsProtosb\x06proto3')
 )
 
 
@@ -33,9 +33,9 @@ _ORGANIZATIONS_ORGANIZATION_NEIGHBOR = _descriptor.Descriptor(
   containing_type=None,
   fields=[
     _descriptor.FieldDescriptor(
-      name='name', full_name='similarity.Organizations.Organization.Neighbor.name', index=0,
-      number=1, type=9, cpp_type=9, label=1,
-      has_default_value=False, default_value=_b("").decode('utf-8'),
+      name='id', full_name='similarity.Organizations.Organization.Neighbor.id', index=0,
+      number=1, type=5, cpp_type=1, label=1,
+      has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR),
@@ -51,8 +51,8 @@ _ORGANIZATIONS_ORGANIZATION_NEIGHBOR = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=195,
-  serialized_end=219,
+  serialized_start=193,
+  serialized_end=215,
 )
 
 _ORGANIZATIONS_ORGANIZATION = _descriptor.Descriptor(
@@ -63,9 +63,9 @@ _ORGANIZATIONS_ORGANIZATION = _descriptor.Descriptor(
   containing_type=None,
   fields=[
     _descriptor.FieldDescriptor(
-      name='name', full_name='similarity.Organizations.Organization.name', index=0,
-      number=1, type=9, cpp_type=9, label=1,
-      has_default_value=False, default_value=_b("").decode('utf-8'),
+      name='id', full_name='similarity.Organizations.Organization.id', index=0,
+      number=1, type=5, cpp_type=1, label=1,
+      has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR),
@@ -89,7 +89,7 @@ _ORGANIZATIONS_ORGANIZATION = _descriptor.Descriptor(
   oneofs=[
   ],
   serialized_start=97,
-  serialized_end=219,
+  serialized_end=215,
 )
 
 _ORGANIZATIONS = _descriptor.Descriptor(
@@ -119,7 +119,7 @@ _ORGANIZATIONS = _descriptor.Descriptor(
   oneofs=[
   ],
   serialized_start=26,
-  serialized_end=219,
+  serialized_end=215,
 )
 
 _ORGANIZATIONS_ORGANIZATION_NEIGHBOR.containing_type = _ORGANIZATIONS_ORGANIZATION
@@ -153,4 +153,5 @@ _sym_db.RegisterMessage(Organizations.Organization)
 _sym_db.RegisterMessage(Organizations.Organization.Neighbor)
 
 
+DESCRIPTOR._options = None
 # @@protoc_insertion_point(module_scope)

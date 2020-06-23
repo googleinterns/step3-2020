@@ -6,9 +6,21 @@
     <script src="script.js"></script>
   </head>
   
-  <body id="body">
-    <p>Enter the index of an organization:</p>
-    <input type="number" id="org-index" name="org-index" min="0" max="50" value="0">
+  <body id="body" onload="fetchOrgs()">
+    <div id="content">
+    <h1>Organization Recommender</h1>
+    <h4>Enter an organization from the below list that you like, and we will recommend three organizations
+        that you will also like!
+    </h4>
+    <h2>Existing Organizations:</h2>
+    <div id="existing-organizations"></div>
+
+    <h3>Enter the index of an organization:</h3>
+    <input type="number" id="org-index" name="org-index" min="0" max="49" value="0">
     <button onclick="findSimilarOrgs()">Find</button>
+    <br><br>
+    <div id="related-section">
+    </div>
+    </div>
   </body>
 </html>

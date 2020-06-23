@@ -131,14 +131,9 @@ public final class OrganizationsProtos {
         com.google.protobuf.MessageOrBuilder {
 
       /**
-       * <code>string name = 1;</code>
+       * <code>int32 id = 1;</code>
        */
-      java.lang.String getName();
-      /**
-       * <code>string name = 1;</code>
-       */
-      com.google.protobuf.ByteString
-          getNameBytes();
+      int getId();
 
       /**
        * <code>repeated .similarity.Organizations.Organization.Neighbor neighbors = 2;</code>
@@ -177,7 +172,7 @@ public final class OrganizationsProtos {
         super(builder);
       }
       private Organization() {
-        name_ = "";
+        id_ = 0;
         neighbors_ = java.util.Collections.emptyList();
       }
 
@@ -205,10 +200,9 @@ public final class OrganizationsProtos {
               case 0:
                 done = true;
                 break;
-              case 10: {
-                java.lang.String s = input.readStringRequireUtf8();
+              case 8: {
 
-                name_ = s;
+                id_ = input.readInt32();
                 break;
               }
               case 18: {
@@ -260,14 +254,9 @@ public final class OrganizationsProtos {
           com.google.protobuf.MessageOrBuilder {
 
         /**
-         * <code>string name = 1;</code>
+         * <code>int32 id = 1;</code>
          */
-        java.lang.String getName();
-        /**
-         * <code>string name = 1;</code>
-         */
-        com.google.protobuf.ByteString
-            getNameBytes();
+        int getId();
       }
       /**
        * Protobuf type {@code similarity.Organizations.Organization.Neighbor}
@@ -282,7 +271,7 @@ public final class OrganizationsProtos {
           super(builder);
         }
         private Neighbor() {
-          name_ = "";
+          id_ = 0;
         }
 
         @java.lang.Override
@@ -309,10 +298,9 @@ public final class OrganizationsProtos {
                 case 0:
                   done = true;
                   break;
-                case 10: {
-                  java.lang.String s = input.readStringRequireUtf8();
+                case 8: {
 
-                  name_ = s;
+                  id_ = input.readInt32();
                   break;
                 }
                 default: {
@@ -347,38 +335,13 @@ public final class OrganizationsProtos {
                   com.google.step.similarity.OrganizationsProtos.Organizations.Organization.Neighbor.class, com.google.step.similarity.OrganizationsProtos.Organizations.Organization.Neighbor.Builder.class);
         }
 
-        public static final int NAME_FIELD_NUMBER = 1;
-        private volatile java.lang.Object name_;
+        public static final int ID_FIELD_NUMBER = 1;
+        private int id_;
         /**
-         * <code>string name = 1;</code>
+         * <code>int32 id = 1;</code>
          */
-        public java.lang.String getName() {
-          java.lang.Object ref = name_;
-          if (ref instanceof java.lang.String) {
-            return (java.lang.String) ref;
-          } else {
-            com.google.protobuf.ByteString bs = 
-                (com.google.protobuf.ByteString) ref;
-            java.lang.String s = bs.toStringUtf8();
-            name_ = s;
-            return s;
-          }
-        }
-        /**
-         * <code>string name = 1;</code>
-         */
-        public com.google.protobuf.ByteString
-            getNameBytes() {
-          java.lang.Object ref = name_;
-          if (ref instanceof java.lang.String) {
-            com.google.protobuf.ByteString b = 
-                com.google.protobuf.ByteString.copyFromUtf8(
-                    (java.lang.String) ref);
-            name_ = b;
-            return b;
-          } else {
-            return (com.google.protobuf.ByteString) ref;
-          }
+        public int getId() {
+          return id_;
         }
 
         private byte memoizedIsInitialized = -1;
@@ -395,8 +358,8 @@ public final class OrganizationsProtos {
         @java.lang.Override
         public void writeTo(com.google.protobuf.CodedOutputStream output)
                             throws java.io.IOException {
-          if (!getNameBytes().isEmpty()) {
-            com.google.protobuf.GeneratedMessageV3.writeString(output, 1, name_);
+          if (id_ != 0) {
+            output.writeInt32(1, id_);
           }
           unknownFields.writeTo(output);
         }
@@ -407,8 +370,9 @@ public final class OrganizationsProtos {
           if (size != -1) return size;
 
           size = 0;
-          if (!getNameBytes().isEmpty()) {
-            size += com.google.protobuf.GeneratedMessageV3.computeStringSize(1, name_);
+          if (id_ != 0) {
+            size += com.google.protobuf.CodedOutputStream
+              .computeInt32Size(1, id_);
           }
           size += unknownFields.getSerializedSize();
           memoizedSize = size;
@@ -426,8 +390,8 @@ public final class OrganizationsProtos {
           com.google.step.similarity.OrganizationsProtos.Organizations.Organization.Neighbor other = (com.google.step.similarity.OrganizationsProtos.Organizations.Organization.Neighbor) obj;
 
           boolean result = true;
-          result = result && getName()
-              .equals(other.getName());
+          result = result && (getId()
+              == other.getId());
           result = result && unknownFields.equals(other.unknownFields);
           return result;
         }
@@ -439,8 +403,8 @@ public final class OrganizationsProtos {
           }
           int hash = 41;
           hash = (19 * hash) + getDescriptor().hashCode();
-          hash = (37 * hash) + NAME_FIELD_NUMBER;
-          hash = (53 * hash) + getName().hashCode();
+          hash = (37 * hash) + ID_FIELD_NUMBER;
+          hash = (53 * hash) + getId();
           hash = (29 * hash) + unknownFields.hashCode();
           memoizedHashCode = hash;
           return hash;
@@ -574,7 +538,7 @@ public final class OrganizationsProtos {
           @java.lang.Override
           public Builder clear() {
             super.clear();
-            name_ = "";
+            id_ = 0;
 
             return this;
           }
@@ -602,7 +566,7 @@ public final class OrganizationsProtos {
           @java.lang.Override
           public com.google.step.similarity.OrganizationsProtos.Organizations.Organization.Neighbor buildPartial() {
             com.google.step.similarity.OrganizationsProtos.Organizations.Organization.Neighbor result = new com.google.step.similarity.OrganizationsProtos.Organizations.Organization.Neighbor(this);
-            result.name_ = name_;
+            result.id_ = id_;
             onBuilt();
             return result;
           }
@@ -651,9 +615,8 @@ public final class OrganizationsProtos {
 
           public Builder mergeFrom(com.google.step.similarity.OrganizationsProtos.Organizations.Organization.Neighbor other) {
             if (other == com.google.step.similarity.OrganizationsProtos.Organizations.Organization.Neighbor.getDefaultInstance()) return this;
-            if (!other.getName().isEmpty()) {
-              name_ = other.name_;
-              onChanged();
+            if (other.getId() != 0) {
+              setId(other.getId());
             }
             this.mergeUnknownFields(other.unknownFields);
             onChanged();
@@ -684,71 +647,28 @@ public final class OrganizationsProtos {
             return this;
           }
 
-          private java.lang.Object name_ = "";
+          private int id_ ;
           /**
-           * <code>string name = 1;</code>
+           * <code>int32 id = 1;</code>
            */
-          public java.lang.String getName() {
-            java.lang.Object ref = name_;
-            if (!(ref instanceof java.lang.String)) {
-              com.google.protobuf.ByteString bs =
-                  (com.google.protobuf.ByteString) ref;
-              java.lang.String s = bs.toStringUtf8();
-              name_ = s;
-              return s;
-            } else {
-              return (java.lang.String) ref;
-            }
+          public int getId() {
+            return id_;
           }
           /**
-           * <code>string name = 1;</code>
+           * <code>int32 id = 1;</code>
            */
-          public com.google.protobuf.ByteString
-              getNameBytes() {
-            java.lang.Object ref = name_;
-            if (ref instanceof String) {
-              com.google.protobuf.ByteString b = 
-                  com.google.protobuf.ByteString.copyFromUtf8(
-                      (java.lang.String) ref);
-              name_ = b;
-              return b;
-            } else {
-              return (com.google.protobuf.ByteString) ref;
-            }
-          }
-          /**
-           * <code>string name = 1;</code>
-           */
-          public Builder setName(
-              java.lang.String value) {
-            if (value == null) {
-    throw new NullPointerException();
-  }
-  
-            name_ = value;
+          public Builder setId(int value) {
+            
+            id_ = value;
             onChanged();
             return this;
           }
           /**
-           * <code>string name = 1;</code>
+           * <code>int32 id = 1;</code>
            */
-          public Builder clearName() {
+          public Builder clearId() {
             
-            name_ = getDefaultInstance().getName();
-            onChanged();
-            return this;
-          }
-          /**
-           * <code>string name = 1;</code>
-           */
-          public Builder setNameBytes(
-              com.google.protobuf.ByteString value) {
-            if (value == null) {
-    throw new NullPointerException();
-  }
-  checkByteStringIsUtf8(value);
-            
-            name_ = value;
+            id_ = 0;
             onChanged();
             return this;
           }
@@ -806,38 +726,13 @@ public final class OrganizationsProtos {
       }
 
       private int bitField0_;
-      public static final int NAME_FIELD_NUMBER = 1;
-      private volatile java.lang.Object name_;
+      public static final int ID_FIELD_NUMBER = 1;
+      private int id_;
       /**
-       * <code>string name = 1;</code>
+       * <code>int32 id = 1;</code>
        */
-      public java.lang.String getName() {
-        java.lang.Object ref = name_;
-        if (ref instanceof java.lang.String) {
-          return (java.lang.String) ref;
-        } else {
-          com.google.protobuf.ByteString bs = 
-              (com.google.protobuf.ByteString) ref;
-          java.lang.String s = bs.toStringUtf8();
-          name_ = s;
-          return s;
-        }
-      }
-      /**
-       * <code>string name = 1;</code>
-       */
-      public com.google.protobuf.ByteString
-          getNameBytes() {
-        java.lang.Object ref = name_;
-        if (ref instanceof java.lang.String) {
-          com.google.protobuf.ByteString b = 
-              com.google.protobuf.ByteString.copyFromUtf8(
-                  (java.lang.String) ref);
-          name_ = b;
-          return b;
-        } else {
-          return (com.google.protobuf.ByteString) ref;
-        }
+      public int getId() {
+        return id_;
       }
 
       public static final int NEIGHBORS_FIELD_NUMBER = 2;
@@ -889,8 +784,8 @@ public final class OrganizationsProtos {
       @java.lang.Override
       public void writeTo(com.google.protobuf.CodedOutputStream output)
                           throws java.io.IOException {
-        if (!getNameBytes().isEmpty()) {
-          com.google.protobuf.GeneratedMessageV3.writeString(output, 1, name_);
+        if (id_ != 0) {
+          output.writeInt32(1, id_);
         }
         for (int i = 0; i < neighbors_.size(); i++) {
           output.writeMessage(2, neighbors_.get(i));
@@ -904,8 +799,9 @@ public final class OrganizationsProtos {
         if (size != -1) return size;
 
         size = 0;
-        if (!getNameBytes().isEmpty()) {
-          size += com.google.protobuf.GeneratedMessageV3.computeStringSize(1, name_);
+        if (id_ != 0) {
+          size += com.google.protobuf.CodedOutputStream
+            .computeInt32Size(1, id_);
         }
         for (int i = 0; i < neighbors_.size(); i++) {
           size += com.google.protobuf.CodedOutputStream
@@ -927,8 +823,8 @@ public final class OrganizationsProtos {
         com.google.step.similarity.OrganizationsProtos.Organizations.Organization other = (com.google.step.similarity.OrganizationsProtos.Organizations.Organization) obj;
 
         boolean result = true;
-        result = result && getName()
-            .equals(other.getName());
+        result = result && (getId()
+            == other.getId());
         result = result && getNeighborsList()
             .equals(other.getNeighborsList());
         result = result && unknownFields.equals(other.unknownFields);
@@ -942,8 +838,8 @@ public final class OrganizationsProtos {
         }
         int hash = 41;
         hash = (19 * hash) + getDescriptor().hashCode();
-        hash = (37 * hash) + NAME_FIELD_NUMBER;
-        hash = (53 * hash) + getName().hashCode();
+        hash = (37 * hash) + ID_FIELD_NUMBER;
+        hash = (53 * hash) + getId();
         if (getNeighborsCount() > 0) {
           hash = (37 * hash) + NEIGHBORS_FIELD_NUMBER;
           hash = (53 * hash) + getNeighborsList().hashCode();
@@ -1082,7 +978,7 @@ public final class OrganizationsProtos {
         @java.lang.Override
         public Builder clear() {
           super.clear();
-          name_ = "";
+          id_ = 0;
 
           if (neighborsBuilder_ == null) {
             neighbors_ = java.util.Collections.emptyList();
@@ -1118,7 +1014,7 @@ public final class OrganizationsProtos {
           com.google.step.similarity.OrganizationsProtos.Organizations.Organization result = new com.google.step.similarity.OrganizationsProtos.Organizations.Organization(this);
           int from_bitField0_ = bitField0_;
           int to_bitField0_ = 0;
-          result.name_ = name_;
+          result.id_ = id_;
           if (neighborsBuilder_ == null) {
             if (((bitField0_ & 0x00000002) == 0x00000002)) {
               neighbors_ = java.util.Collections.unmodifiableList(neighbors_);
@@ -1177,9 +1073,8 @@ public final class OrganizationsProtos {
 
         public Builder mergeFrom(com.google.step.similarity.OrganizationsProtos.Organizations.Organization other) {
           if (other == com.google.step.similarity.OrganizationsProtos.Organizations.Organization.getDefaultInstance()) return this;
-          if (!other.getName().isEmpty()) {
-            name_ = other.name_;
-            onChanged();
+          if (other.getId() != 0) {
+            setId(other.getId());
           }
           if (neighborsBuilder_ == null) {
             if (!other.neighbors_.isEmpty()) {
@@ -1237,71 +1132,28 @@ public final class OrganizationsProtos {
         }
         private int bitField0_;
 
-        private java.lang.Object name_ = "";
+        private int id_ ;
         /**
-         * <code>string name = 1;</code>
+         * <code>int32 id = 1;</code>
          */
-        public java.lang.String getName() {
-          java.lang.Object ref = name_;
-          if (!(ref instanceof java.lang.String)) {
-            com.google.protobuf.ByteString bs =
-                (com.google.protobuf.ByteString) ref;
-            java.lang.String s = bs.toStringUtf8();
-            name_ = s;
-            return s;
-          } else {
-            return (java.lang.String) ref;
-          }
+        public int getId() {
+          return id_;
         }
         /**
-         * <code>string name = 1;</code>
+         * <code>int32 id = 1;</code>
          */
-        public com.google.protobuf.ByteString
-            getNameBytes() {
-          java.lang.Object ref = name_;
-          if (ref instanceof String) {
-            com.google.protobuf.ByteString b = 
-                com.google.protobuf.ByteString.copyFromUtf8(
-                    (java.lang.String) ref);
-            name_ = b;
-            return b;
-          } else {
-            return (com.google.protobuf.ByteString) ref;
-          }
-        }
-        /**
-         * <code>string name = 1;</code>
-         */
-        public Builder setName(
-            java.lang.String value) {
-          if (value == null) {
-    throw new NullPointerException();
-  }
-  
-          name_ = value;
+        public Builder setId(int value) {
+          
+          id_ = value;
           onChanged();
           return this;
         }
         /**
-         * <code>string name = 1;</code>
+         * <code>int32 id = 1;</code>
          */
-        public Builder clearName() {
+        public Builder clearId() {
           
-          name_ = getDefaultInstance().getName();
-          onChanged();
-          return this;
-        }
-        /**
-         * <code>string name = 1;</code>
-         */
-        public Builder setNameBytes(
-            com.google.protobuf.ByteString value) {
-          if (value == null) {
-    throw new NullPointerException();
-  }
-  checkByteStringIsUtf8(value);
-          
-          name_ = value;
+          id_ = 0;
           onChanged();
           return this;
         }
@@ -2292,13 +2144,13 @@ public final class OrganizationsProtos {
       descriptor;
   static {
     java.lang.String[] descriptorData = {
-      "\n\tknn.proto\022\nsimilarity\"\301\001\n\rOrganization" +
+      "\n\tknn.proto\022\nsimilarity\"\275\001\n\rOrganization" +
       "s\0224\n\004orgs\030\001 \003(\0132&.similarity.Organizatio" +
-      "ns.Organization\032z\n\014Organization\022\014\n\004name\030" +
-      "\001 \001(\t\022B\n\tneighbors\030\002 \003(\0132/.similarity.Or" +
-      "ganizations.Organization.Neighbor\032\030\n\010Nei" +
-      "ghbor\022\014\n\004name\030\001 \001(\tB1\n\032com.google.step.s" +
-      "imilarityB\023OrganizationsProtosb\006proto3"
+      "ns.Organization\032v\n\014Organization\022\n\n\002id\030\001 " +
+      "\001(\005\022B\n\tneighbors\030\002 \003(\0132/.similarity.Orga" +
+      "nizations.Organization.Neighbor\032\026\n\010Neigh" +
+      "bor\022\n\n\002id\030\001 \001(\005B1\n\032com.google.step.simil" +
+      "arityB\023OrganizationsProtosb\006proto3"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
         new com.google.protobuf.Descriptors.FileDescriptor.    InternalDescriptorAssigner() {
@@ -2323,13 +2175,13 @@ public final class OrganizationsProtos {
     internal_static_similarity_Organizations_Organization_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_similarity_Organizations_Organization_descriptor,
-        new java.lang.String[] { "Name", "Neighbors", });
+        new java.lang.String[] { "Id", "Neighbors", });
     internal_static_similarity_Organizations_Organization_Neighbor_descriptor =
       internal_static_similarity_Organizations_Organization_descriptor.getNestedTypes().get(0);
     internal_static_similarity_Organizations_Organization_Neighbor_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_similarity_Organizations_Organization_Neighbor_descriptor,
-        new java.lang.String[] { "Name", });
+        new java.lang.String[] { "Id", });
   }
 
   // @@protoc_insertion_point(outer_class_scope)

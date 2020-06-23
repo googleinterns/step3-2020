@@ -7,9 +7,9 @@ option java_outer_classname = "OrganizationsProtos";
 
 message Organizations {
   message Organization {
-    string name = 1;
+    int32 id = 1;
     message Neighbor {
-      string name = 1;
+      int32 id = 1;
     }
     repeated Neighbor neighbors = 2; 
   }
