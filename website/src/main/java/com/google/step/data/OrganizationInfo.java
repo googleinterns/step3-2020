@@ -20,7 +20,6 @@ public final class OrganizationInfo {
     newOrganization.setProperty("webLink", request.getParameter("webLink"));
     newOrganization.setProperty("donateLink", request.getParameter("donateLink"));
     newOrganization.setProperty("about", request.getParameter("about"));
-    newOrganization.setProperty("flags", new ArrayList<String>());
 
     return newOrganization;
   }

@@ -27,4 +27,44 @@ public final class OrganizationInfoTest {
     OrganizationInfo test = new OrganizationInfo(entity);
     Assert.assertEquals(entity, test.getEntity());
   }
-}
+
+  @Test
+  public void isValidAllValid() {
+    Entity entity = new Entity("Test");
+    entity.setProperty("name", "This is a test");
+    entity.setProperty("webLink", "https://test.com");
+    entity.setProperty("about", "This test is definitely a test");
+    OrganizationInfo test = new OrganizationInfo(entity);
+    Assert.assertTrue(test.isValid());
+  }
+
+  @Test
+  public void isValidBadLink() {
+    Entity entity = new Entity("Test");
+    entity.setProperty("name", "This is a test");
+    entity.setProperty("webLink", "thisIsNotALink");
+    entity.setProperty("about", "This test is definitely a test");
+    OrganizationInfo test = new OrganizationInfo(entity);
+    Assert.assertFalse(test.isValid());
+  }
+
+  @Test
+  public void isValidNoName() {
+    Entity entity = new Entity("Test");
+    entity.setProperty("name", "");
+    entity.setProperty("webLink", "https://test.com");
+    entity.setProperty("about", "This test is definitely a test");
+    OrganizationInfo test = new OrganizationInfo(entity);
+    Assert.assertFalse(test.isValid());
+  }
+
+  @Test
+  public void isValidNoAbout() {
+    Entity entity = new Entity("Test");
+    entity.setProperty("name", "This is a test");
+    entity.setProperty("webLink", "https://test.com");
+    entity.setProperty("about", "");
+    OrganizationInfo test = new OrganizationInfo(entity);
+    Assert.assertFalse(test.isValid());
+  }
+ }
