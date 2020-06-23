@@ -4,12 +4,14 @@ import com.google.gson.Gson;
 import com.google.step.similarity.OrganizationsProtos.Organizations;
 import com.opencsv.*;
 import java.io.*;
+import java.lang.ClassLoader;
 import java.util.ArrayList;
 import java.util.List;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.ServletContext;
 
 @WebServlet("/predict")
 public class PredictionServlet extends HttpServlet {
@@ -27,10 +29,9 @@ public class PredictionServlet extends HttpServlet {
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
     int index = Integer.parseInt(request.getParameter("org_index"));
-    String path = "../../../neighbors";
-    List<Organizations.Organization> orgs = readProtobuf(path + ".txt");
+    List<Organizations.Organization> orgs = readProtobuf("neighbors.txt");
 
-    String filename = "../../../similarity/sample_data.csv";
+    String filename = "sample_data.csv";
     List<Organization> org_details = readCsv(filename);
     List<Organization> neighbors = getNeighbors(orgs, org_details, index);
 
@@ -41,9 +42,11 @@ public class PredictionServlet extends HttpServlet {
     response.getWriter().println(gson.toJson(neighbors));
   }
 
-  private static List<Organizations.Organization> readProtobuf(String filename) throws IOException {
-    // Read the existing organizations
-    Organizations orgs = Organizations.parseFrom(new FileInputStream(filename));
+  // Read the existing organizations
+  private List<Organizations.Organization> readProtobuf(String filename) throws IOException {
+    ServletContext sc = this.getServletContext();
+    InputStream is = sc.getResourceAsStream("/WEB-INF/" + filename);
+    Organizations orgs = Organizations.parseFrom(is);
     return orgs.getOrgsList();
   }
 
@@ -58,11 +61,13 @@ public class PredictionServlet extends HttpServlet {
     return similar_orgs;
   }
 
-  private static List<Organization> readCsv(String filename) {
+  private List<Organization> readCsv(String filename) {
     List<Organization> orgs = new ArrayList<>();
     try {
-      FileReader filereader = new FileReader(filename); 
-      CSVReader csvReader = new CSVReaderBuilder(filereader).withSkipLines(1).build();
+      ServletContext sc = this.getServletContext();
+      InputStream is = sc.getResourceAsStream("/WEB-INF/" + filename);
+      InputStreamReader isReader = new InputStreamReader(is); 
+      CSVReader csvReader = new CSVReaderBuilder(isReader).withSkipLines(1).build();
       String[] nextRecord = new String[2]; 
       int index = 0;
       while ((nextRecord = csvReader.readNext()) != null) { 
@@ -75,5 +80,4 @@ public class PredictionServlet extends HttpServlet {
     }
     return orgs;
   }
-
 }
