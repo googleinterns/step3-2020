@@ -23,8 +23,12 @@ import com.google.appengine.api.datastore.KeyFactory;
 import com.google.appengine.api.datastore.PreparedQuery;
 import com.google.appengine.api.datastore.Query;
 import com.google.step.data.OrganizationInfo;
-import java.io.IOException;
+import com.google.gson.Gson;
+import com.opencsv.*;
+import java.io.*;
 import javax.servlet.annotation.WebServlet;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -35,9 +39,11 @@ public class DataServlet extends HttpServlet {
 
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-    response.setContentType("text/html;");
-    response.getWriter().println("<h1>Hello world!</h1>");
+    String filename = "../../../similarity/sample_data.csv";
+    int index = searchCsvFor(request.getParameter("organization"), filename);
+    response.sendRedirect("/results.html?index=" + Integer.toString(index) + "&name=" + request.getParameter("organization"));
   }
+
 
   @Override
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
@@ -51,7 +57,26 @@ public class DataServlet extends HttpServlet {
       datastore.put(submission.getEntity());
       response.sendRedirect("/index.html");
     } else {
-      response.sendRedirect("/");
+    response.sendRedirect("/");
     }
+  }
+
+  private static int searchCsvFor(String orgName,String filename) {
+    try {
+      FileReader filereader = new FileReader(filename); 
+      CSVReader csvReader = new CSVReaderBuilder(filereader).withSkipLines(1).build();
+      String[] nextRecord = new String[2]; 
+      int index = 0;
+      while ((nextRecord = csvReader.readNext()) != null) {
+        if (nextRecord[0].equals(orgName)) {
+          return index;
+        } else {
+          index++;
+        }
+      } 
+    } catch(Exception ex) {
+      System.err.println(ex);
+    }
+    return -1;
   }
 }
