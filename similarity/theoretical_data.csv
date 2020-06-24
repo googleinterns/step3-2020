@@ -1,8 +1,8 @@
 Name,Tony,Elijah,Iris,Ali,Jess,Adam
-Apple,1,0,NAN,1,0,1
-Orange,0,NAN,1,0,1,0
-Banana,NAN,0,1,0,NAN,0
-Strawberry,1,0,NAN,NAN,0,1
-Blueberry,1,1,1,NAN,1,0
-Blackberry,1,0,NAN,0,NAN,1
-Avacado,0,0,0,1,NAN,NAN
+Apple,2,5,nan,4,2,4
+Orange,1,nan,4,2,4,5
+Banana,nan,1,4,5,nan,2
+Strawberry,nan,4,1,nan,4,5
+Blueberry,5,1,2,nan,4,2
+Blackberry,4,1,nan,5,nan,5
+Avacado,2,5,3,1,4,nan
