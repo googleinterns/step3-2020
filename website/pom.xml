@@ -35,6 +35,26 @@
       <artifactId>appengine-api-1.0-sdk</artifactId>
       <version>1.9.59</version>
     </dependency>
+    <!-- LocalService for Testing Datastore -->
+    <dependency>
+        <groupId>com.google.appengine</groupId>
+        <artifactId>appengine-testing</artifactId>
+        <version>1.4.0</version>
+        <scope>test</scope>
+    </dependency>
+    <!-- URL Validator -->
+    <dependency>
+  	  <groupId>commons-validator</groupId>
+  	  <artifactId>commons-validator</artifactId>
+  	  <version>1.6</version>
+	  </dependency>
+    <!-- Junit testing -->
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>4.12</version>
+      <scope>test</scope>
+    </dependency>
     <!-- Google Protocol Buffer (protobuf) -->
     <dependency>
       <groupId>com.google.protobuf</groupId>
