@@ -17,5 +17,10 @@
       <textarea id="about" name="about" rows="6" cols="45"></textarea><br></br>
       <input id="submit" type="submit">
     </form>
+    <form id="uploadFormCSV" action="/data" method="post" enctype="multipart/form-data">
+    	<label for="orgName">Organization Files:</label><br></br>
+      <input type="file" id="file" name="file" required><br></br>
+      <input id="submit" type="submit">
+    </form>
   </body>
 </html>

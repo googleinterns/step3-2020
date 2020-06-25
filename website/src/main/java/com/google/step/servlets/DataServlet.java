@@ -23,11 +23,17 @@ import com.google.appengine.api.datastore.KeyFactory;
 import com.google.appengine.api.datastore.PreparedQuery;
 import com.google.appengine.api.datastore.Query;
 import com.google.step.data.OrganizationInfo;
-import java.io.IOException;
+import com.opencsv.*;
+import java.io.*;
+import java.lang.Process.*;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.apache.commons.fileupload.FileItemStream;
+import org.apache.commons.fileupload.FileItemIterator;
+import org.apache.commons.fileupload.FileUploadException;
+import org.apache.commons.fileupload.servlet.ServletFileUpload;
 
 /** Servlet that returns some example content. TODO: modify this file to handle comments data */
 @WebServlet("/data")
@@ -41,17 +47,25 @@ public class DataServlet extends HttpServlet {
 
   @Override
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
-    OrganizationInfo submission = OrganizationInfo.createInstanceFrom(request);
     DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
-    datastore.prepare(submission.getQueryForDuplicates()).asList(FetchOptions.Builder.withDefaults()).forEach((duplicate -> {
-      submission.merge(duplicate);
-      datastore.delete(duplicate.getKey());
-    }));
-    if (submission.isValid()) {
-      datastore.put(submission.getEntity());
-      response.sendRedirect("/index.html");
-    } else {
-      response.sendRedirect("/");
+    // Create a new file upload handler
+    ServletFileUpload upload = new ServletFileUpload();
+    try{
+      // Parse the request
+      FileItemIterator iter = upload.getItemIterator(request);
+      while (iter.hasNext()) {
+        FileItemStream item = iter.next();
+        if (!item.isFormField()) {
+          // Process the input stream
+          InputStreamReader isReader = new InputStreamReader(item.openStream()); 
+          OrganizationInfo.getOrganizationsFrom(new CSVReaderBuilder(isReader).withSkipLines(1).build())
+          .stream()
+          .forEach(org -> datastore.put(org.getEntity()));
+        }
+      } 
+    } catch (FileUploadException ex) {
+      System.err.println(ex);
     }
   }
 }
+
