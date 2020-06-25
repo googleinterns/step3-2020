@@ -69,10 +69,6 @@ public class DataServlet extends HttpServlet {
       String[] nextRecord = new String[2]; 
       int index = 0;
       while ((nextRecord = csvReader.readNext()) != null) {
-<<<<<<< HEAD
-=======
-        System.out.println(orgName + nextRecord[0]);
->>>>>>> 347e8bd7e1bed269cf0b4db1f290a9c42908698a
         if (nextRecord[0].equals(orgName)) {
           return index;
         } else {

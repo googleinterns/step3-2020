@@ -15,7 +15,7 @@ function findSimilarOrgs() {
     const postQuery = '/predict?org_index=' + index;
     fetch(postQuery).then(response => response.json()).then(text => { 
       text.forEach((org) => {
-        if (org.name==urlParams.get('name')) {
+        if (org.name===urlParams.get('name')) {
           similarOrgs.appendChild(getOrgAsHtmlRelated(org, org.index));
         } else {
           similarOrgs.appendChild(getOrgAsHtmlList(org));
