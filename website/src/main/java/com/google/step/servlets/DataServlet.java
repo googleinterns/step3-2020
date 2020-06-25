@@ -61,6 +61,8 @@ public class DataServlet extends HttpServlet {
           OrganizationInfo.getOrganizationsFrom(new CSVReaderBuilder(isReader).withSkipLines(1).build())
           .stream()
           .forEach(org -> datastore.put(org.getEntity()));
+        } else {
+          System.out.println(item.getName());
         }
       } 
     } catch (FileUploadException ex) {
