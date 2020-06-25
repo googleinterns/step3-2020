@@ -2,6 +2,7 @@ package com.google.step.data;
 
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.Query;
+import com.google.apphosting.api.DeadlineExceededException;
 import com.google.cloud.language.v1.ClassificationCategory;
 import com.google.cloud.language.v1.ClassifyTextRequest;
 import com.google.cloud.language.v1.ClassifyTextResponse;
@@ -18,7 +19,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletRequest;
-import org.apache.commons.validator.UrlValidator;
 
 public final class OrganizationInfo {
   private final Entity entity;
@@ -48,20 +48,11 @@ public final class OrganizationInfo {
   }
 
   public boolean isValid() {
-    UrlValidator urlValidator = new UrlValidator();
     //Required fields
-    try {
-      if (((String) this.entity.getProperty("name")).isEmpty() || 
-          ((String) this.entity.getProperty("about")).isEmpty() ||
-          !urlValidator.isValid(((String) this.entity.getProperty("webLink")))) {
-        return false;
-      }
-    } catch (ClassCastException e) {
+    if (((String) this.entity.getProperty("name")).isEmpty() || 
+        ((String) this.entity.getProperty("about")).isEmpty() ||
+        Objects.isNull(this.entity.getProperty("classification"))) {
       return false;
-    }
-    //Change invalid Optional Fields to null
-    if (urlValidator.isValid(((String) this.entity.getProperty("donateLink")))) {
-      this.entity.setProperty("donateLink",null);
     }
     return true;
   }
@@ -104,6 +95,8 @@ public final class OrganizationInfo {
       }
     } catch (CsvValidationException ex) {
       System.err.println(ex);
+    } catch (DeadlineExceededException ex) {
+      return organizations;
     }
     return organizations;    
   }
