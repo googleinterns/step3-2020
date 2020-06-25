@@ -9,6 +9,7 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.ServletContext;
 
 @WebServlet("/fetch-orgs")
 public class OrganizationServlet extends HttpServlet {
@@ -27,7 +28,7 @@ public class OrganizationServlet extends HttpServlet {
 
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-    String filename = "../../../similarity/sample_data.csv";
+    String filename = "sample_data.csv";
     List<Organization> orgs = readCsv(filename);
     // Send the JSON as the response
     response.setContentType("application/json; charset=UTF-8");
@@ -36,11 +37,13 @@ public class OrganizationServlet extends HttpServlet {
     response.getWriter().println(gson.toJson(orgs));
   }
 
-  private static List<Organization> readCsv(String filename) {
+  private List<Organization> readCsv(String filename) {
     List<Organization> orgs = new ArrayList<>();
     try {
-      FileReader filereader = new FileReader(filename); 
-      CSVReader csvReader = new CSVReaderBuilder(filereader).withSkipLines(1).build();
+      ServletContext sc = this.getServletContext();
+      InputStream is = sc.getResourceAsStream("/WEB-INF/" + filename);
+      InputStreamReader isReader = new InputStreamReader(is); 
+      CSVReader csvReader = new CSVReaderBuilder(isReader).withSkipLines(1).build();
       String[] nextRecord = new String[2]; 
       int index = 0;
       while ((nextRecord = csvReader.readNext()) != null) { 
