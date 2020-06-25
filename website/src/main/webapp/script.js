@@ -29,11 +29,9 @@ function findSimilarOrgs() {
 
 function getOrgAsHtmlRelated(org, index) {
   if (Number(org.index) === Number(index)) {
-    const liElement = document.createElement('li');
     const nameElement = document.createElement('h3');
     nameElement.innerText = 'Organizations similar to ' + org.name + ': ';
-    liElement.appendChild(nameElement);
-    return liElement;
+    return nameElement;
   }
   const orgElement = document.createElement('li');
   const nameElement = document.createElement('h4');
