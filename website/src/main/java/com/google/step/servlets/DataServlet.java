@@ -23,23 +23,20 @@ import com.google.appengine.api.datastore.KeyFactory;
 import com.google.appengine.api.datastore.PreparedQuery;
 import com.google.appengine.api.datastore.Query;
 import com.google.step.data.OrganizationInfo;
-import com.google.gson.Gson;
 import com.opencsv.*;
 import java.io.*;
 import javax.servlet.annotation.WebServlet;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
+import javax.servlet.ServletContext;
 /** Servlet that returns some example content. TODO: modify this file to handle comments data */
 @WebServlet("/data")
 public class DataServlet extends HttpServlet {
 
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-    String filename = "../../../similarity/sample_data.csv";
+    String filename = "sample_data.csv";
     int index = searchCsvFor(request.getParameter("organization"), filename);
     response.sendRedirect("/results.html?index=" + Integer.toString(index) + "&name=" + request.getParameter("organization"));
   }
@@ -62,10 +59,12 @@ public class DataServlet extends HttpServlet {
     }
   }
 
-  private static int searchCsvFor(String orgName,String filename) {
+  private int searchCsvFor(String orgName,String filename) {
     try {
-      FileReader filereader = new FileReader(filename); 
-      CSVReader csvReader = new CSVReaderBuilder(filereader).withSkipLines(1).build();
+      ServletContext sc = this.getServletContext();
+      InputStream is = sc.getResourceAsStream("/WEB-INF/" + filename);
+      InputStreamReader isReader = new InputStreamReader(is); 
+      CSVReader csvReader = new CSVReaderBuilder(isReader).withSkipLines(1).build();
       String[] nextRecord = new String[2]; 
       int index = 0;
       while ((nextRecord = csvReader.readNext()) != null) {
