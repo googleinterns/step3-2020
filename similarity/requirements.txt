@@ -1,5 +1,0 @@
-google-api-python-client
-nltk
-numpy
-pandas
-scikit-learn

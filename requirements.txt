@@ -1,0 +1,9 @@
+bs4
+google
+google-api-python-client
+nltk
+numpy
+pandas
+scikit-learn
+selenium
+webdriver_manager
