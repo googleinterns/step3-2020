@@ -17,6 +17,7 @@ package com.google.step.servlets;
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
+import com.google.appengine.api.datastore.Query.SortDirection;
 import com.google.appengine.api.datastore.FetchOptions;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
@@ -26,6 +27,7 @@ import com.google.step.data.OrganizationInfo;
 import com.opencsv.*;
 import java.io.*;
 import java.lang.Process.*;
+import java.util.List;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -48,6 +50,11 @@ public class DataServlet extends HttpServlet {
   @Override
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
     DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+    //Determine where to start index of new CSV
+    List<Entity> lastEntry = datastore.prepare(
+      new Query("Organization").addSort("index",SortDirection.DESCENDING))
+      .asList(FetchOptions.Builder.withLimit(2));
+    long lastIndex = (lastEntry.isEmpty() )? 0 : (long) lastEntry.get(0).getProperty("index");
     // Create a new file upload handler
     ServletFileUpload upload = new ServletFileUpload();
     try{
@@ -58,9 +65,10 @@ public class DataServlet extends HttpServlet {
         if (!item.isFormField()) {
           // Process the input stream
           InputStreamReader isReader = new InputStreamReader(item.openStream()); 
-          OrganizationInfo.getOrganizationsFrom(new CSVReaderBuilder(isReader).withSkipLines(1).build())
-          .stream()
-          .forEach(org -> datastore.put(org.getEntity()));
+          OrganizationInfo.getOrganizationsFrom(
+              new CSVReaderBuilder(isReader).withSkipLines(1).build(),lastIndex)
+              .stream()
+              .forEach(org -> datastore.put(org.getEntity()));
         } else {
           System.out.println(item.getName());
         }
@@ -68,6 +76,7 @@ public class DataServlet extends HttpServlet {
     } catch (FileUploadException ex) {
       System.err.println(ex);
     }
+    response.sendRedirect("upload.html");
   }
 }
 

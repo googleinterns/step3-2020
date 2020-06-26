@@ -4,6 +4,7 @@ import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.tools.development.testing.LocalDatastoreServiceTestConfig;
 import com.google.appengine.tools.development.testing.LocalServiceTestHelper;
 import com.google.step.data.OrganizationInfo;
+import java.util.Arrays;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -32,7 +33,7 @@ public final class OrganizationInfoTest {
   public void isValidAllValid() {
     Entity entity = new Entity("Test");
     entity.setProperty("name", "This is a test");
-    entity.setProperty("classification", "/tests");
+    entity.setProperty("classification", "/test");
     entity.setProperty("about", "This test is definitely a test");
     OrganizationInfo test = new OrganizationInfo(entity);
     Assert.assertTrue(test.isValid());
@@ -42,7 +43,6 @@ public final class OrganizationInfoTest {
   public void isValidNoClassification() {
     Entity entity = new Entity("Test");
     entity.setProperty("name", "This is a test");
-    entity.setProperty("classification", null);
     entity.setProperty("about", "This test is definitely a test");
     OrganizationInfo test = new OrganizationInfo(entity);
     Assert.assertFalse(test.isValid());

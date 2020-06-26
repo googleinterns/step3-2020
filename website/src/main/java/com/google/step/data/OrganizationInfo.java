@@ -14,6 +14,7 @@ import com.opencsv.*;
 import com.opencsv.exceptions.CsvValidationException;
 
 import java.io.*;
+import java.util.Arrays;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -37,13 +38,16 @@ public final class OrganizationInfo {
     return newOrganization;
   }
 
-  private static Entity getOrganizationEntityFrom(String[] line, int index) throws Exception{
+  private static Entity getOrganizationEntityFrom(String[] line, long index) throws Exception{
     Entity newOrganization = new Entity("Organization");
     newOrganization.setProperty("name", line[0]);
     newOrganization.setProperty("webLink", line[1]);
     newOrganization.setProperty("about", line[2]);
     newOrganization.setProperty("index", index);
-    newOrganization.setProperty("classification", classifyText(line[0] + " " + line[2]));
+    List<String> classification = classifyText(line[0] + " " + line[2]);
+    if (!classification.isEmpty()){
+      newOrganization.setProperty("classification", classification);
+    }
     return newOrganization;
   }
 
@@ -51,7 +55,8 @@ public final class OrganizationInfo {
     //Required fields
     if (((String) this.entity.getProperty("name")).isEmpty() || 
         ((String) this.entity.getProperty("about")).isEmpty() ||
-        Objects.isNull(this.entity.getProperty("classification"))) {
+        ((String) this.entity.getProperty("webLink")).isEmpty() ||
+        !this.entity.hasProperty("classification")) {
       return false;
     }
     return true;
@@ -80,15 +85,19 @@ public final class OrganizationInfo {
     return new OrganizationInfo(getOrgEntityFrom(request));
   }
 
-  public static List<OrganizationInfo> getOrganizationsFrom(CSVReader csvReader) throws IOException {
+  public static List<OrganizationInfo> getOrganizationsFrom(CSVReader csvReader, long index) throws IOException {
     List<OrganizationInfo> organizations = new ArrayList<>();
-    String[] nextRecord = new String[3];
-    int index = 0; 
+    String[] nextRecord = new String[3]; 
     try {
       while ((nextRecord = csvReader.readNext()) != null) { 
         try {
-          OrganizationInfo item = new OrganizationInfo(getOrganizationEntityFrom(nextRecord, index++)); 
+          OrganizationInfo item = new OrganizationInfo(getOrganizationEntityFrom(nextRecord, index));
+          if (item.isValid()) { 
             organizations.add(item);
+            index++;
+          } else {
+            index--;
+          }
         } catch (Exception ex) {
           System.err.println(ex);
         }
@@ -113,8 +122,12 @@ public final class OrganizationInfo {
       ClassifyTextResponse response = language.classifyText(request);
 
       return response.getCategoriesList().stream()
-      .map(ClassificationCategory::getName)
-      .collect(Collectors.toList());
+          .map(ClassificationCategory::getName)
+          .map(category-> Arrays.asList(category.split("/", 0)))
+          .collect(ArrayList<String>::new, List::addAll, List::addAll)
+          .stream()
+          .filter(category -> !category.isEmpty())
+          .collect(Collectors.toCollection(ArrayList::new));
     }
     // [END language_classify_text]
   }
