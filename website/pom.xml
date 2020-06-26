@@ -67,6 +67,24 @@
       <artifactId>opencsv</artifactId> 
       <version>5.2</version> 
     </dependency>
+    <!--Hikari for connecting to Cloud SQL-->
+    <dependency>
+      <groupId>com.zaxxer</groupId>
+      <artifactId>HikariCP</artifactId>
+      <version>3.4.5</version>
+    </dependency>
+    <!--MySQL database-->
+    <dependency>
+      <groupId>mysql</groupId>
+      <artifactId>mysql-connector-java</artifactId>
+      <version>8.0.20</version>
+  </dependency>
+  <!--Google Cloud SQL-->
+  <dependency>
+    <groupId>com.google.cloud.sql</groupId>
+    <artifactId>mysql-socket-factory</artifactId>
+    <version>1.0.16</version>
+  </dependency>
   </dependencies>
 
   <build>
