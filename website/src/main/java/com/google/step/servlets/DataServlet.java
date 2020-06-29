@@ -17,6 +17,7 @@ package com.google.step.servlets;
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
+import com.google.appengine.api.datastore.Query.SortDirection;
 import com.google.appengine.api.datastore.FetchOptions;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
@@ -25,58 +26,56 @@ import com.google.appengine.api.datastore.Query;
 import com.google.step.data.OrganizationInfo;
 import com.opencsv.*;
 import java.io.*;
+import java.lang.Process.*;
+import java.util.List;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.ServletContext;
+import org.apache.commons.fileupload.FileItemStream;
+import org.apache.commons.fileupload.FileItemIterator;
+import org.apache.commons.fileupload.FileUploadException;
+import org.apache.commons.fileupload.servlet.ServletFileUpload;
+
 /** Servlet that returns some example content. TODO: modify this file to handle comments data */
 @WebServlet("/data")
 public class DataServlet extends HttpServlet {
 
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-    String filename = "sample_data.csv";
-    int index = searchCsvFor(request.getParameter("organization"), filename);
-    response.sendRedirect("/results.html?index=" + Integer.toString(index) + "&name=" + request.getParameter("organization"));
+    response.setContentType("text/html;");
+    response.getWriter().println("<h1>Hello world!</h1>");
   }
-
-
 
   @Override
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
-    OrganizationInfo submission = OrganizationInfo.createInstanceFrom(request);
     DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
-    datastore.prepare(submission.getQueryForDuplicates()).asList(FetchOptions.Builder.withDefaults()).forEach((duplicate -> {
-      submission.merge(duplicate);
-      datastore.delete(duplicate.getKey());
-    }));
-    if (submission.isValid()) {
-      datastore.put(submission.getEntity());
-      response.sendRedirect("/index.html");
-    } else {
-    response.sendRedirect("/");
-    }
-  }
-
-  private int searchCsvFor(String orgName,String filename) {
-    try {
-      ServletContext sc = this.getServletContext();
-      InputStream is = sc.getResourceAsStream("/WEB-INF/" + filename);
-      InputStreamReader isReader = new InputStreamReader(is); 
-      CSVReader csvReader = new CSVReaderBuilder(isReader).withSkipLines(1).build();
-      String[] nextRecord = new String[2]; 
-      int index = 0;
-      while ((nextRecord = csvReader.readNext()) != null) {
-        if (nextRecord[0].equals(orgName)) {
-          return index;
+    //Determine where to start index of new CSV
+    List<Entity> lastEntry = datastore.prepare(
+      new Query("Organization").addSort("index",SortDirection.DESCENDING))
+      .asList(FetchOptions.Builder.withLimit(2));
+    long lastIndex = (lastEntry.isEmpty() )? 0 : (long) lastEntry.get(0).getProperty("index");
+    // Create a new file upload handler
+    ServletFileUpload upload = new ServletFileUpload();
+    try{
+      // Parse the request
+      FileItemIterator iter = upload.getItemIterator(request);
+      while (iter.hasNext()) {
+        FileItemStream item = iter.next();
+        if (!item.isFormField()) {
+          // Process the input stream
+          InputStreamReader isReader = new InputStreamReader(item.openStream()); 
+          OrganizationInfo.getOrganizationsFrom(
+              new CSVReaderBuilder(isReader).withSkipLines(1).build(),lastIndex)
+              .stream()
+              .forEach(org -> datastore.put(org.getEntity()));
         } else {
-          index++;
+          System.out.println(item.getName());
         }
       } 
-    } catch(Exception ex) {
+    } catch (FileUploadException ex) {
       System.err.println(ex);
     }
-    return -1;
+    response.sendRedirect("upload.html");
   }
 }
