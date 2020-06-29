@@ -28,16 +28,6 @@ public final class OrganizationInfo {
     this.entity = organizationEntity;
   }
 
-  private static Entity getOrgEntityFrom(HttpServletRequest request) {
-    Entity newOrganization = new Entity("Organization");
-    newOrganization.setProperty("name", request.getParameter("orgName"));
-    newOrganization.setProperty("webLink", request.getParameter("webLink"));
-    newOrganization.setProperty("donateLink", request.getParameter("donateLink"));
-    newOrganization.setProperty("about", request.getParameter("about"));
-
-    return newOrganization;
-  }
-
   private static Entity getOrganizationEntityFrom(String[] line, long index) throws Exception{
     Entity newOrganization = new Entity("Organization");
     newOrganization.setProperty("name", line[0]);
@@ -66,27 +56,8 @@ public final class OrganizationInfo {
     return true;
   }
 
-  public void merge(Entity duplicate) {
-    this.entity.getProperties().forEach((property, value) -> {
-      if (Objects.isNull(value) && !Objects.isNull(duplicate.getProperty(property))) {
-        this.entity.setProperty(property, duplicate.getProperty(property));
-      } 
-      else if (!Objects.isNull(value) && !Objects.isNull(duplicate.getProperty(property))) {
-        //TODO: Handle case where fields are conflicting
-      }
-    });
-  }
-
   public Entity getEntity() {
     return this.entity;
-  }
-
-  public Query getQueryForDuplicates() {
-    return new Query("Organization").addFilter("name", Query.FilterOperator.EQUAL, entity.getProperty("name"));
-  }
-
-  public static OrganizationInfo createInstanceFrom(HttpServletRequest request) {
-    return new OrganizationInfo(getOrgEntityFrom(request));
   }
 
   public static List<OrganizationInfo> getOrganizationsFrom(CSVReader csvReader, long index) throws IOException {
