@@ -34,6 +34,7 @@ public final class OrganizationInfoTest {
     Entity entity = new Entity("Test");
     entity.setProperty("name", "This is a test");
     entity.setProperty("classification", "/test");
+    entity.setProperty("webLink", "www.test.org");
     entity.setProperty("about", "This test is definitely a test");
     OrganizationInfo test = new OrganizationInfo(entity);
     Assert.assertTrue(test.isValid());
@@ -53,6 +54,7 @@ public final class OrganizationInfoTest {
     Entity entity = new Entity("Test");
     entity.setProperty("name", "");
     entity.setProperty("classification", "/tests");
+    entity.setProperty("webLink", "www.test.org");
     entity.setProperty("about", "This test is definitely a test");
     OrganizationInfo test = new OrganizationInfo(entity);
     Assert.assertFalse(test.isValid());
@@ -62,6 +64,7 @@ public final class OrganizationInfoTest {
   public void isValidNoAbout() {
     Entity entity = new Entity("Test");
     entity.setProperty("name", "This is a test");
+    entity.setProperty("classification", "/tests");
     entity.setProperty("webLink", "https://test.com");
     entity.setProperty("about", "");
     OrganizationInfo test = new OrganizationInfo(entity);
