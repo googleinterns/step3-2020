@@ -36,6 +36,10 @@ import org.apache.commons.fileupload.FileItemStream;
 import org.apache.commons.fileupload.FileItemIterator;
 import org.apache.commons.fileupload.FileUploadException;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
+import java.util.Set;
+import java.util.HashSet;
+import java.util.stream.Collector;
+import java.util.function.*;
 
 /** Servlet that returns some example content. TODO: modify this file to handle comments data */
 @WebServlet("/data")
@@ -50,33 +54,45 @@ public class DataServlet extends HttpServlet {
   @Override
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
     DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
-    //Determine where to start index of new CSV
-    List<Entity> lastEntry = datastore.prepare(
-      new Query("Organization").addSort("index",SortDirection.DESCENDING))
-      .asList(FetchOptions.Builder.withLimit(2));
-    long lastIndex = (lastEntry.isEmpty() )? 0 : (long) lastEntry.get(0).getProperty("index");
-    // Create a new file upload handler
-    ServletFileUpload upload = new ServletFileUpload();
-    try{
-      // Parse the request
-      FileItemIterator iter = upload.getItemIterator(request);
-      while (iter.hasNext()) {
-        FileItemStream item = iter.next();
-        if (!item.isFormField()) {
-          // Process the input stream
-          InputStreamReader isReader = new InputStreamReader(item.openStream()); 
-          OrganizationInfo.getOrganizationsFrom(
-              new CSVReaderBuilder(isReader).withSkipLines(1).build(),lastIndex)
-              .stream()
-              .forEach(org -> datastore.put(org.getEntity()));
-        } else {
-          System.out.println(item.getName());
-        }
-      } 
+    
+    try{  
+      CSVReader csvToUpload = getCSVReaderFrom(request);
+      long startIndex = getLatestIndexFrom(datastore);
+      OrganizationInfo.getOrganizationsFrom(csvToUpload, startIndex)
+          .stream()
+          .forEach(org -> datastore.put(org.getEntity()));
     } catch (FileUploadException ex) {
       System.err.println(ex);
     }
+    catch (NullPointerException ex) {
+      System.err.println(ex);
+    }
+    
     response.sendRedirect("upload.html");
   }
-}
 
+  
+
+  private CSVReader getCSVReaderFrom(HttpServletRequest request) throws FileUploadException, IOException {
+    //create file upload handler
+    ServletFileUpload upload = new ServletFileUpload();
+    //Search request for file
+    FileItemIterator iter = upload.getItemIterator(request);
+    while (iter.hasNext()) {
+      FileItemStream item = iter.next();
+      if (!item.isFormField()) {
+        InputStreamReader fileStreamReader = new InputStreamReader(item.openStream()); 
+        return new CSVReaderBuilder(fileStreamReader).withSkipLines(1).build();
+      }
+    }
+    return null;
+  }
+
+  private long getLatestIndexFrom(DatastoreService datastore) {
+    //Determine where to start index of new CSV
+    List<Entity> lastEntry = datastore.prepare(
+        new Query("Organization").addSort("index",SortDirection.DESCENDING))
+        .asList(FetchOptions.Builder.withLimit(2));
+    return (lastEntry.isEmpty()) ? 0 : (long) lastEntry.get(0).getProperty("index");
+  }
+}
