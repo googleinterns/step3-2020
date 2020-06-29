@@ -42,12 +42,25 @@
         <version>1.4.0</version>
         <scope>test</scope>
     </dependency>
+    <!-- Google NLP -->
+
+    <dependency>
+      <groupId>com.google.cloud</groupId>
+      <artifactId>google-cloud-language</artifactId>
+      <version>1.99.4</version>
+    </dependency>
     <!-- URL Validator -->
     <dependency>
   	  <groupId>commons-validator</groupId>
   	  <artifactId>commons-validator</artifactId>
   	  <version>1.6</version>
 	  </dependency>
+    <!-- Reading multi-part HTTP requests -->
+    <dependency>
+      <groupId>commons-fileupload</groupId>
+      <artifactId>commons-fileupload</artifactId>
+      <version>1.4</version>
+    </dependency>
     <!-- Junit testing -->
     <dependency>
       <groupId>junit</groupId>
@@ -68,6 +81,7 @@
       <version>5.2</version> 
     </dependency>
   </dependencies>
+  
 
   <build>
     <plugins>
