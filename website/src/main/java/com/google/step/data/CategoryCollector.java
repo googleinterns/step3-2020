@@ -48,3 +48,4 @@ public class CategoryCollector implements Collector<String, KeyFactory.Builder, 
       return characteristics;
     }
   }
+  

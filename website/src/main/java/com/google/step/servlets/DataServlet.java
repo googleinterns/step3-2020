@@ -23,7 +23,7 @@ import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
 import com.google.appengine.api.datastore.PreparedQuery;
 import com.google.appengine.api.datastore.Query;
-import com.google.step.data.OrganizationInfo;
+import com.google.step.data.*;
 import com.opencsv.*;
 import java.io.*;
 import java.lang.Process.*;
@@ -36,10 +36,6 @@ import org.apache.commons.fileupload.FileItemStream;
 import org.apache.commons.fileupload.FileItemIterator;
 import org.apache.commons.fileupload.FileUploadException;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
-import java.util.Set;
-import java.util.HashSet;
-import java.util.stream.Collector;
-import java.util.function.*;
 
 /** Servlet that returns some example content. TODO: modify this file to handle comments data */
 @WebServlet("/data")
@@ -69,41 +65,6 @@ public class DataServlet extends HttpServlet {
     }
     
     response.sendRedirect("upload.html");
-  }
-
-  private class catergoryToKeyCollector implements Collector<String, KeyFactory.Builder, Key> {
-    private Key root = KeyFactory.createKey("categories", "root");
-    //private DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
-    @Override
-    public Supplier<KeyFactory.Builder> supplier() {
-      return () -> new KeyFactory.Builder(root);
-    }
-
-    @Override
-    public BiConsumer<KeyFactory.Builder, String> accumulator() {
-      return (curKey, category) -> curKey.addChild(category, curKey.getString());
-    }
-
-    @Override
-    public Function<KeyFactory.Builder, Key> finisher() {
-      return KeyFactory.Builder::getKey;
-    }
-
-    @Override
-    public BinaryOperator<KeyFactory.Builder> combiner() {
-      return (keyBuilder1, keyBuilder2) -> {
-          Key key2 = keyBuilder2.getKey();
-          keyBuilder1.addChild(key2.getKind(), key2.getName());
-          return keyBuilder1;
-      };
-    }
-    
-    @Override
-    public Set<Characteristics> characteristics() {
-      Set<Characteristics> characteristics = new HashSet<Characteristics>();
-      characteristics.add(Collector.Characteristics.valueOf("UNORDERED"));
-      return characteristics;
-    }
   }
 
   private CSVReader getCSVReaderFrom(HttpServletRequest request) throws FileUploadException, IOException {

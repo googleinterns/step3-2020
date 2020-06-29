@@ -61,7 +61,7 @@ public final class OrganizationInfo {
     //Create key using categories as parent key
     Key classKey = classification.stream().collect(CategoryCollector.toKey());
     Entity newOrganization = 
-        new Entity(KeyFactory.createKey(classKey, "Organization", line[0]));
+        new Entity("Organization", classKey);
     //set org properties
     newOrganization.setProperty("name", line[0]);
     newOrganization.setProperty("webLink", line[1]);

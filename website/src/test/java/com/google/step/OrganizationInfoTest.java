@@ -1,9 +1,10 @@
 package com.google.step;
 
 import com.google.appengine.api.datastore.Entity;
+import com.google.appengine.api.datastore.Key;
 import com.google.appengine.tools.development.testing.LocalDatastoreServiceTestConfig;
 import com.google.appengine.tools.development.testing.LocalServiceTestHelper;
-import com.google.step.data.OrganizationInfo;
+import com.google.step.data.*;
 import java.util.Arrays;
 import org.junit.After;
 import org.junit.Assert;
@@ -69,5 +70,12 @@ public final class OrganizationInfoTest {
     entity.setProperty("about", "");
     OrganizationInfo test = new OrganizationInfo(entity);
     Assert.assertFalse(OrganizationInfo.valid(test));
+  }
+
+  @Test
+  public void ReduceCategoriesToKey() {
+    String[] classification = {"Finance","Accounting & Auditing","Tax Preparation & Planning"};
+    Key actual = Arrays.stream(classification).collect(CategoryCollector.toKey());
+    Assert.assertEquals( "root(\"root\")/class(\"Finance\")/class(\"Accounting & Auditing\")/class(\"Tax Preparation & Planning\")", actual.toString());
   }
  }
