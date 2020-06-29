@@ -37,7 +37,7 @@ public final class OrganizationInfoTest {
     entity.setProperty("webLink", "www.test.org");
     entity.setProperty("about", "This test is definitely a test");
     OrganizationInfo test = new OrganizationInfo(entity);
-    Assert.assertTrue(test.isValid());
+    Assert.assertTrue(OrganizationInfo.valid(test));
   }
 
   @Test
@@ -46,7 +46,7 @@ public final class OrganizationInfoTest {
     entity.setProperty("name", "This is a test");
     entity.setProperty("about", "This test is definitely a test");
     OrganizationInfo test = new OrganizationInfo(entity);
-    Assert.assertFalse(test.isValid());
+    Assert.assertFalse(OrganizationInfo.valid(test));
   }
 
   @Test
@@ -57,7 +57,7 @@ public final class OrganizationInfoTest {
     entity.setProperty("webLink", "www.test.org");
     entity.setProperty("about", "This test is definitely a test");
     OrganizationInfo test = new OrganizationInfo(entity);
-    Assert.assertFalse(test.isValid());
+    Assert.assertFalse(OrganizationInfo.valid(test));
   }
 
   @Test
@@ -68,6 +68,6 @@ public final class OrganizationInfoTest {
     entity.setProperty("webLink", "https://test.com");
     entity.setProperty("about", "");
     OrganizationInfo test = new OrganizationInfo(entity);
-    Assert.assertFalse(test.isValid());
+    Assert.assertFalse(OrganizationInfo.valid(test));
   }
  }

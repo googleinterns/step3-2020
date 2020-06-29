@@ -1,6 +1,8 @@
 package com.google.step.data;
 
 import com.google.appengine.api.datastore.Entity;
+import com.google.appengine.api.datastore.Key;
+import com.google.appengine.api.datastore.KeyFactory;
 import com.google.appengine.api.datastore.Query;
 import com.google.apphosting.api.DeadlineExceededException;
 import com.google.cloud.language.v1.ClassificationCategory;
@@ -28,63 +30,6 @@ public final class OrganizationInfo {
     this.entity = organizationEntity;
   }
 
-  private static Entity getOrganizationEntityFrom(String[] line, long index) throws Exception{
-    Entity newOrganization = new Entity("Organization");
-    newOrganization.setProperty("name", line[0]);
-    newOrganization.setProperty("webLink", line[1]);
-    newOrganization.setProperty("about", line[2]);
-    newOrganization.setProperty("index", index);
-    List<String> classification = classifyText(line[0] + " " + line[2]);
-    if (!classification.isEmpty()){
-      newOrganization.setProperty("classification", classification);
-    }
-    return newOrganization;
-  }
-
-  public boolean isValid() {
-    //Required fields
-    try {
-      if (((String) this.entity.getProperty("name")).isEmpty() || 
-          ((String) this.entity.getProperty("about")).isEmpty() ||
-          ((String) this.entity.getProperty("webLink")).isEmpty() ||
-          !this.entity.hasProperty("classification")) {
-        return false;
-      }
-    } catch (NullPointerException ex) {
-      return false;
-    }
-    return true;
-  }
-
-  public Entity getEntity() {
-    return this.entity;
-  }
-
-  public static List<OrganizationInfo> getOrganizationsFrom(CSVReader csvReader, long index) throws IOException {
-    List<OrganizationInfo> organizations = new ArrayList<>();
-    String[] nextRecord = new String[3]; 
-    try {
-      while ((nextRecord = csvReader.readNext()) != null) { 
-        try {
-          OrganizationInfo item = new OrganizationInfo(getOrganizationEntityFrom(nextRecord, index));
-          if (item.isValid()) { 
-            organizations.add(item);
-            index++;
-          } else {
-            index--;
-          }
-        } catch (Exception ex) {
-          System.err.println(ex);
-        }
-      }
-    } catch (CsvValidationException ex) {
-      System.err.println(ex);
-    } catch (DeadlineExceededException ex) {
-      return organizations;
-    }
-    return organizations;    
-  }
-
   /** Detects categories in text using the Language Beta API. */
   private static List<String> classifyText(String text) throws Exception {
     // [START language_classify_text]
@@ -105,5 +50,66 @@ public final class OrganizationInfo {
           .collect(Collectors.toCollection(ArrayList::new));
     }
     // [END language_classify_text]
+  }
+
+  private static Entity getOrganizationEntityFrom(String[] line, long index) throws Exception{
+    //Classify submission by name and about, stop if unclassifiable
+    List<String> classification = classifyText(line[0] + " " + line[2]);
+    if (classification.isEmpty()){
+      return null;
+    }
+    //Create key using categories as parent key
+    Key classKey = classification.stream().collect(CategoryCollector.toKey());
+    Entity newOrganization = 
+        new Entity(KeyFactory.createKey(classKey, "Organization", line[0]));
+    //set org properties
+    newOrganization.setProperty("name", line[0]);
+    newOrganization.setProperty("webLink", line[1]);
+    newOrganization.setProperty("about", line[2]);
+    newOrganization.setProperty("index", index);
+    newOrganization.setProperty("classification", classification);    
+    return newOrganization;
+  }
+
+  public static boolean valid(OrganizationInfo item) {
+    //Required fields
+    try {
+      if (((String) item.entity.getProperty("name")).isEmpty() || 
+          ((String) item.entity.getProperty("about")).isEmpty() ||
+          ((String) item.entity.getProperty("webLink")).isEmpty() ||
+          !item.entity.hasProperty("classification")) {
+        return false;
+      }
+    } catch (NullPointerException ex) {
+      return false;
+    }
+    return true;
+  }
+
+  public Entity getEntity() {
+    return this.entity;
+  }
+
+  public static List<OrganizationInfo> getOrganizationsFrom(CSVReader csvReader, long index) throws IOException {
+    List<OrganizationInfo> organizations = new ArrayList<>();
+    String[] nextRecord = new String[3]; 
+    try {
+      while ((nextRecord = csvReader.readNext()) != null) { 
+        try {
+          OrganizationInfo item = new OrganizationInfo(getOrganizationEntityFrom(nextRecord, index));
+          if (valid(item)) { 
+            organizations.add(item);
+            index++;
+          } 
+        } catch (Exception ex) {
+          System.err.println(ex);
+        }
+      }
+    } catch (CsvValidationException ex) {
+      System.err.println(ex);
+    } catch (DeadlineExceededException ex) {
+      return organizations;
+    }
+    return organizations;    
   }
 }

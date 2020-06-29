@@ -10,7 +10,7 @@ public class CategoryCollector implements Collector<String, KeyFactory.Builder, 
     private Key root; 
     
     public CategoryCollector() {
-      this.root = KeyFactory.createKey("categories", "root"); 
+      this.root = KeyFactory.createKey("root", "root"); 
     }
 
     public static CategoryCollector toKey() {
@@ -24,7 +24,7 @@ public class CategoryCollector implements Collector<String, KeyFactory.Builder, 
 
     @Override
     public BiConsumer<KeyFactory.Builder, String> accumulator() {
-      return (curKey, category) -> curKey.addChild(category, curKey.getString());
+      return (curKey, category) -> curKey.addChild("class", category);
     }
 
     @Override
