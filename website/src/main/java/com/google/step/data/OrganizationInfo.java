@@ -53,10 +53,14 @@ public final class OrganizationInfo {
 
   public boolean isValid() {
     //Required fields
-    if (((String) this.entity.getProperty("name")).isEmpty() || 
-        ((String) this.entity.getProperty("about")).isEmpty() ||
-        ((String) this.entity.getProperty("webLink")).isEmpty() ||
-        !this.entity.hasProperty("classification")) {
+    try {
+      if (((String) this.entity.getProperty("name")).isEmpty() || 
+          ((String) this.entity.getProperty("about")).isEmpty() ||
+          ((String) this.entity.getProperty("webLink")).isEmpty() ||
+          !this.entity.hasProperty("classification")) {
+        return false;
+      }
+    } catch (NullPointerException ex) {
       return false;
     }
     return true;
