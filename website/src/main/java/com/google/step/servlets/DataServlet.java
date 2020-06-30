@@ -14,15 +14,6 @@
 
 package com.google.step.servlets;
 
-import com.google.appengine.api.datastore.DatastoreService;
-import com.google.appengine.api.datastore.DatastoreServiceFactory;
-import com.google.appengine.api.datastore.Entity;
-import com.google.appengine.api.datastore.Query.SortDirection;
-import com.google.appengine.api.datastore.FetchOptions;
-import com.google.appengine.api.datastore.Key;
-import com.google.appengine.api.datastore.KeyFactory;
-import com.google.appengine.api.datastore.PreparedQuery;
-import com.google.appengine.api.datastore.Query;
 import com.google.step.data.*;
 import com.opencsv.*;
 import java.io.*;
@@ -40,7 +31,7 @@ import org.apache.commons.fileupload.servlet.ServletFileUpload;
 /** Servlet that returns some example content. TODO: modify this file to handle comments data */
 @WebServlet("/data")
 public class DataServlet extends HttpServlet {
-
+    
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
     response.setContentType("text/html;");
@@ -49,20 +40,6 @@ public class DataServlet extends HttpServlet {
 
   @Override
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
-    DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
-    
-    try{  
-      CSVReader csvToUpload = getCSVReaderFrom(request);
-      long startIndex = getLatestIndexFrom(datastore);
-      OrganizationInfo.getOrganizationsFrom(csvToUpload, startIndex)
-          .stream()
-          .forEach(org -> datastore.put(org.getEntity()));
-    } catch (FileUploadException ex) {
-      System.err.println(ex);
-    }
-    catch (NullPointerException ex) {
-      System.err.println(ex);
-    }
     
     response.sendRedirect("upload.html");
   }
@@ -82,11 +59,11 @@ public class DataServlet extends HttpServlet {
     return null;
   }
 
-  private long getLatestIndexFrom(DatastoreService datastore) {
-    //Determine where to start index of new CSV
-    List<Entity> lastEntry = datastore.prepare(
-        new Query("Organization").addSort("index",SortDirection.DESCENDING))
-        .asList(FetchOptions.Builder.withLimit(2));
-    return (lastEntry.isEmpty()) ? 0 : (long) lastEntry.get(0).getProperty("index");
-  }
+  // private long getLatestIndexFrom(DatastoreService datastore) {
+  //   //Determine where to start index of new CSV
+  //   List<Entity> lastEntry = datastore.prepare(
+  //       new Query("Organization").addSort("index",SortDirection.DESCENDING))
+  //       .asList(FetchOptions.Builder.withLimit(2));
+  //   return (lastEntry.isEmpty()) ? 0 : (long) lastEntry.get(0).getProperty("index");
+  // }
 }
