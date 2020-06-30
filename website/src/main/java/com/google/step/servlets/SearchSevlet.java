@@ -1,11 +1,14 @@
 package com.google.step.servlets;
 
-import com.zaxxer.hikari.HikariConfig;
-import com.zaxxer.hikari.HikariDataSource;
+import com.google.gson.Gson;
 import com.opencsv.*;
 import com.opencsv.exceptions.CsvValidationException;
+import com.zaxxer.hikari.HikariConfig;
+import com.zaxxer.hikari.HikariDataSource;
 import java.io.*;
 import java.sql.*;
+import java.util.ArrayList; 
+import java.util.List; 
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -30,6 +33,20 @@ public class SearchSevlet extends HttpServlet {
   private static final String DB_PASS = "jMMAak8xh7a7bCnq";
   private static final String DB_NAME = "orgs";
 
+  private static class Organization {
+    int id;
+    String name;
+    String link;
+    String about;
+
+    private Organization(int id, String name, String link, String about) {
+      this.id = id;
+      this.name = name;
+      this.link = link;
+      this.about = about;
+    }
+  }
+
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
     DataSource pool = createConnectionPool();
@@ -38,24 +55,28 @@ public class SearchSevlet extends HttpServlet {
     try {
       Connection conn = pool.getConnection();
       Statement stmt = conn.createStatement();
+      List<Organization> orgs = new ArrayList<>();
       if (!keyword.isEmpty()) {
         sql = "SELECT id, name, link, about FROM org WHERE (name LIKE '%" + keyword + "%' OR about LIKE '%" + keyword + "%');";
       }
-      System.out.println(sql);
       ResultSet rs = stmt.executeQuery(sql);
       while (rs.next()) {
         int id = rs.getInt("id");
         String name = rs.getString("name");
         String link = rs.getString("link");
         String about = rs.getString("about");
-
-        System.out.print("ID: " + id);
-        System.out.print(", name: " + name);
-        System.out.print(", link: " + link);
-        System.out.println(", about: " + about);
+        
+        Organization org = new Organization(id, name, link, about);
+        orgs.add(org);
       }
       rs.close();
       conn.close();
+
+      // Send the JSON as the response
+      response.setContentType("application/json; charset=UTF-8");
+      response.setCharacterEncoding("UTF-8");
+      Gson gson = new Gson();
+      response.getWriter().println(gson.toJson(orgs));
     } catch (SQLException ex) {
       System.err.println(ex);
     }

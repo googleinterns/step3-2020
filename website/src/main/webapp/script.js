@@ -15,7 +15,7 @@ function findSimilarOrgs() {
     const postQuery = '/predict?org_index=' + index;
     fetch(postQuery).then(response => response.json()).then(text => { 
       text.forEach((org) => {
-        if (org.name===urlParams.get('name')) {
+        if (org.name === urlParams.get('name')) {
           similarOrgs.appendChild(getOrgAsHtmlRelated(org, org.index));
         } else {
           similarOrgs.appendChild(getOrgAsHtmlList(org));
@@ -58,14 +58,7 @@ function updateQueryString(key, value) {
   return searchParams;
 }
 
-function fetchOrgs() {
-  fetch("/fetch-orgs").then(response => response.json()).then(text => {
-    const orgsDiv = document.getElementById("existing-organizations");
-    text.forEach(org => {
-      orgsDiv.appendChild(getOrgAsHtmlDescription(org));
-    });
-  })
-}
+
 
 function notFoundHTML(query) {
   const notFound = document.createElement('li');
@@ -85,7 +78,32 @@ function getOrgs() {
  * Add the searched organizations by keyword
  */
 function searchOrgs() {
+  // remove previously displayed similar organizations
+  var similarOrgs = document.getElementById('existing-organizations');
+  while (similarOrgs.firstChild) {
+    similarOrgs.removeChild(similarOrgs.firstChild);
+  }
+
   const keyword = document.getElementById('keyword').value;
   const qs = '/sql?' + updateQueryString('keyword', keyword);
-  fetch(qs);
+  fetch(qs).then(response => response.json()).then(text => {
+    const orgsContainer = document.getElementById('existing-organizations');
+    text.forEach(entry => {
+      orgsContainer.appendChild(getOrgAsHtmlDescription(entry));
+    });
+  })
+}
+
+/**
+ * Creates list element from org
+ */
+function getOrgAsHtmlDescription(org) {
+  const orgElement = document.createElement('li');
+  const nameElement = document.createElement('h4');
+  nameElement.innerText = org.index + '. ' + org.name;
+  orgElement.appendChild(nameElement);
+  const textElement = document.createElement('p');
+  textElement.innerText = org.statement;
+  orgElement.appendChild(textElement);
+  return orgElement;
 }
