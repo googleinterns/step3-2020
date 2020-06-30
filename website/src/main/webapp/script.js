@@ -73,6 +73,19 @@ function notFoundHTML(query) {
   return notFound;
 }
 
+/**
+ * Add all existing organizations to web page
+ */
 function getOrgs() {
-  fetch("/sql")
+  const qs = '/sql?' + updateQueryString('keyword', '');
+  fetch(qs);
+}
+
+/**
+ * Add the searched organizations by keyword
+ */
+function searchOrgs() {
+  const keyword = document.getElementById('keyword').value;
+  const qs = '/sql?' + updateQueryString('keyword', keyword);
+  fetch(qs);
 }

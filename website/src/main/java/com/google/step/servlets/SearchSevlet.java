@@ -33,10 +33,15 @@ public class SearchSevlet extends HttpServlet {
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
     DataSource pool = createConnectionPool();
+    String keyword = request.getParameter("keyword");
+    String sql = "SELECT id, name, link, about FROM org";
     try {
       Connection conn = pool.getConnection();
       Statement stmt = conn.createStatement();
-      String sql = "SELECT id, name, link, about FROM org";
+      if (!keyword.isEmpty()) {
+        sql = "SELECT id, name, link, about FROM org WHERE (name LIKE '%" + keyword + "%' OR about LIKE '%" + keyword + "%');";
+      }
+      System.out.println(sql);
       ResultSet rs = stmt.executeQuery(sql);
       while (rs.next()) {
         int id = rs.getInt("id");
