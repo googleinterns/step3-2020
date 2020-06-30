@@ -1,9 +1,5 @@
 package com.google.step.data;
 
-import com.google.appengine.api.datastore.Entity;
-import com.google.appengine.api.datastore.Key;
-import com.google.appengine.api.datastore.KeyFactory;
-import com.google.appengine.api.datastore.Query;
 import com.google.apphosting.api.DeadlineExceededException;
 import com.google.cloud.language.v1.ClassificationCategory;
 import com.google.cloud.language.v1.ClassifyTextRequest;
@@ -14,8 +10,8 @@ import com.google.cloud.language.v1.EncodingType;
 import com.google.cloud.language.v1.LanguageServiceClient;
 import com.opencsv.*;
 import com.opencsv.exceptions.CsvValidationException;
-
 import java.io.*;
+import java.sql.*;
 import java.util.Arrays;
 import java.util.ArrayList;
 import java.util.List;
@@ -24,11 +20,20 @@ import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletRequest;
 
 public final class OrganizationInfo {
-  private final Entity entity;
+    private final int id;
+    private final String name;
+    private final String link;
+    private final String about;
+    private final List<String> classification;
 
-  public OrganizationInfo(Entity organizationEntity) {
-    this.entity = organizationEntity;
-  }
+    private OrganizationInfo(int id, String name, String link, String about, List<String> classification) {
+      this.id = id;
+      this.name = name;
+      this.link = link;
+      this.about = about;
+      this.classification = classification;
+    }
+
 
   /** Detects categories in text using the Language Beta API. */
   private static List<String> classifyText(String text) throws Exception {
@@ -52,64 +57,16 @@ public final class OrganizationInfo {
     // [END language_classify_text]
   }
 
-  private static Entity getOrganizationEntityFrom(String[] line, long index) throws Exception{
+  public static OrganizationInfo getClassifiedOrgFrom(ResultSet rs) throws Exception{
+    int id = rs.getInt("id");
+    String name = rs.getString("name");
+    String link = rs.getString("link");
+    String about = rs.getString("about");
     //Classify submission by name and about, stop if unclassifiable
-    List<String> classification = classifyText(line[0] + " " + line[2]);
+    List<String> classification = classifyText(name + " " + about);
     if (classification.isEmpty()){
       return null;
-    }
-    //Create key using categories as parent key
-    Key classKey = classification.stream().collect(CategoryCollector.toKey());
-    Entity newOrganization = 
-        new Entity("Organization", classKey);
-    //set org properties
-    newOrganization.setProperty("name", line[0]);
-    newOrganization.setProperty("webLink", line[1]);
-    newOrganization.setProperty("about", line[2]);
-    newOrganization.setProperty("index", index);
-    newOrganization.setProperty("classification", classification);    
-    return newOrganization;
-  }
-
-  public static boolean valid(OrganizationInfo item) {
-    //Required fields
-    try {
-      if (((String) item.entity.getProperty("name")).isEmpty() || 
-          ((String) item.entity.getProperty("about")).isEmpty() ||
-          ((String) item.entity.getProperty("webLink")).isEmpty() ||
-          !item.entity.hasProperty("classification")) {
-        return false;
-      }
-    } catch (NullPointerException ex) {
-      return false;
-    }
-    return true;
-  }
-
-  public Entity getEntity() {
-    return this.entity;
-  }
-
-  public static List<OrganizationInfo> getOrganizationsFrom(CSVReader csvReader, long index) throws IOException {
-    List<OrganizationInfo> organizations = new ArrayList<>();
-    String[] nextRecord = new String[3]; 
-    try {
-      while ((nextRecord = csvReader.readNext()) != null) { 
-        try {
-          OrganizationInfo item = new OrganizationInfo(getOrganizationEntityFrom(nextRecord, index));
-          if (valid(item)) { 
-            organizations.add(item);
-            index++;
-          } 
-        } catch (Exception ex) {
-          System.err.println(ex);
-        }
-      }
-    } catch (CsvValidationException ex) {
-      System.err.println(ex);
-    } catch (DeadlineExceededException ex) {
-      return organizations;
-    }
-    return organizations;    
+    }  
+    return new OrganizationInfo(id, name, link, about, classification);
   }
 }
