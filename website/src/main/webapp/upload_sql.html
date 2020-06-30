@@ -10,6 +10,8 @@
       <form id="uploadFormCSV" action="/sql" method="POST" enctype="multipart/form-data">
         <label for="file">Organization Files:</label><br></br>
         <input type="file" id="file" name="file" required><br></br>
+        <label for="index">Starting index:</label>
+        <input type="number" id="index" name="index" value="0" min="0"><br></br>
         <input id="submit" type="submit"><br></br>
       </form>
       <br><br>

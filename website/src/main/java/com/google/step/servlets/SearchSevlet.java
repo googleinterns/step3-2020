@@ -103,7 +103,7 @@ public class SearchSevlet extends HttpServlet {
           CSVReader csvReader = new CSVReaderBuilder(isReader).withSkipLines(1).build();
           // insert to MySQL
           String[] nextRecord = new String[2]; 
-          int index = 0;
+          int index = Integer.parseInt(request.getParameter("index"));
           while ((nextRecord = csvReader.readNext()) != null) { 
             String name = nextRecord[0];
             String link = nextRecord[1];
