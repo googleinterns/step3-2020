@@ -3,11 +3,6 @@
   <head>
     <meta charset="UTF-8">
     <link rel="stylesheet" href="style.css">
-    <!-- Google Maps API Key -->
-    <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCRoWmpBfVbAdP17w7Lfnp6J7AiJ30nnCw&callback=initMap"
-        type="text/javascript"></script>
-    <!-- Google Charts -->
-    <script src="https://www.gstatic.com/charts/loader.js"></script>
     <script src="script.js"></script>
   </head>
   
@@ -19,11 +14,12 @@
 
     <center>
     <h1>Nonprofit Finder</h2>
-
     <div id="search">
-      <input type="text" placeholder="search by issue">
+      <form id="searchForm" action="/data" method="GET">
+        <input id="organization " name="organization" type="text" placeholder="search by issue">
+        <input type="submit">
+      </form>
     </div>
-
     <div id="upload">
       Know a smaller nonprofit?<br>
       Or noticed we're missing any?
