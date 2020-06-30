@@ -5,11 +5,7 @@ import com.zaxxer.hikari.HikariDataSource;
 import com.opencsv.*;
 import com.opencsv.exceptions.CsvValidationException;
 import java.io.*;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.Statement;
-import java.sql.SQLException;
+import java.sql.*;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -35,11 +31,36 @@ public class SearchSevlet extends HttpServlet {
   private static final String DB_NAME = "orgs";
 
   @Override
+  public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    DataSource pool = createConnectionPool();
+    try {
+      Connection conn = pool.getConnection();
+      Statement stmt = conn.createStatement();
+      String sql = "SELECT id, name, link, about FROM org";
+      ResultSet rs = stmt.executeQuery(sql);
+      while (rs.next()) {
+        int id = rs.getInt("id");
+        String name = rs.getString("name");
+        String link = rs.getString("link");
+        String about = rs.getString("about");
+
+        System.out.print("ID: " + id);
+        System.out.print(", name: " + name);
+        System.out.print(", link: " + link);
+        System.out.println(", about: " + about);
+      }
+      rs.close();
+      conn.close();
+    } catch (SQLException ex) {
+      System.err.println(ex);
+    }
+  }
+
+  @Override
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
     DataSource pool = createConnectionPool();
     try {
       createTable(pool);
-      System.out.println("table created");
       Connection conn = pool.getConnection();
       int batch = 20; // insert orgs in batches of 20
       String stmtText = "INSERT INTO org (id, name, link, about) VALUES (?, ?, ?, ?)";

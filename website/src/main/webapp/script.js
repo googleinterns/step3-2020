@@ -72,3 +72,7 @@ function notFoundHTML(query) {
   notFound.innerText = "Apologies, we currently have no information on: " + query;
   return notFound;
 }
+
+function getOrgs() {
+  fetch("/sql")
+}
