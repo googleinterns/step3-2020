@@ -18,7 +18,9 @@ import com.google.step.data.*;
 import com.opencsv.*;
 import java.io.*;
 import java.lang.Process.*;
+import java.util.Arrays;
 import java.util.List;
+import java.sql.*;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -40,6 +42,35 @@ public class DataServlet extends HttpServlet {
 
   @Override
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    try {
+      CloudSQLManager database = CloudSQLManager.setUp();
+      ResultSet orgsNoClassification = database.get("org");
+      String orgsWithClass = "nonprofits";
+      List<String> columns = Arrays.asList(
+          "id INTEGER PRIMARY KEY", 
+          "name VARCHAR(255) NOT NULL", 
+          "link VARCHAR(255) NOT NULL", 
+          "about VARCHAR(255) NOT NULL",
+          "class VARCHAR(255) NOT NULL",
+          "parent-class VARCHAR(255) NOT NULL");
+      database.createTable(orgsWithClass, columns);
+      PreparedStatement statement = database.buildInsertStatement(orgsWithClass, columns);
+      int index = 0;
+      while (orgsNoClassification.next()) {
+        OrganizationInfo org = OrganizationInfo.getClassifiedOrgFrom(orgsNoClassification, index);
+        if (org != null) {
+          org.passInfoTo(statement);
+          statement.addBatch();
+          index ++;
+        }
+      }
+      statement.executeBatch();
+      database.tearDown();
+    } catch (SQLException ex) {
+      System.err.println(ex);
+    } catch(Exception ex) {
+      System.err.println(ex);
+    }
     
     response.sendRedirect("upload.html");
   }
