@@ -79,4 +79,3 @@ public class DataServlet extends HttpServlet {
     response.sendRedirect("upload.html");
   }
 }
-
