@@ -49,61 +49,8 @@ function getOrgAsHtmlList(org) {
   return orgElement;
 }
 
-/**
- * Returns an updated URL search param
- */
-function updateQueryString(key, value) {
-  var searchParams = new URLSearchParams();
-  searchParams.append(key, value);
-  return searchParams;
-}
-
-
-
 function notFoundHTML(query) {
   const notFound = document.createElement('li');
   notFound.innerText = "Apologies, we currently have no information on: " + query;
   return notFound;
-}
-
-/**
- * Add all existing organizations to web page
- */
-function getOrgs() {
-  const qs = '/sql?' + updateQueryString('keyword', '');
-  fetch(qs);
-}
-
-/**
- * Add the searched organizations by keyword
- */
-function searchOrgs() {
-  // remove previously displayed similar organizations
-  var similarOrgs = document.getElementById('existing-organizations');
-  while (similarOrgs.firstChild) {
-    similarOrgs.removeChild(similarOrgs.firstChild);
-  }
-
-  const keyword = document.getElementById('keyword').value;
-  const qs = '/sql?' + updateQueryString('keyword', keyword);
-  fetch(qs).then(response => response.json()).then(text => {
-    const orgsContainer = document.getElementById('existing-organizations');
-    text.forEach(entry => {
-      orgsContainer.appendChild(getOrgAsHtmlDescription(entry));
-    });
-  })
-}
-
-/**
- * Creates list element from org
- */
-function getOrgAsHtmlDescription(org) {
-  const orgElement = document.createElement('li');
-  const nameElement = document.createElement('h4');
-  nameElement.innerText = org.index + '. ' + org.name;
-  orgElement.appendChild(nameElement);
-  const textElement = document.createElement('p');
-  textElement.innerText = org.statement;
-  orgElement.appendChild(textElement);
-  return orgElement;
 }
