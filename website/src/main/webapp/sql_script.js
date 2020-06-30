@@ -2,28 +2,36 @@
  * Add all existing organizations to web page
  */
 function getOrgs() {
+  removeOrgs()
   const qs = '/sql?' + updateQueryString('keyword', '');
-  fetch(qs);
+  addOrgs(qs);
 }
 
 /**
  * Add the searched organizations by keyword
  */
 function searchOrgs() {
-  // remove previously displayed similar organizations
-  var similarOrgs = document.getElementById('existing-organizations');
-  while (similarOrgs.firstChild) {
-    similarOrgs.removeChild(similarOrgs.firstChild);
-  }
-
+  removeOrgs()
   const keyword = document.getElementById('keyword').value;
   const qs = '/sql?' + updateQueryString('keyword', keyword);
+  addOrgs(qs);
+}
+
+function addOrgs(qs) {
   fetch(qs).then(response => response.json()).then(text => {
     const orgsContainer = document.getElementById('existing-organizations');
     text.forEach(entry => {
       orgsContainer.appendChild(getOrgAsHtmlDescription(entry));
     });
   })
+}
+
+function removeOrgs() {
+  // remove previously displayed similar organizations
+  var existingOrgs = document.getElementById('existing-organizations');
+  while (existingOrgs.firstChild) {
+    existingOrgs.removeChild(existingOrgs.firstChild);
+  }
 }
 
 /**
@@ -35,7 +43,8 @@ function getOrgAsHtmlDescription(org) {
   nameElement.innerText = org.id + '. ' + org.name;
   orgElement.appendChild(nameElement);
   const linkElement = document.createElement('a');
-  linkElement.setAttribute('href', org.link);
+  linkElement.setAttribute('href', 'https://' + org.link);
+  linkElement.setAttribute('target', '_blank');
   linkElement.innerText = org.link;
   orgElement.appendChild(linkElement);
   const aboutElement = document.createElement('p');
