@@ -57,7 +57,7 @@ def process_text(input):
 
 def knn(features):
   # TODO: check the radius
-  classifier = NearestNeighbors(n_neighbors=4, radius=0.4)
+  classifier = NearestNeighbors(n_neighbors=5, radius=0.4)
   classifier.fit(features)
   return classifier
 
@@ -70,7 +70,7 @@ def main():
 
   # K-Nearest Neighbors (k = 4)
   model = knn(embeddings)
-  prediction = model.kneighbors(vectorized, 4, return_distance=False)
+  prediction = model.kneighbors(embeddings, 5, return_distance=False)
   orgs = Organizations()
   for i in range(df.shape[0]):
     print(df['name'][i], ': ', df['name'][prediction[i][1]], ', ',
