@@ -57,8 +57,7 @@ public final class OrganizationInfo {
     // [END language_classify_text]
   }
 
-  public static OrganizationInfo getClassifiedOrgFrom(ResultSet rs) throws Exception{
-    int id = rs.getInt("id");
+  public static OrganizationInfo getClassifiedOrgFrom(ResultSet rs, int index) throws Exception{
     String name = rs.getString("name");
     String link = rs.getString("link");
     String about = rs.getString("about");
@@ -67,6 +66,17 @@ public final class OrganizationInfo {
     if (classification.isEmpty()){
       return null;
     }  
-    return new OrganizationInfo(id, name, link, about, classification);
+    return new OrganizationInfo(index, name, link, about, classification);
+  }
+
+  public void passInfoTo(PreparedStatement statement) throws SQLException {
+    statement.setInt(1, this.id);
+    statement.setString(2, this.name);
+    statement.setString(3, this.link);
+    statement.setString(4, this.about);
+    String classPath = String.join("/", this.classification);
+    String parentClass = this.classification.get(this.classification.size() - 1);
+    statement.setString(5, classPath);
+    statement.setString(6, parentClass);
   }
 }
