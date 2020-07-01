@@ -76,10 +76,10 @@ public class SearchSevlet extends HttpServlet {
         String link = rs.getString("link");
         String about = rs.getString("about");
         
-        String neighbor1 = "SELECT id, name FROM org WHERE id = " + rs.getInt("neighbor1") + ";";
-        String neighbor2 = "SELECT id, name FROM org WHERE id = " + rs.getInt("neighbor2") + ";";
-        String neighbor3 = "SELECT id, name FROM org WHERE id = " + rs.getInt("neighbor3") + ";";
-        String neighbor4 = "SELECT id, name FROM org WHERE id = " + rs.getInt("neighbor4") + ";";
+        String neighbor1 = "SELECT name FROM org WHERE id = " + rs.getInt("neighbor1") + ";";
+        String neighbor2 = "SELECT name FROM org WHERE id = " + rs.getInt("neighbor2") + ";";
+        String neighbor3 = "SELECT name FROM org WHERE id = " + rs.getInt("neighbor3") + ";";
+        String neighbor4 = "SELECT name FROM org WHERE id = " + rs.getInt("neighbor4") + ";";
         
         Organization org = new Organization(id, name, link, about, neighbor1, neighbor2, neighbor3, neighbor4);
         orgs.add(org);
@@ -100,7 +100,7 @@ public class SearchSevlet extends HttpServlet {
       response.setContentType("application/json; charset=UTF-8");
       response.setCharacterEncoding("UTF-8");
       Gson gson = new Gson();
-      response.getWriter().println(gson.toJson(result));
+      response.getWriter().println(gson.toJson(orgs));
     } catch (SQLException ex) {
       System.err.println(ex);
     }
@@ -109,10 +109,8 @@ public class SearchSevlet extends HttpServlet {
   private String getName(Statement stmt, String sql) throws SQLException {
     String name = "";
     ResultSet rs = stmt.executeQuery(sql);
-    System.out.print(sql + " ");
-    while (rs.next()) {
-      name = rs.getString("name");
-      System.out.println(name);
+    if (rs.next()) {
+      name = rs.getString("name");      
     }
     rs.close();
     return name;
@@ -121,10 +119,11 @@ public class SearchSevlet extends HttpServlet {
   @Override
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
     DataSource pool = createConnectionPool();
+    int index = 0;
     try {
       createTable(pool);
       Connection conn = pool.getConnection();
-      int batch = 20; // insert orgs in batches of 20
+      int batch = 500; // insert orgs in batches of 500
       String stmtText = "INSERT INTO org (id, name, link, about) VALUES (?, ?, ?, ?)";
       PreparedStatement statement = conn.prepareStatement(stmtText);
       // Create a new file upload handler
@@ -139,7 +138,6 @@ public class SearchSevlet extends HttpServlet {
           CSVReader csvReader = new CSVReaderBuilder(isReader).withSkipLines(1).build();
           // insert to MySQL
           String[] nextRecord = new String[2]; 
-          int index = Integer.parseInt(request.getParameter("index-input"));
           while ((nextRecord = csvReader.readNext()) != null) { 
             String name = nextRecord[0];
             String link = nextRecord[1];
@@ -173,7 +171,7 @@ public class SearchSevlet extends HttpServlet {
   private void createTable(DataSource pool) throws SQLException {
     // Safely attempt to create the table schema.
     try (Connection conn = pool.getConnection()) {
-      String stmt = "CREATE TABLE IF NOT EXISTS org (id INTEGER PRIMARY KEY, name VARCHAR(255) NOT NULL, link VARCHAR(255) NOT NULL, about VARCHAR(255) NOT NULL);";
+      String stmt = "CREATE TABLE IF NOT EXISTS org (id INTEGER PRIMARY KEY, name TEXT NOT NULL, link TEXT NOT NULL, about TEXT NOT NULL);";
       try (PreparedStatement createTableStatement = conn.prepareStatement(stmt); ) {
         createTableStatement.execute();
       }

@@ -37,7 +37,7 @@ public class SimilarityServlet extends HttpServlet {
     try {
       Connection conn = pool.getConnection();
       // TODO: only need to alter the table once
-      // alterTable(conn);
+      alterTable(conn);
       int batch = 20; // insert orgs in batches of 20
       int count = 0;
       String query = "UPDATE org SET neighbor1 = ?, neighbor2 = ?, neighbor3 = ?, neighbor4 = ? where id = ?;";
