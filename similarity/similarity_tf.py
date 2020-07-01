@@ -22,9 +22,9 @@ def load_module():
 def embed(input, model):
   return model(input)
 
-# Reads csv as input and returns a Pandas DataFrame
+# Reads tsv as input and returns a Pandas DataFrame
 def read_data(filename):
-  df = pd.read_csv(filename, skipinitialspace=True)
+  df = pd.read_csv(filename, skipinitialspace=True, sep='\t')
   # appends organization name to about information
   df.about += ' ' + df.name
   return df
@@ -77,15 +77,15 @@ def main():
         df['name'][prediction[i][2]], ', ', df['name'][prediction[i][3]], 
         ', ', df['name'][prediction[i][4]])
     org = orgs.orgs.add()
-    org.id = i
+    org.id = df['id'][i]
     neighbor1 = org.neighbors.add()
-    neighbor1.id = prediction[i][1]
+    neighbor1.id = df['id'][prediction[i][1]]
     neighbor2 = org.neighbors.add()
-    neighbor2.id = prediction[i][2]
+    neighbor2.id = df['id'][prediction[i][2]]
     neighbor3 = org.neighbors.add()
-    neighbor3.id = prediction[i][3]
+    neighbor3.id = df['id'][prediction[i][3]]
     neighbor4 = org.neighbors.add()
-    neighbor4.id = prediction[i][4]
+    neighbor4.id = df['id'][prediction[i][4]]
     with open(path + '0_100_neighbors.txt', 'wb') as out_file:
       out_file.write(orgs.SerializeToString())
 
