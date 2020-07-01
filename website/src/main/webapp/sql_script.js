@@ -51,7 +51,7 @@ function getOrgAsHtmlDescription(org) {
   aboutElement.innerText = org.about;
   orgElement.appendChild(aboutElement);
   const neighborElement = document.createElement('p');
-  neighborElement.innerText = org.neighbor1 + ', ' + org.neighbor2 + ', ' + org.neighbor3 + ', ' + org.neighbor4;
+  neighborElement.innerText = 'Like this: ' + org.neighbor1 + ', ' + org.neighbor2 + ', ' + org.neighbor3 + ', ' + org.neighbor4;
   orgElement.appendChild(neighborElement);
   return orgElement;
 }

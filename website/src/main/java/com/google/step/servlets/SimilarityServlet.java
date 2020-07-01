@@ -37,13 +37,12 @@ public class SimilarityServlet extends HttpServlet {
     try {
       Connection conn = pool.getConnection();
       // TODO: only need to alter the table once
-      alterTable(conn);
-      int batch = 20; // insert orgs in batches of 20
-      int count = 0;
+      // alterTable(conn);
       String query = "UPDATE org SET neighbor1 = ?, neighbor2 = ?, neighbor3 = ?, neighbor4 = ? where id = ?;";
       // create the java mysql update preparedstatement
       PreparedStatement preparedStmt = conn.prepareStatement(query);
       List<Organizations.Organization> orgs = readProtobuf(request);
+      int count = 0;
       for (Organizations.Organization org : orgs) {
         List<Organizations.Organization.Neighbor> neighbors = org.getNeighborsList();
         preparedStmt.setInt(1, neighbors.get(0).getId());
@@ -51,11 +50,8 @@ public class SimilarityServlet extends HttpServlet {
         preparedStmt.setInt(3, neighbors.get(2).getId());
         preparedStmt.setInt(4, neighbors.get(3).getId());
         preparedStmt.setInt(5, org.getId());
-        preparedStmt.addBatch();
         // execute the java preparedstatement
-        if (count % batch == 0) {
-          preparedStmt.executeUpdate();
-        }
+        preparedStmt.executeUpdate();
         count++;
       }
       

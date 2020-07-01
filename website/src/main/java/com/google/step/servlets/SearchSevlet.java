@@ -75,7 +75,6 @@ public class SearchSevlet extends HttpServlet {
         String name = rs.getString("name");
         String link = rs.getString("link");
         String about = rs.getString("about");
-        
         String neighbor1 = "SELECT name FROM org WHERE id = " + rs.getInt("neighbor1") + ";";
         String neighbor2 = "SELECT name FROM org WHERE id = " + rs.getInt("neighbor2") + ";";
         String neighbor3 = "SELECT name FROM org WHERE id = " + rs.getInt("neighbor3") + ";";
@@ -100,7 +99,7 @@ public class SearchSevlet extends HttpServlet {
       response.setContentType("application/json; charset=UTF-8");
       response.setCharacterEncoding("UTF-8");
       Gson gson = new Gson();
-      response.getWriter().println(gson.toJson(orgs));
+      response.getWriter().println(gson.toJson(result));
     } catch (SQLException ex) {
       System.err.println(ex);
     }
