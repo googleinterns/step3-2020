@@ -38,12 +38,21 @@ public class SearchSevlet extends HttpServlet {
     String name;
     String link;
     String about;
+    int neighbor1;
+    int neighbor2;
+    int neighbor3;
+    int neighbor4;
 
-    private Organization(int id, String name, String link, String about) {
+    private Organization(int id, String name, String link, String about, 
+        int neighbor1, int neighbor2, int neighbor3, int neighbor4) {
       this.id = id;
       this.name = name;
       this.link = link;
       this.about = about;
+      this.neighbor1 = neighbor1;
+      this.neighbor2 = neighbor2;
+      this.neighbor3 = neighbor3;
+      this.neighbor4 = neighbor4;
     }
   }
 
@@ -51,13 +60,13 @@ public class SearchSevlet extends HttpServlet {
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
     DataSource pool = createConnectionPool();
     String keyword = request.getParameter("keyword");
-    String sql = "SELECT id, name, link, about FROM org";
+    String sql = "SELECT id, name, link, about, neighbor1, neighbor2, neighbor3, neighbor4 FROM org";
     try {
       Connection conn = pool.getConnection();
       Statement stmt = conn.createStatement();
       List<Organization> orgs = new ArrayList<>();
       if (!keyword.isEmpty()) {
-        sql = "SELECT id, name, link, about FROM org WHERE (name LIKE '%" + keyword + "%' OR about LIKE '%" + keyword + "%');";
+        sql = "SELECT id, name, link, about, neighbor1, neighbor2, neighbor3, neighbor4 FROM org WHERE (name LIKE '%" + keyword + "%' OR about LIKE '%" + keyword + "%');";
       }
       ResultSet rs = stmt.executeQuery(sql);
       while (rs.next()) {
@@ -65,8 +74,12 @@ public class SearchSevlet extends HttpServlet {
         String name = rs.getString("name");
         String link = rs.getString("link");
         String about = rs.getString("about");
+        int neighbor1 = rs.getInt("neighbor1");
+        int neighbor2 = rs.getInt("neighbor2");
+        int neighbor3 = rs.getInt("neighbor3");
+        int neighbor4 = rs.getInt("neighbor4");
         
-        Organization org = new Organization(id, name, link, about);
+        Organization org = new Organization(id, name, link, about, neighbor1, neighbor2, neighbor3, neighbor4);
         orgs.add(org);
       }
       rs.close();
