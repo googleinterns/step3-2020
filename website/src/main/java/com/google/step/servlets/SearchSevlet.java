@@ -38,13 +38,13 @@ public class SearchSevlet extends HttpServlet {
     String name;
     String link;
     String about;
-    int neighbor1;
-    int neighbor2;
-    int neighbor3;
-    int neighbor4;
+    String neighbor1;
+    String neighbor2;
+    String neighbor3;
+    String neighbor4;
 
     private Organization(int id, String name, String link, String about, 
-        int neighbor1, int neighbor2, int neighbor3, int neighbor4) {
+        String neighbor1, String neighbor2, String neighbor3, String neighbor4) {
       this.id = id;
       this.name = name;
       this.link = link;
@@ -65,6 +65,7 @@ public class SearchSevlet extends HttpServlet {
       Connection conn = pool.getConnection();
       Statement stmt = conn.createStatement();
       List<Organization> orgs = new ArrayList<>();
+      List<Organization> result = new ArrayList<>();
       if (!keyword.isEmpty()) {
         sql = "SELECT id, name, link, about, neighbor1, neighbor2, neighbor3, neighbor4 FROM org WHERE (name LIKE '%" + keyword + "%' OR about LIKE '%" + keyword + "%');";
       }
@@ -74,25 +75,47 @@ public class SearchSevlet extends HttpServlet {
         String name = rs.getString("name");
         String link = rs.getString("link");
         String about = rs.getString("about");
-        int neighbor1 = rs.getInt("neighbor1");
-        int neighbor2 = rs.getInt("neighbor2");
-        int neighbor3 = rs.getInt("neighbor3");
-        int neighbor4 = rs.getInt("neighbor4");
+        
+        String neighbor1 = "SELECT id, name FROM org WHERE id = " + rs.getInt("neighbor1") + ";";
+        String neighbor2 = "SELECT id, name FROM org WHERE id = " + rs.getInt("neighbor2") + ";";
+        String neighbor3 = "SELECT id, name FROM org WHERE id = " + rs.getInt("neighbor3") + ";";
+        String neighbor4 = "SELECT id, name FROM org WHERE id = " + rs.getInt("neighbor4") + ";";
         
         Organization org = new Organization(id, name, link, about, neighbor1, neighbor2, neighbor3, neighbor4);
         orgs.add(org);
       }
       rs.close();
+      // send more requests to SQL to get names
+      for (Organization org : orgs) {
+        String neighbor1 = getName(stmt, org.neighbor1);
+        String neighbor2 = getName(stmt, org.neighbor2);
+        String neighbor3 = getName(stmt, org.neighbor3);
+        String neighbor4 = getName(stmt, org.neighbor4);
+        Organization organization = new Organization(org.id, org.name, org.link, org.about, neighbor1, neighbor2, neighbor3, neighbor4);
+        result.add(organization);
+      }
       conn.close();
 
       // Send the JSON as the response
       response.setContentType("application/json; charset=UTF-8");
       response.setCharacterEncoding("UTF-8");
       Gson gson = new Gson();
-      response.getWriter().println(gson.toJson(orgs));
+      response.getWriter().println(gson.toJson(result));
     } catch (SQLException ex) {
       System.err.println(ex);
     }
+  }
+
+  private String getName(Statement stmt, String sql) throws SQLException {
+    String name = "";
+    ResultSet rs = stmt.executeQuery(sql);
+    System.out.print(sql + " ");
+    while (rs.next()) {
+      name = rs.getString("name");
+      System.out.println(name);
+    }
+    rs.close();
+    return name;
   }
 
   @Override
@@ -116,7 +139,7 @@ public class SearchSevlet extends HttpServlet {
           CSVReader csvReader = new CSVReaderBuilder(isReader).withSkipLines(1).build();
           // insert to MySQL
           String[] nextRecord = new String[2]; 
-          int index = Integer.parseInt(request.getParameter("index"));
+          int index = Integer.parseInt(request.getParameter("index-input"));
           while ((nextRecord = csvReader.readNext()) != null) { 
             String name = nextRecord[0];
             String link = nextRecord[1];
