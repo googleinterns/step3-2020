@@ -18,9 +18,9 @@ import com.google.step.data.*;
 import com.opencsv.*;
 import java.io.*;
 import java.lang.Process.*;
-import java.util.Arrays;
-import java.util.List;
 import java.sql.*;
+import java.util.*;
+import java.util.stream.Collectors;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -43,29 +43,69 @@ public class DataServlet extends HttpServlet {
   @Override
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
     try {
+      //Set up SQL connection
       CloudSQLManager database = CloudSQLManager.setUp();
-      ResultSet orgsNoClassification = database.get("");
-      String orgsWithClass = "nonprofits";
+      System.out.println("Database set up");
+      String orgsWithClass = "organizationsTest2";
+      //Create table for orgs with classification
       List<String> columns = Arrays.asList(
           "id INTEGER PRIMARY KEY", 
           "name VARCHAR(255) NOT NULL", 
           "link VARCHAR(255) NOT NULL", 
           "about VARCHAR(255) NOT NULL",
           "class VARCHAR(255) NOT NULL",
-          "parent-class VARCHAR(255) NOT NULL");
+          "parentClass VARCHAR(255) NOT NULL");
+      database.drop(orgsWithClass);
       database.createTable(orgsWithClass, columns);
+      System.out.println("Target table created");
+
+      //Get reader for orgs with no classifiation
+      CSVReader orgsNoClassification = getCSVReaderFrom(request);
+      System.out.println("File recieved from HTTP request");
+
+      //Classify each org, and add to target table
       PreparedStatement statement = database.buildInsertStatement(orgsWithClass, columns);
+      System.out.println("Insert statement built");
+      String[] nextRecord = new String[2]; 
       int index = 0;
-      while (orgsNoClassification.next()) {
-        OrganizationInfo org = OrganizationInfo.getClassifiedOrgFrom(orgsNoClassification, index);
+      while ((nextRecord = orgsNoClassification.readNext()) != null) {
+        OrganizationInfo org = OrganizationInfo.getClassifiedOrgFrom(nextRecord, index);
         if (org != null) {
           org.passInfoTo(statement);
           statement.addBatch();
           index ++;
         }
       }
+      System.out.println("Classifications added");
       statement.executeBatch();
+      System.out.println("Insertion Executed");
+      orgsNoClassification.close();
+
+      //Get all distinct classes
+      ResultSet classes = database.getDistinct(orgsWithClass, Arrays.asList("class"), null);
+      System.out.println("Classifications selected");
+      SortedSet<String> parents = new TreeSet<>();
+      Map<String, Set<String>> classTree = new HashMap<>();
+      while (classes.next()) {
+        Queue<String> parsed = Arrays.stream(classes.getString("class").split("/", 0))
+            .collect(Collectors.toCollection(LinkedList::new));
+        parents.add(parsed.peek());
+        while (!parsed.isEmpty()) {
+          String parent = parsed.remove();
+          List<String> child = (parsed.peek() != null) ? Arrays.asList(parsed.peek()) : new ArrayList<String>();
+          if (classTree.containsKey(parent)) {
+            classTree.get(parent).addAll(child);
+          } else {
+            classTree.put(parent, new HashSet<>(child));
+          }
+        }
+      }
+      classes.close();
       database.tearDown();
+      
+      while (!parents.isEmpty()) {
+        printClassTree(classTree, parents, parents.first() , "");
+      }
     } catch (SQLException ex) {
       System.err.println(ex);
     } catch(Exception ex) {
@@ -73,6 +113,19 @@ public class DataServlet extends HttpServlet {
     }
     
     response.sendRedirect("upload.html");
+  }
+
+  private void printClassTree(Map<String, Set<String>> classTree, Set<String> parents, String parent, String spacing) {
+    try {
+      System.out.println(spacing + parent);
+      parents.remove(parent);
+      if (classTree.get(parent).isEmpty()) {
+        return;
+      }
+      classTree.get(parent).forEach(child -> printClassTree(classTree, parents, child, spacing + "     "));
+    } catch(NullPointerException ex) {
+      System.err.println(ex);
+    }
   }
 
   private CSVReader getCSVReaderFrom(HttpServletRequest request) throws FileUploadException, IOException {
