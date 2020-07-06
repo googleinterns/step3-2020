@@ -1,9 +1,12 @@
 package com.google.step.servlets;
 
+import com.google.gson.Gson;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import java.io.*;
 import java.sql.*;
+import java.util.ArrayList; 
+import java.util.List; 
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -14,6 +17,18 @@ import javax.sql.DataSource;
 /** Servelt that searches for a category and returns results */
 @WebServlet("/download")
 public class DownloadServlet extends HttpServlet {
+
+  private static class Organization {
+    String id;
+    String name;
+    String about;
+
+    private Organization(String id, String name, String about) {
+      this.id = id;
+      this.name = name;
+      this.about = about;
+    }
+  }
 
   // Saving credentials in environment variables is convenient, but not secure - consider a more
   // secure solution such as https://cloud.google.com/kms/ to help keep secrets safe.
@@ -34,20 +49,23 @@ public class DownloadServlet extends HttpServlet {
       ResultSet result = statement.executeQuery(sql);
 
       response.setContentType("text/plain");
-      response.setHeader("Content-disposition", "attachment; filename=database.tsv");
+      response.setHeader("Content-disposition", "attachment; filename=database.json");
       OutputStream out = response.getOutputStream();
       Writer writer = new OutputStreamWriter(out, "UTF-8");
 
       // write header line containing column names       
       writer.write("id\tname\tabout\n");
+      List<Organization> orgs = new ArrayList<>();
       while (result.next()) {
         String id = result.getString("id");
         String name = result.getString("name");
         String about = result.getString("about");
-        String line = String.format("%s\t%s\t%s\n", id, name, about);
-        writer.write(line);            
+        Organization org = new Organization(id, name, about);
+        orgs.add(org);   
       }
       statement.close();
+      Gson gson = new Gson();
+      writer.write(gson.toJson(orgs));
       writer.close();
     } catch (SQLException ex) {
       System.err.println(ex);
