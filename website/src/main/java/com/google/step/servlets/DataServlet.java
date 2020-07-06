@@ -44,7 +44,7 @@ public class DataServlet extends HttpServlet {
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
     try {
       CloudSQLManager database = CloudSQLManager.setUp();
-      ResultSet orgsNoClassification = database.get("org");
+      ResultSet orgsNoClassification = database.get("");
       String orgsWithClass = "nonprofits";
       List<String> columns = Arrays.asList(
           "id INTEGER PRIMARY KEY", 

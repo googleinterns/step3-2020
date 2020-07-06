@@ -64,6 +64,25 @@ public final class CloudSQLManager {
     return stmt.executeQuery(query);
   }
 
+  public void drop(String tableName) {
+    try {
+      String query = String.format("DROP TABLE %s;", tableName);
+      Statement stmt = this.conn.createStatement();
+      stmt.execute(query);
+    } catch (SQLException ex) {
+      System.out.println(tableName + " Already dropped");
+      System.err.println(ex);
+    }
+  }
+
+  public ResultSet getDistinct( String tableName, List<String> columns, List<String> clauses) throws SQLException {
+    String values = String.join(",", columns);
+    String where = (clauses == null) ? ";" : String.format(" WHERE %s;", String.join("AND", clauses)); 
+    String query = String.format("SELECT DISTINCT %s FROM %s%s", values, tableName, where);
+    Statement stmt = this.conn.createStatement();
+    return stmt.executeQuery(query);
+  }
+
   public PreparedStatement buildInsertStatement(String tableName, List<String> columns) throws SQLException {
     List<String> placeHolders = new ArrayList<>();
     for (String column : columns) {
@@ -73,7 +92,8 @@ public final class CloudSQLManager {
         .map((name) -> name.substring(0, name.indexOf(" ")))
         .collect(Collectors.joining(","));
     String stmtText = String.format("INSERT INTO %s (%s) VALUES (%s);", 
-        tableName, columnNames, String.join("placeHolders", ","));
+        tableName, columnNames, String.join(",", placeHolders));
+    System.out.println("Statement: " + stmtText);
     return conn.prepareStatement(stmtText);
   }
 
