@@ -53,8 +53,6 @@ public class DownloadServlet extends HttpServlet {
       OutputStream out = response.getOutputStream();
       Writer writer = new OutputStreamWriter(out, "UTF-8");
 
-      // write header line containing column names       
-      writer.write("id\tname\tabout\n");
       List<Organization> orgs = new ArrayList<>();
       while (result.next()) {
         String id = result.getString("id");

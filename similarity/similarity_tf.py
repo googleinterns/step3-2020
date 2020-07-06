@@ -1,4 +1,3 @@
-from absl import logging
 import nltk
 from nltk.corpus import stopwords
 from nltk.stem import WordNetLemmatizer
@@ -7,24 +6,11 @@ import pandas as pd
 import re
 from sklearn.neighbors import NearestNeighbors
 import string
-import tensorflow as tf
-import tensorflow_hub as hub
 
 
-def load_module():
-  module_url = "https://tfhub.dev/google/universal-sentence-encoder/4" 
-  model = hub.load(module_url)
-  # Reduce logging output.
-  logging.set_verbosity(logging.ERROR)
-  print ("module %s loaded" % module_url)
-  return model
-
-def embed(input, model):
-  return model(input)
-
-# Reads tsv as input and returns a Pandas DataFrame
+# Reads csv as input and returns a Pandas DataFrame
 def read_data(filename):
-  df = pd.read_csv(filename, skipinitialspace=True, sep='\t')
+  df = pd.read_json(filename)
   # appends organization name to about information
   df.about += ' ' + df.name
   return df
@@ -61,12 +47,13 @@ def knn(features):
   classifier.fit(features)
   return classifier
 
+
 def main():
-  filename = 'processed_irs990_0_100.csv'
+  path = '/content/drive/My Drive/Capstone/'
+  filename = path + 'processed_data/database.json'
   df = read_data(filename)
   text = process_text(df)  
-  module = load_module()
-  embeddings = embed(text, module)
+  embeddings = embed(text)
 
   # K-Nearest Neighbors (k = 4)
   model = knn(embeddings)
@@ -86,8 +73,9 @@ def main():
     neighbor3.id = df['id'][prediction[i][3]]
     neighbor4 = org.neighbors.add()
     neighbor4.id = df['id'][prediction[i][4]]
-    with open(path + '0_100_neighbors.txt', 'wb') as out_file:
-      out_file.write(orgs.SerializeToString())
+  with open(path + 'knn/0_10000_neighbors.txt', 'wb') as out_file:
+    out_file.write(orgs.SerializeToString())
+
 
 if __name__ == '__main__':
   main()
