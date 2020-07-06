@@ -40,14 +40,11 @@ function updateQueryString(key, value) {
  */
 function getOrgAsHtmlDescription(org) {
   const orgElement = document.createElement('li');
-  const nameElement = document.createElement('h4');
-  nameElement.innerText = org.id + '. ' + org.name;
+  const nameElement = document.createElement('a');
+  nameElement.setAttribute('href', 'https://' + org.link);
+  nameElement.setAttribute('target', '_blank');
+  nameElement.innerText = org.name;
   orgElement.appendChild(nameElement);
-  const linkElement = document.createElement('a');
-  linkElement.setAttribute('href', 'https://' + org.link);
-  linkElement.setAttribute('target', '_blank');
-  linkElement.innerText = org.link;
-  orgElement.appendChild(linkElement);
   const aboutElement = document.createElement('p');
   aboutElement.innerText = org.about;
   orgElement.appendChild(aboutElement);
