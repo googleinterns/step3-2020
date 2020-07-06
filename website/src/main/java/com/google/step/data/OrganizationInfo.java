@@ -57,16 +57,29 @@ public final class OrganizationInfo {
     // [END language_classify_text]
   }
 
-  public static OrganizationInfo getClassifiedOrgFrom(ResultSet rs, int index) throws Exception{
-    String name = rs.getString("name");
-    String link = rs.getString("link");
-    String about = rs.getString("about");
+  public static OrganizationInfo getClassifiedOrgFrom(String[] record, int index) throws Exception{
+    String name = record[0];
+    String link = record[1];
+    String about = record[2];
     //Classify submission by name and about, stop if unclassifiable
-    List<String> classification = classifyText(name + " " + about);
+    List<List<String>> classification = Arrays.asList(
+        Arrays.asList("Coding","Testing","Test1"),
+        Arrays.asList("Coding","Testing","Test2"),
+        Arrays.asList("Coding","Testing","Test3"),
+        Arrays.asList("Coding1","1Testing1","8Test1"),
+        Arrays.asList("Coding1","1Testing1","8Test2"),
+        Arrays.asList("Coding1","1Testing3","8Test3"),
+        Arrays.asList("Coding2","2Testing2","2Test"),
+        Arrays.asList("Coding2","2Testing2","2Test"),
+        Arrays.asList("Coding2","2Testing2","2Test"),
+        Arrays.asList("Coding3","3Testing3","3Test"),
+        Arrays.asList("Coding3","3Testing3","3Test"),
+        Arrays.asList("Coding3","3Testing4","3Test4"),
+        Arrays.asList("Coding3","3Testing4","3Test5"));//classifyText(name + " " + about);
     if (classification.isEmpty()){
       return null;
     }  
-    return new OrganizationInfo(index, name, link, about, classification);
+    return new OrganizationInfo(index, name, link, about, classification.get(index%13));
   }
 
   public void passInfoTo(PreparedStatement statement) throws SQLException {
