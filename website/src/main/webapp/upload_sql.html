@@ -7,18 +7,31 @@
   </head>
   <body id="body">
     <div id="content">
+      <h4>Upload CSV to Cloud SQL Database</h4>
       <form id="uploadFormCSV" action="/sql" method="POST" enctype="multipart/form-data">
         <label for="file">Organization Files:</label><br></br>
         <input type="file" id="file" name="file" required><br></br>
-        <label for="index">Starting index:</label>
-        <input type="number" id="index" name="index" value="0" min="0"><br></br>
-        <input id="submit" type="submit"><br></br>
+        <input id="submit-csv" type="submit"><br></br>
       </form>
       <br><br>
-      
-      <h4>Get Organizations in the database</h4>
-      <button onclick="getOrgs();">Get All</button>
+
+      <h4>Upload k-NN to Cloud SQL Database</h4>
+      <form id="uploadProto" action="/update" method="POST" enctype="multipart/form-data">
+        <label for="file">k-NN Protos:</label><br></br>
+        <input type="file" id="knn-file" name="file" required><br></br>
+        <input id="submit-proto" type="submit"><br></br>
+      </form>
       <br><br>
+
+      <h4>Download Organizations as JSON</h4>
+      <form id="download" action="/download" method="GET">
+        <label for="submit">Download:</label><br></br>
+        <input id="download-json" type="submit">
+      </form>
+      <br><br>
+
+      <h4>Get Organizations in the database</h4>
+      <button onclick="getOrgs();">Get All</button><br><br>
       <input type="text" id="keyword">
       <button onclick="searchOrgs();">Keyword Search</button>
       <ul id="existing-organizations"></ul>

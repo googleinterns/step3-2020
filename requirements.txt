@@ -1,3 +1,4 @@
+absl-py
 bs4
 google
 google-api-python-client
@@ -6,4 +7,6 @@ numpy
 pandas
 scikit-learn
 selenium
+setuptools
+tensorflow
 webdriver_manager
