@@ -1,19 +1,11 @@
 /**
- * Add all existing organizations to web page
- */
-function getOrgs() {
-  removeOrgs();
-  const qs = '/sql?' + updateQueryString('keyword', '');
-  addOrgs(qs);
-}
-
-/**
  * Add the searched organizations by keyword
  */
 function searchOrgs() {
   removeOrgs();
   const keyword = document.getElementById('keyword').value;
   const qs = '/sql?' + updateQueryString('keyword', keyword);
+  addTitle(keyword);
   addOrgs(qs);
 }
 
@@ -32,6 +24,15 @@ function removeOrgs() {
   while (existingOrgs.firstChild) {
     existingOrgs.removeChild(existingOrgs.firstChild);
   }
+}
+
+/**
+ * Returns an updated URL search param
+ */
+function updateQueryString(key, value) {
+  var searchParams = new URLSearchParams();
+  searchParams.append(key, value);
+  return searchParams;
 }
 
 /**
@@ -56,11 +57,16 @@ function getOrgAsHtmlDescription(org) {
   return orgElement;
 }
 
-/**
- * Returns an updated URL search param
- */
-function updateQueryString(key, value) {
-  var searchParams = new URLSearchParams();
-  searchParams.append(key, value);
-  return searchParams;
+function addListener() {
+  const inputBox = document.getElementById('keyword');
+  inputBox.addEventListener('keyup', function(event) {
+      if (event.key === 'Enter') {
+        searchOrgs();
+      }
+  });
+}
+
+function addTitle(keyword) {
+  const element = document.getElementById('results-title');
+  element.innerText = 'Results for [' + keyword + ']: ';
 }
