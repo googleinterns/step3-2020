@@ -63,7 +63,7 @@ function addListener() {
   const inputBox = document.getElementById('keyword');
   inputBox.addEventListener('keyup', function(event) {
       if (event.key === 'Enter') {
-        searchOrgs();
+        searchOrgs(0);
       }
   });
 }
