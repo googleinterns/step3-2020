@@ -1,19 +1,11 @@
 /**
- * Add all existing organizations to web page
- */
-function getOrgs() {
-  removeOrgs();
-  const qs = '/sql?' + updateQueryString('keyword', '');
-  addOrgs(qs);
-}
-
-/**
  * Add the searched organizations by keyword
  */
 function searchOrgs() {
   removeOrgs();
   const keyword = document.getElementById('keyword').value;
   const qs = '/sql?' + updateQueryString('keyword', keyword);
+  addTitle(keyword);
   addOrgs(qs);
 }
 
@@ -35,18 +27,24 @@ function removeOrgs() {
 }
 
 /**
+ * Returns an updated URL search param
+ */
+function updateQueryString(key, value) {
+  var searchParams = new URLSearchParams();
+  searchParams.append(key, value);
+  return searchParams;
+}
+
+/**
  * Creates list element from org
  */
 function getOrgAsHtmlDescription(org) {
   const orgElement = document.createElement('li');
-  const nameElement = document.createElement('h4');
-  nameElement.innerText = org.id + '. ' + org.name;
+  const nameElement = document.createElement('a');
+  nameElement.setAttribute('href', 'https://' + org.link);
+  nameElement.setAttribute('target', '_blank');
+  nameElement.innerText = org.name;
   orgElement.appendChild(nameElement);
-  const linkElement = document.createElement('a');
-  linkElement.setAttribute('href', 'https://' + org.link);
-  linkElement.setAttribute('target', '_blank');
-  linkElement.innerText = org.link;
-  orgElement.appendChild(linkElement);
   const aboutElement = document.createElement('p');
   aboutElement.innerText = org.about;
   orgElement.appendChild(aboutElement);
@@ -56,11 +54,16 @@ function getOrgAsHtmlDescription(org) {
   return orgElement;
 }
 
-/**
- * Returns an updated URL search param
- */
-function updateQueryString(key, value) {
-  var searchParams = new URLSearchParams();
-  searchParams.append(key, value);
-  return searchParams;
+function addListener() {
+  const inputBox = document.getElementById('keyword');
+  inputBox.addEventListener('keyup', function(event) {
+      if (event.key === 'Enter') {
+        searchOrgs();
+      }
+  });
+}
+
+function addTitle(keyword) {
+  const element = document.getElementById('results-title');
+  element.innerText = 'Results for [' + keyword + ']: ';
 }
