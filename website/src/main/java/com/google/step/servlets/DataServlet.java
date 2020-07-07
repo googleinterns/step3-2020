@@ -14,6 +14,7 @@
 
 package com.google.step.servlets;
 
+import com.google.gson.Gson;
 import com.google.step.data.*;
 import com.opencsv.*;
 import java.io.*;
@@ -33,63 +34,98 @@ import org.apache.commons.fileupload.servlet.ServletFileUpload;
 /** Servlet that returns some example content. TODO: modify this file to handle comments data */
 @WebServlet("/data")
 public class DataServlet extends HttpServlet {
+  private static String orgsWithClass = "orgTable";
     
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-    response.setContentType("text/html;");
-    response.getWriter().println("<h1>Hello world!</h1>");
+    try {
+      //Set up Proxy for handling SQL server
+      CloudSQLManager database = CloudSQLManager.setUp();
+      //Get all distinct classifications to develop tree
+      ResultSet classes = database.getDistinct(orgsWithClass, Arrays.asList("class"), null);
+      Map<String, Set<String>> classTree = createClassificationTree(classes);
+      //Send out info
+      response.setContentType("application/json; charset=UTF-8");
+      response.setCharacterEncoding("UTF-8");
+      Gson gson = new Gson();
+      response.getWriter().println(gson.toJson(classTree));
+    } catch (SQLException ex) {
+      System.err.println(ex);
+    }
+    response.setContentType("text/html");
+    response.getWriter().println("<p>Didn't Work</p>");
   }
 
   @Override
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    //Column Information for database to be created
+    List<String> columns = Arrays.asList(
+        "id INTEGER PRIMARY KEY", 
+        "name TEXT NOT NULL", 
+        "link TEXT NOT NULL", 
+        "about TEXT NOT NULL",
+        "class VARCHAR(255) NOT NULL");
+
     try {
-      //Set up SQL connection
+      //Set up Proxy for handling SQL server
       CloudSQLManager database = CloudSQLManager.setUp();
-      System.out.println("Database set up");
-      String orgsWithClass = "organizationsTest2";
       //Create table for orgs with classification
-      List<String> columns = Arrays.asList(
-          "id INTEGER PRIMARY KEY", 
-          "name VARCHAR(255) NOT NULL", 
-          "link VARCHAR(255) NOT NULL", 
-          "about VARCHAR(255) NOT NULL",
-          "class VARCHAR(255) NOT NULL",
-          "parentClass VARCHAR(255) NOT NULL");
-      database.drop(orgsWithClass);
       database.createTable(orgsWithClass, columns);
-      System.out.println("Target table created");
-
-      //Get reader for orgs with no classifiation
+      //Get file reader for orgs with no classifiation
       CSVReader orgsNoClassification = getCSVReaderFrom(request);
-      System.out.println("File recieved from HTTP request");
-
-      //Classify each org, and add to target table
+      //Classify each org from, file, and add to target table
       PreparedStatement statement = database.buildInsertStatement(orgsWithClass, columns);
-      System.out.println("Insert statement built");
-      String[] nextRecord = new String[2]; 
-      int index = 0;
-      while ((nextRecord = orgsNoClassification.readNext()) != null) {
-        OrganizationInfo org = OrganizationInfo.getClassifiedOrgFrom(nextRecord, index);
-        if (org != null) {
-          org.passInfoTo(statement);
-          statement.addBatch();
-          index ++;
-        }
-      }
-      System.out.println("Classifications added");
-      statement.executeBatch();
-      System.out.println("Insertion Executed");
-      orgsNoClassification.close();
+      int startIndex = getLastEntryIndex(orgsWithClass, database) + 1;
+      passFileToStatement(orgsNoClassification, statement, startIndex);
+      //Wrap up
+      database.tearDown();
+      response.sendRedirect("upload.html");
+    } catch (SQLException ex) {
+      System.err.println(ex);
+    } catch(Exception ex) {
+      System.err.println(ex);
+    }
+  }
 
-      //Get all distinct classes
-      ResultSet classes = database.getDistinct(orgsWithClass, Arrays.asList("class"), null);
-      System.out.println("Classifications selected");
-      SortedSet<String> parents = new TreeSet<>();
-      Map<String, Set<String>> classTree = new HashMap<>();
+  //Helper functions for processing new CSV files
+  private int getLastEntryIndex(String tableName, CloudSQLManager database) {
+    try {
+      ResultSet maxIndexSet = database.getDistinct(tableName, Arrays.asList("MAX(id) AS id"), null); 
+      maxIndexSet.next();
+      int lastEntryIndex = maxIndexSet.getInt("id");
+    return lastEntryIndex;
+    } catch (SQLException ex) {
+      System.err.println(ex);
+      return 0;
+    }
+  }
+
+  private void passFileToStatement(CSVReader orgsFileReader, PreparedStatement statement, int index) throws IOException, Exception, SQLException {
+    String[] nextRecord = new String[2]; 
+    int batchAmount = 500;
+    while ((nextRecord = orgsFileReader.readNext()) != null) {
+      OrganizationInfo org = OrganizationInfo.getClassifiedOrgFrom(nextRecord, index);
+      if (org != null) {
+        org.passInfoTo(statement);
+        statement.addBatch();
+        index ++;
+      }
+      if (index % batchAmount == 0){
+        statement.executeBatch();
+      }
+    }
+    orgsFileReader.close();
+    statement.executeBatch();
+  }
+
+  //Developing classification tree from already processed org info
+  public static Map<String, Set<String>> createClassificationTree(ResultSet classes) throws SQLException {
+    Map<String, Set<String>> classTree = new HashMap<>();
+    classTree.put("roots", new TreeSet<String>());
       while (classes.next()) {
         Queue<String> parsed = Arrays.stream(classes.getString("class").split("/", 0))
             .collect(Collectors.toCollection(LinkedList::new));
-        parents.add(parsed.peek());
+        classTree.get("roots").add(parsed.peek());
         while (!parsed.isEmpty()) {
           String parent = parsed.remove();
           List<String> child = (parsed.peek() != null) ? Arrays.asList(parsed.peek()) : new ArrayList<String>();
@@ -101,20 +137,10 @@ public class DataServlet extends HttpServlet {
         }
       }
       classes.close();
-      database.tearDown();
-      
-      while (!parents.isEmpty()) {
-        printClassTree(classTree, parents, parents.first() , "");
-      }
-    } catch (SQLException ex) {
-      System.err.println(ex);
-    } catch(Exception ex) {
-      System.err.println(ex);
-    }
-    
-    response.sendRedirect("upload.html");
+      return classTree;
   }
 
+  
   private void printClassTree(Map<String, Set<String>> classTree, Set<String> parents, String parent, String spacing) {
     try {
       System.out.println(spacing + parent);
@@ -127,7 +153,7 @@ public class DataServlet extends HttpServlet {
       System.err.println(ex);
     }
   }
-
+  //Process HTTP Request for CSV file
   private CSVReader getCSVReaderFrom(HttpServletRequest request) throws FileUploadException, IOException {
     //create file upload handler
     ServletFileUpload upload = new ServletFileUpload();
@@ -142,12 +168,4 @@ public class DataServlet extends HttpServlet {
     }
     return null;
   }
-
-  // private long getLatestIndexFrom(DatastoreService datastore) {
-  //   //Determine where to start index of new CSV
-  //   List<Entity> lastEntry = datastore.prepare(
-  //       new Query("Organization").addSort("index",SortDirection.DESCENDING))
-  //       .asList(FetchOptions.Builder.withLimit(2));
-  //   return (lastEntry.isEmpty()) ? 0 : (long) lastEntry.get(0).getProperty("index");
-  // }
 }
