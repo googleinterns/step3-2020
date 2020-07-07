@@ -2,9 +2,20 @@
  * Add the searched organizations by keyword
  */
 function searchOrgs(page) {
+  const pageElement = document.getElementById('current-page');
+  // -1 for prev page and -2 for next page
+  if (page === -1) {
+    if (pageElement.innerText > 0) {
+      pageElement.innerText--;
+    }
+  } else if (page === -2) {
+    pageElement.innerText++;
+  } else {
+    pageElement.innerText = page;
+  }
   removeOrgs();
   const keyword = document.getElementById('keyword').value;
-  const qs = '/sql?' + updateQueryString('keyword', keyword) + '&' + updateQueryString('page', page);
+  const qs = '/sql?' + updateQueryString('keyword', keyword) + '&' + updateQueryString('page', pageElement.innerText);
   addTitle(keyword);
   addPagination();
   addOrgs(qs);

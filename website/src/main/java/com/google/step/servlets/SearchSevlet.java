@@ -63,8 +63,7 @@ public class SearchSevlet extends HttpServlet {
     int page = Integer.parseInt(request.getParameter("page"));
     // displaying 10 orgs per page
     int offset = page * 10;
-    System.out.println(page);
-    String sql = "SELECT id, name, link, about, neighbor1, neighbor2, neighbor3, neighbor4 FROM org LIMIT 10;";
+    String sql = "SELECT id, name, link, about, neighbor1, neighbor2, neighbor3, neighbor4 FROM org LIMIT " + offset + ",10;";
     try {
       Connection conn = pool.getConnection();
       Statement stmt = conn.createStatement();

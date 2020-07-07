@@ -26,14 +26,14 @@
 
       <!-- pagination -->
       <div id="pagination">
-        <!-- TODO: implement cursors for prev and next page -->
-        <!-- <a href="#">&laquo;</a> -->
+        <button onclick="searchOrgs(-1);">&laquo;</button>
         <button onclick="searchOrgs(0);">1</button>
         <button onclick="searchOrgs(1);">2</button>
         <button onclick="searchOrgs(2);">3</button>
         <button onclick="searchOrgs(3);">4</button>
         <button onclick="searchOrgs(4);">5</button>
-        <!-- <a href="#">&raquo;</a> -->
+        <button onclick="searchOrgs(-2);">&raquo;</button>
+        <p id="current-page" class="hidden">0</p>
       </div>
     </center>
   </body>
