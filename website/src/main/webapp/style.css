@@ -71,3 +71,10 @@ h1{
   line-height: 42px;
   text-align: center;
 }
+
+#side-nav{
+  position: absolute;
+  top: 30%;
+  left: 0%;
+  margin-right: -50%;
+}
