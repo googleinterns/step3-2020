@@ -68,3 +68,7 @@ h1 {
 #existing-organizations {
   list-style-type: none;
 }
+
+#pagination {
+  display: none;
+}

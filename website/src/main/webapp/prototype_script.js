@@ -1,12 +1,17 @@
 /**
  * Add the searched organizations by keyword
  */
-function searchOrgs() {
+function searchOrgs(page) {
   removeOrgs();
   const keyword = document.getElementById('keyword').value;
-  const qs = '/sql?' + updateQueryString('keyword', keyword);
+  const qs = '/sql?' + updateQueryString('keyword', keyword) + '&' + updateQueryString('page', page);
   addTitle(keyword);
+  addPagination();
   addOrgs(qs);
+}
+
+function addPagination() {
+  document.getElementById('pagination').style.display = 'inline-block';
 }
 
 function addOrgs(qs) {
@@ -15,7 +20,7 @@ function addOrgs(qs) {
     text.forEach(entry => {
       orgsContainer.appendChild(getOrgAsHtmlDescription(entry));
     });
-  })
+  });
 }
 
 function removeOrgs() {

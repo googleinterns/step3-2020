@@ -17,12 +17,24 @@
       <!-- search by keyword -->
       <div id="results-search">
         <input type="text" id="keyword" placeholder="Search by keyword">
-        <button onclick="searchOrgs();">Search</button>
+        <button onclick="searchOrgs(0);">Search</button>
       </div>
 
       <!-- display results -->
       <h3 id="results-title"></h3>
       <ul id="existing-organizations"></ul>
+
+      <!-- pagination -->
+      <div id="pagination">
+        <!-- TODO: implement cursors for prev and next page -->
+        <!-- <a href="#">&laquo;</a> -->
+        <button onclick="searchOrgs(0);">1</button>
+        <button onclick="searchOrgs(1);">2</button>
+        <button onclick="searchOrgs(2);">3</button>
+        <button onclick="searchOrgs(3);">4</button>
+        <button onclick="searchOrgs(4);">5</button>
+        <!-- <a href="#">&raquo;</a> -->
+      </div>
     </center>
   </body>
 </html>
