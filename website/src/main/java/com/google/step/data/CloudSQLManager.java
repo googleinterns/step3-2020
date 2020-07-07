@@ -22,10 +22,6 @@ public final class CloudSQLManager {
   private static final String DB_NAME = "orgs";
   private Connection conn;
 
-  private CloudSQLManager(Connection conn) {
-    this.conn = conn;
-  }
-
   private static DataSource createConnectionPool() {
     // The configuration object specifies behaviors for the connection pool.
     HikariConfig config = new HikariConfig();
@@ -48,6 +44,10 @@ public final class CloudSQLManager {
     return pool;
   }
 
+  public CloudSQLManager(Connection conn) {
+    this.conn = conn;
+  }
+
   public static CloudSQLManager setUp() throws SQLException {
     DataSource pool = createConnectionPool();
     Connection conn = pool.getConnection();
@@ -58,31 +58,34 @@ public final class CloudSQLManager {
     this.conn.close();
   }
 
+  //Get contents of an entire table
   public ResultSet get(String tableName) throws SQLException{
     String query = String.format("SELECT * FROM %s;", tableName);
     Statement stmt = this.conn.createStatement();
     return stmt.executeQuery(query);
   }
 
+  //Remove table from database
   public void drop(String tableName) {
     try {
       String query = String.format("DROP TABLE %s;", tableName);
       Statement stmt = this.conn.createStatement();
       stmt.execute(query);
     } catch (SQLException ex) {
-      System.out.println(tableName + " Already dropped");
       System.err.println(ex);
     }
   }
 
-  public ResultSet getDistinct( String tableName, List<String> columns, List<String> clauses) throws SQLException {
-    String values = String.join(",", columns);
+  //Get distinct specifcied columns from table matching given clauses if any
+  public ResultSet getDistinct(String tableName, List<String> columns, List<String> clauses) throws SQLException {
+    String values = String.join(", ", columns);
     String where = (clauses == null) ? ";" : String.format(" WHERE %s;", String.join("AND", clauses)); 
     String query = String.format("SELECT DISTINCT %s FROM %s%s", values, tableName, where);
     Statement stmt = this.conn.createStatement();
     return stmt.executeQuery(query);
   }
 
+  //create a prepared statement for insertion into a preexisting table
   public PreparedStatement buildInsertStatement(String tableName, List<String> columns) throws SQLException {
     List<String> placeHolders = new ArrayList<>();
     for (String column : columns) {
@@ -93,11 +96,11 @@ public final class CloudSQLManager {
         .collect(Collectors.joining(","));
     String stmtText = String.format("INSERT INTO %s (%s) VALUES (%s);", 
         tableName, columnNames, String.join(",", placeHolders));
-    System.out.println("Statement: " + stmtText);
     return conn.prepareStatement(stmtText);
   }
 
-   public void createTable(String tableName, List<String> columns) throws SQLException {
+  //Create new table with given columns
+  public void createTable(String tableName, List<String> columns) throws SQLException {
     // Safely attempt to create the table schema.
     String stmt = String.format("CREATE TABLE IF NOT EXISTS %s (%s);", 
         tableName, String.join(",", columns));
