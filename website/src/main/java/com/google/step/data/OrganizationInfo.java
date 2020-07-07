@@ -20,20 +20,19 @@ import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletRequest;
 
 public final class OrganizationInfo {
-    private final int id;
-    private final String name;
-    private final String link;
-    private final String about;
-    private final List<String> classification;
+  private final int id;
+  private final String name;
+  private final String link;
+  private final String about;
+  private final List<String> classification;
 
-    private OrganizationInfo(int id, String name, String link, String about, List<String> classification) {
-      this.id = id;
-      this.name = name;
-      this.link = link;
-      this.about = about;
-      this.classification = classification;
-    }
-
+  private OrganizationInfo(int id, String name, String link, String about, List<String> classification) {
+    this.id = id;
+    this.name = name;
+    this.link = link;
+    this.about = about;
+    this.classification = classification;
+  }
 
   /** Detects categories in text using the Language Beta API. */
   private static List<String> classifyText(String text) throws Exception {
@@ -62,24 +61,11 @@ public final class OrganizationInfo {
     String link = record[1];
     String about = record[2];
     //Classify submission by name and about, stop if unclassifiable
-    List<List<String>> classification = Arrays.asList(
-        Arrays.asList("Coding","Testing","Test1"),
-        Arrays.asList("Coding","Testing","Test2"),
-        Arrays.asList("Coding","Testing","Test3"),
-        Arrays.asList("Coding1","1Testing1","8Test1"),
-        Arrays.asList("Coding1","1Testing1","8Test2"),
-        Arrays.asList("Coding1","1Testing3","8Test3"),
-        Arrays.asList("Coding2","2Testing2","2Test"),
-        Arrays.asList("Coding2","2Testing2","2Test"),
-        Arrays.asList("Coding2","2Testing2","2Test"),
-        Arrays.asList("Coding3","3Testing3","3Test"),
-        Arrays.asList("Coding3","3Testing3","3Test"),
-        Arrays.asList("Coding3","3Testing4","3Test4"),
-        Arrays.asList("Coding3","3Testing4","3Test5"));//classifyText(name + " " + about);
+    List<String> classification = classifyText(name + " " + about);
     if (classification.isEmpty()){
       return null;
     }  
-    return new OrganizationInfo(index, name, link, about, classification.get(index%13));
+    return new OrganizationInfo(index, name, link, about, classification);
   }
 
   public void passInfoTo(PreparedStatement statement) throws SQLException {
@@ -88,8 +74,6 @@ public final class OrganizationInfo {
     statement.setString(3, this.link);
     statement.setString(4, this.about);
     String classPath = String.join("/", this.classification);
-    String parentClass = this.classification.get(this.classification.size() - 1);
     statement.setString(5, classPath);
-    statement.setString(6, parentClass);
   }
 }
