@@ -7,7 +7,7 @@
   </head>
   <body id="body">
     <div id="content">
-      <h4>Upload CSV to Cloud SQL Database</h4>
+      <h4>Upload CSV to Cloud SQL Database (deprecated) </h4>
       <form id="uploadFormCSV" action="/sql" method="POST" enctype="multipart/form-data">
         <label for="file">Organization Files:</label><br></br>
         <input type="file" id="file" name="file" required><br></br>
@@ -15,7 +15,8 @@
       </form>
       <br><br>
 
-      <h4>Upload CSV to Cloud SQL Database with Category Tree</h4>
+      <h3>Workflow: </h3>
+      <h4>1. Upload CSV to Cloud SQL Database with Category Tree</h4>
       <form id="uploadFormCSV" action="/data" method="POST" enctype="multipart/form-data">
         <label for="file">Organization Files:</label><br></br>
         <input type="file" id="file" name="file" required><br></br>
@@ -23,18 +24,18 @@
       </form>
       <br><br>
 
-      <h4>Upload k-NN to Cloud SQL Database</h4>
+      <h4>2. Download Organizations as JSON</h4>
+      <form id="download" action="/download" method="GET">
+        <label for="submit">Download:</label><br></br>
+        <input id="download-json" type="submit">
+      </form>
+      <br><br>
+
+      <h4>3. Upload k-NN to Cloud SQL Database</h4>
       <form id="uploadProto" action="/update" method="POST" enctype="multipart/form-data">
         <label for="file">k-NN Protos:</label><br></br>
         <input type="file" id="knn-file" name="file" required><br></br>
         <input id="submit-proto" type="submit"><br></br>
-      </form>
-      <br><br>
-
-      <h4>Download Organizations as JSON</h4>
-      <form id="download" action="/download" method="GET">
-        <label for="submit">Download:</label><br></br>
-        <input id="download-json" type="submit">
       </form>
       <br><br>
 
