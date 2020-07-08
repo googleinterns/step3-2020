@@ -38,12 +38,21 @@ public class SearchSevlet extends HttpServlet {
     String name;
     String link;
     String about;
+    String neighbor1;
+    String neighbor2;
+    String neighbor3;
+    String neighbor4;
 
-    private Organization(int id, String name, String link, String about) {
+    private Organization(int id, String name, String link, String about, 
+        String neighbor1, String neighbor2, String neighbor3, String neighbor4) {
       this.id = id;
       this.name = name;
       this.link = link;
       this.about = about;
+      this.neighbor1 = neighbor1;
+      this.neighbor2 = neighbor2;
+      this.neighbor3 = neighbor3;
+      this.neighbor4 = neighbor4;
     }
   }
 
@@ -51,13 +60,14 @@ public class SearchSevlet extends HttpServlet {
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
     DataSource pool = createConnectionPool();
     String keyword = request.getParameter("keyword");
-    String sql = "SELECT id, name, link, about FROM org";
+    String sql = "SELECT id, name, link, about, neighbor1, neighbor2, neighbor3, neighbor4 FROM org";
     try {
       Connection conn = pool.getConnection();
       Statement stmt = conn.createStatement();
       List<Organization> orgs = new ArrayList<>();
+      List<Organization> result = new ArrayList<>();
       if (!keyword.isEmpty()) {
-        sql = "SELECT id, name, link, about FROM org WHERE (name LIKE '%" + keyword + "%' OR about LIKE '%" + keyword + "%');";
+        sql = "SELECT id, name, link, about, neighbor1, neighbor2, neighbor3, neighbor4 FROM org WHERE (name LIKE '%" + keyword + "%' OR about LIKE '%" + keyword + "%');";
       }
       ResultSet rs = stmt.executeQuery(sql);
       while (rs.next()) {
@@ -65,30 +75,54 @@ public class SearchSevlet extends HttpServlet {
         String name = rs.getString("name");
         String link = rs.getString("link");
         String about = rs.getString("about");
+        String neighbor1 = "SELECT name FROM org WHERE id = " + rs.getInt("neighbor1") + ";";
+        String neighbor2 = "SELECT name FROM org WHERE id = " + rs.getInt("neighbor2") + ";";
+        String neighbor3 = "SELECT name FROM org WHERE id = " + rs.getInt("neighbor3") + ";";
+        String neighbor4 = "SELECT name FROM org WHERE id = " + rs.getInt("neighbor4") + ";";
         
-        Organization org = new Organization(id, name, link, about);
+        Organization org = new Organization(id, name, link, about, neighbor1, neighbor2, neighbor3, neighbor4);
         orgs.add(org);
       }
       rs.close();
+      // send more requests to SQL to get names
+      for (Organization org : orgs) {
+        String neighbor1 = getName(stmt, org.neighbor1);
+        String neighbor2 = getName(stmt, org.neighbor2);
+        String neighbor3 = getName(stmt, org.neighbor3);
+        String neighbor4 = getName(stmt, org.neighbor4);
+        Organization organization = new Organization(org.id, org.name, org.link, org.about, neighbor1, neighbor2, neighbor3, neighbor4);
+        result.add(organization);
+      }
       conn.close();
 
       // Send the JSON as the response
       response.setContentType("application/json; charset=UTF-8");
       response.setCharacterEncoding("UTF-8");
       Gson gson = new Gson();
-      response.getWriter().println(gson.toJson(orgs));
+      response.getWriter().println(gson.toJson(result));
     } catch (SQLException ex) {
       System.err.println(ex);
     }
   }
 
+  private String getName(Statement stmt, String sql) throws SQLException {
+    String name = "";
+    ResultSet rs = stmt.executeQuery(sql);
+    if (rs.next()) {
+      name = rs.getString("name");      
+    }
+    rs.close();
+    return name;
+  }
+
   @Override
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
     DataSource pool = createConnectionPool();
+    int index = 0;
     try {
       createTable(pool);
       Connection conn = pool.getConnection();
-      int batch = 20; // insert orgs in batches of 20
+      int batch = 500; // insert orgs in batches of 500
       String stmtText = "INSERT INTO org (id, name, link, about) VALUES (?, ?, ?, ?)";
       PreparedStatement statement = conn.prepareStatement(stmtText);
       // Create a new file upload handler
@@ -103,7 +137,6 @@ public class SearchSevlet extends HttpServlet {
           CSVReader csvReader = new CSVReaderBuilder(isReader).withSkipLines(1).build();
           // insert to MySQL
           String[] nextRecord = new String[2]; 
-          int index = 0;
           while ((nextRecord = csvReader.readNext()) != null) { 
             String name = nextRecord[0];
             String link = nextRecord[1];
@@ -137,7 +170,7 @@ public class SearchSevlet extends HttpServlet {
   private void createTable(DataSource pool) throws SQLException {
     // Safely attempt to create the table schema.
     try (Connection conn = pool.getConnection()) {
-      String stmt = "CREATE TABLE IF NOT EXISTS org (id INTEGER PRIMARY KEY, name VARCHAR(255) NOT NULL, link VARCHAR(255) NOT NULL, about VARCHAR(255) NOT NULL);";
+      String stmt = "CREATE TABLE IF NOT EXISTS org (id INTEGER PRIMARY KEY, name TEXT NOT NULL, link TEXT NOT NULL, about TEXT NOT NULL);";
       try (PreparedStatement createTableStatement = conn.prepareStatement(stmt); ) {
         createTableStatement.execute();
       }
