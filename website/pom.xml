@@ -3,8 +3,8 @@
     xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
-  <groupId>com.google.sps</groupId>
-  <artifactId>portfolio</artifactId>
+  <groupId>com.google.step</groupId>
+  <artifactId>capstone</artifactId>
   <version>1</version>
   <packaging>war</packaging>
 
@@ -35,19 +35,71 @@
       <artifactId>appengine-api-1.0-sdk</artifactId>
       <version>1.9.59</version>
     </dependency>
-    <!-- Google Cloud Translation -->
+    <!-- LocalService for Testing Datastore -->
     <dependency>
-      <groupId>com.google.cloud</groupId>
-      <artifactId>google-cloud-translate</artifactId>
-      <version>1.70.0</version>
+        <groupId>com.google.appengine</groupId>
+        <artifactId>appengine-testing</artifactId>
+        <version>1.4.0</version>
+        <scope>test</scope>
     </dependency>
-    <!-- Google Cloud Sentiment Analysis -->
+    <!-- Google NLP -->
+
     <dependency>
       <groupId>com.google.cloud</groupId>
       <artifactId>google-cloud-language</artifactId>
-      <version>1.55.0</version>
+      <version>1.99.4</version>
+    </dependency>
+    <!-- URL Validator -->
+    <dependency>
+  	  <groupId>commons-validator</groupId>
+  	  <artifactId>commons-validator</artifactId>
+  	  <version>1.6</version>
+	  </dependency>
+    <!-- Reading multi-part HTTP requests -->
+    <dependency>
+      <groupId>commons-fileupload</groupId>
+      <artifactId>commons-fileupload</artifactId>
+      <version>1.4</version>
+    </dependency>
+    <!-- Junit testing -->
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>4.12</version>
+      <scope>test</scope>
+    </dependency>
+    <!-- Google Protocol Buffer (protobuf) -->
+    <dependency>
+      <groupId>com.google.protobuf</groupId>
+      <artifactId>protobuf-java</artifactId>
+      <version>3.12.2</version>
+    </dependency>
+    <!-- OpenCSV for reading CSV files -->
+    <dependency> 
+      <groupId>com.opencsv</groupId> 
+      <artifactId>opencsv</artifactId> 
+      <version>5.2</version> 
+    </dependency>
+    <!--Hikari for connecting to Cloud SQL-->
+    <dependency>
+      <groupId>com.zaxxer</groupId>
+      <artifactId>HikariCP</artifactId>
+      <version>3.4.5</version>
+    </dependency>
+    <!--MySQL database-->
+    <dependency>
+      <groupId>mysql</groupId>
+      <artifactId>mysql-connector-java</artifactId>
+      <version>8.0.20</version>
+    </dependency>
+    <!--Google Cloud SQL-->
+    <dependency>
+      <groupId>com.google.cloud.sql</groupId>
+      <artifactId>mysql-socket-factory</artifactId>
+      <version>1.0.16</version>
     </dependency>
   </dependencies>
+  
 
   <build>
     <plugins>

@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="style.css">
+    <script src="prototype_script.js"></script>
+  </head>
+  
+  <body id="body" onload="addListener();">
+    <div class="navbar">
+      <a href="index.html"> Home </a>
+      <a href="/login">Login</a>
+    </div>
+    <br><br>
+
+    <center>
+      <!-- search by keyword -->
+      <div id="results-search">
+        <input type="text" id="keyword" placeholder="Search by keyword">
+        <button onclick="searchOrgs();">Search</button>
+      </div>
+
+      <!-- display results -->
+      <h3 id="results-title"></h3>
+      <ul id="existing-organizations"></ul>
+    </center>
+  </body>
+</html>

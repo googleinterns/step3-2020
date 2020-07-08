@@ -1,0 +1,12 @@
+absl-py
+bs4
+google
+google-api-python-client
+nltk
+numpy
+pandas
+scikit-learn
+selenium
+setuptools
+tensorflow
+webdriver_manager

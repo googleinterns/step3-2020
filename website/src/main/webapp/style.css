@@ -1,10 +1,5 @@
-#content {
-  margin-left: auto;
-  margin-right: auto;
-  width: 650px;
-}
 
-.navbar{
+.navbar {
   width: 100%;
   background-color: lightgrey;
   display: flex;
@@ -17,7 +12,8 @@
   line-height: 84px;
 }
 
-#search{
+
+#search {
   position: absolute;
   top: 40%;
   left: 50%;
@@ -25,7 +21,7 @@
   transform: translate(-50%, -50%);
 }
 
-#search input[type=text]{
+#search, #results-search input[type=text] {
   float:inherit;
   padding: 6px;
   border: 1px solid lightgrey;
@@ -34,7 +30,8 @@
   vertical-align: center;
 }
 
-h1{
+
+h1 {
   position: absolute;
   width: 519px;
   height: 84px;
@@ -49,32 +46,22 @@ h1{
   font-size: 72px;
   line-height: 84px;
   text-align: center;
-
   color: #000000;
 }
 
 #upload{
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-direction: column;
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  margin-right: -50%;
-  transform: translate(-50%, -50%);
-
-  font-family: Roboto;
-  font-style: normal;
-  font-weight: normal;
-  font-size: 30px;
-  line-height: 42px;
-  text-align: center;
+  color: #000000;
 }
+
+
 
 #side-nav{
   position: absolute;
   top: 30%;
   left: 0%;
   margin-right: -50%;
+}
+
+#existing-organizations {
+  list-style-type: none;
 }
