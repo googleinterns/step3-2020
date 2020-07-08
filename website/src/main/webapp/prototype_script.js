@@ -67,3 +67,36 @@ function addTitle(keyword) {
   const element = document.getElementById('results-title');
   element.innerText = 'Results for [' + keyword + ']: ';
 }
+
+function getClassifications() {
+  const qs = '/data';
+  const classDiv = document.getElementById("classifications");
+  fetch(qs).then(response => response.json()).then(tree => {
+    console.log(tree);
+    tree.roots.forEach(root=> {
+      classDiv.appendChild(addToClassTree(tree, root));
+    });
+    var toggler = document.getElementsByClassName("caret");
+    var i;
+    for (i = 0; i < toggler.length; i++) {
+      toggler[i].addEventListener("click", function() {
+        this.parentElement.querySelector('.nested').classList.toggle("active");
+        this.classList.toggle("caret-down");
+      });
+    }
+  }); 
+}
+
+function addToClassTree(tree, parent) {
+  const parentElem = document.createElement('li');
+  if (!(tree[parent].length === 0)) {
+    parentElem.innerHTML += "<span class=\"caret\">" + parent + "</span>";
+    const nested = document.createElement('ul');
+    nested.setAttribute('class', 'nested');
+    tree[parent].forEach(child => nested.appendChild(addToClassTree(tree, child)));
+    parentElem.appendChild(nested);
+  } else {
+    parentElem.innerText = parent;
+  }
+  return parentElem;
+}

@@ -52,8 +52,6 @@ public class DataServlet extends HttpServlet {
     } catch (SQLException ex) {
       System.err.println(ex);
     }
-    response.setContentType("text/html");
-    response.getWriter().println("<p>Didn't Work</p>");
   }
 
   @Override
@@ -132,7 +130,7 @@ public class DataServlet extends HttpServlet {
           if (classTree.containsKey(parent)) {
             classTree.get(parent).addAll(child);
           } else {
-            classTree.put(parent, new HashSet<>(child));
+            classTree.put(parent, new TreeSet<>(child));
           }
         }
       }
