@@ -15,6 +15,14 @@
       </form>
       <br><br>
 
+      <h4>Upload CSV to Cloud SQL Database with Category Tree</h4>
+      <form id="uploadFormCSV" action="/data" method="POST" enctype="multipart/form-data">
+        <label for="file">Organization Files:</label><br></br>
+        <input type="file" id="file" name="file" required><br></br>
+        <input id="submit-csv" type="submit"><br></br>
+      </form>
+      <br><br>
+
       <h4>Upload k-NN to Cloud SQL Database</h4>
       <form id="uploadProto" action="/update" method="POST" enctype="multipart/form-data">
         <label for="file">k-NN Protos:</label><br></br>
