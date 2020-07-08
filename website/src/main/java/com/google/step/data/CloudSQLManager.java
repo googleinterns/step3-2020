@@ -109,4 +109,30 @@ public final class CloudSQLManager {
     }
   }
 
+  public ResultSet getOrgsWithNeighbors(String keyword, int offset) throws SQLException{ 
+    String similarTo = (!keyword.isEmpty()) ? "WHERE (name LIKE '%" + keyword + "%' OR about LIKE '% " + keyword + "%')" : "";
+    String preliminaryQuery = String.format("SELECT * FROM org %sLIMIT " + offset + ", 10", similarTo);    
+    
+    String query = String.join("\n","SELECT",
+            "preliminary.id, ",
+            "preliminary.name, " ,
+            "preliminary.about, "  ,
+            "n1.name, ",
+            "n2.name, ",
+            "n3.name, ",
+            "n4.name",
+        String.format("FROM (%s) AS preliminary",preliminaryQuery),
+        "INNER JOIN (SELECT name,id FROM org WHERE id = preliminary.neighbor1) AS n1" ,
+            "ON preliminary.neighbor1 = n1.id",
+        "INNER JOIN (SELECT name,id FROM org WHERE id = preliminary.neighbor2) AS n2" ,
+            "ON preliminary.neighbor2 = n2.id",
+        "INNER JOIN (SELECT name,id FROM org WHERE id = preliminary.neighbor3) AS n3" ,
+            "ON preliminary.neighbor3 = n3.id",
+        "INNER JOIN (SELECT name,id FROM org WHERE id = preliminary.neighbor4) AS n4", 
+            "ON preliminary.neighbor4 = n4.id;")    
+        ;
+    Statement stmt = this.conn.createStatement();
+    return stmt.executeQuery(query);
+  }
+
 }

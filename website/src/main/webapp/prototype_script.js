@@ -27,6 +27,7 @@ function addPagination() {
 
 function addOrgs(qs) {
   fetch(qs).then(response => response.json()).then(text => {
+    console.log(text);
     const orgsContainer = document.getElementById('existing-organizations');
     text.forEach(entry => {
       orgsContainer.appendChild(getOrgAsHtmlDescription(entry));
@@ -90,12 +91,12 @@ function getClassifications() {
   fetch(qs).then(response => response.json()).then(tree => {
     console.log(tree);
     tree.roots.forEach(root=> {
-      classDiv.appendChild(addToClassTree(tree, root));
+      classDiv.appendChild(addToClassTree(tree, root, root + "/"));
     });
     var toggler = document.getElementsByClassName("caret");
     var i;
     for (i = 0; i < toggler.length; i++) {
-      toggler[i].addEventListener("click", function() {
+      toggler[i].addEventListener('click', function() {
         this.parentElement.querySelector('.nested').classList.toggle("active");
         this.classList.toggle("caret-down");
       });
@@ -103,16 +104,29 @@ function getClassifications() {
   }); 
 }
 
-function addToClassTree(tree, parent) {
+function addToClassTree(tree, parent, classPath) {
   const parentElem = document.createElement('li');
+  parentElem.value = classPath;
   if (!(tree[parent].length === 0)) {
-    parentElem.innerHTML += "<span class=\"caret\">" + parent + "</span>";
+    parentElem.innerHTML += '<span class=\"caret\">' + parent + '</span>';
     const nested = document.createElement('ul');
     nested.setAttribute('class', 'nested');
-    tree[parent].forEach(child => nested.appendChild(addToClassTree(tree, child)));
+    tree[parent].forEach(child => nested.appendChild(addToClassTree(tree, child, classPath.concat("/" + child))));
     parentElem.appendChild(nested);
   } else {
     parentElem.innerText = parent;
+    parentElem.addEventListener('click', function() {
+      const pageElement = document.getElementById('current-page');
+      const qs = '/sql?' + updateQueryString('keyword', this.value) + '&' + updateQueryString('page', pageElement.innerText);
+      addTitle(keyword);
+      addPagination();
+      addOrgs(qs);
+    });
   }
   return parentElem;
+}
+
+function setUpPrototype() {
+  addListener();
+  getClassifications();
 }

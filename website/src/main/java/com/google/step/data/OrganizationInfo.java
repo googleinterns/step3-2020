@@ -25,6 +25,10 @@ public final class OrganizationInfo {
   private final String link;
   private final String about;
   private final List<String> classification;
+  private final String neighbor1;
+  private final String neighbor2;
+  private final String neighbor3;
+  private final String neighbor4;
 
   private OrganizationInfo(int id, String name, String link, String about, List<String> classification) {
     this.id = id;
@@ -32,6 +36,23 @@ public final class OrganizationInfo {
     this.link = link;
     this.about = about;
     this.classification = classification;
+    this.neighbor1 = null;
+    this.neighbor2 = null;
+    this.neighbor3 = null;
+    this.neighbor4 = null;
+  }
+
+  private OrganizationInfo(int id, String name, String link, String about, 
+        String neighbor1, String neighbor2, String neighbor3, String neighbor4) {
+    this.id = id;
+    this.name = name;
+    this.link = link;
+    this.about = about;
+    this.neighbor1 = neighbor1;
+    this.neighbor2 = neighbor2;
+    this.neighbor3 = neighbor3;
+    this.neighbor4 = neighbor4;
+    this.classification = null;
   }
 
   /** Detects categories in text using the Language Beta API. */
@@ -66,6 +87,19 @@ public final class OrganizationInfo {
       return null;
     }  
     return new OrganizationInfo(index, name, link, about, classification);
+  }
+
+  public static OrganizationInfo getResultOrgFrom(ResultSet rs) throws SQLException {
+    int id = rs.getInt("id");
+    String name = rs.getString("name");
+    String link = rs.getString("link");
+    String about = rs.getString("about");
+    String neighbor1 = "SELECT name FROM org WHERE id = " + rs.getInt("neighbor1") + ";";
+    String neighbor2 = "SELECT name FROM org WHERE id = " + rs.getInt("neighbor2") + ";";
+    String neighbor3 = "SELECT name FROM org WHERE id = " + rs.getInt("neighbor3") + ";";
+    String neighbor4 = "SELECT name FROM org WHERE id = " + rs.getInt("neighbor4") + ";";
+        
+    return new OrganizationInfo(id, name, link, about, neighbor1, neighbor2, neighbor3, neighbor4);
   }
 
   public void passInfoTo(PreparedStatement statement) throws SQLException {
