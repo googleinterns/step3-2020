@@ -1,7 +1,5 @@
 package com.google.step.data;
 
-import com.google.appengine.api.datastore.Entity;
-import com.google.appengine.api.datastore.Query;
 import com.google.apphosting.api.DeadlineExceededException;
 import com.google.cloud.language.v1.ClassificationCategory;
 import com.google.cloud.language.v1.ClassifyTextRequest;
@@ -12,8 +10,8 @@ import com.google.cloud.language.v1.EncodingType;
 import com.google.cloud.language.v1.LanguageServiceClient;
 import com.opencsv.*;
 import com.opencsv.exceptions.CsvValidationException;
-
 import java.io.*;
+import java.sql.*;
 import java.util.Arrays;
 import java.util.ArrayList;
 import java.util.List;
@@ -22,96 +20,18 @@ import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletRequest;
 
 public final class OrganizationInfo {
-  private final Entity entity;
+  private final int id;
+  private final String name;
+  private final String link;
+  private final String about;
+  private final List<String> classification;
 
-  public OrganizationInfo(Entity organizationEntity) {
-    this.entity = organizationEntity;
-  }
-
-  private static Entity getOrgEntityFrom(HttpServletRequest request) {
-    Entity newOrganization = new Entity("Organization");
-    newOrganization.setProperty("name", request.getParameter("orgName"));
-    newOrganization.setProperty("webLink", request.getParameter("webLink"));
-    newOrganization.setProperty("donateLink", request.getParameter("donateLink"));
-    newOrganization.setProperty("about", request.getParameter("about"));
-
-    return newOrganization;
-  }
-
-  private static Entity getOrganizationEntityFrom(String[] line, long index) throws Exception{
-    Entity newOrganization = new Entity("Organization");
-    newOrganization.setProperty("name", line[0]);
-    newOrganization.setProperty("webLink", line[1]);
-    newOrganization.setProperty("about", line[2]);
-    newOrganization.setProperty("index", index);
-    List<String> classification = classifyText(line[0] + " " + line[2]);
-    if (!classification.isEmpty()){
-      newOrganization.setProperty("classification", classification);
-    }
-    return newOrganization;
-  }
-
-  public boolean isValid() {
-    //Required fields
-    try {
-      if (((String) this.entity.getProperty("name")).isEmpty() || 
-          ((String) this.entity.getProperty("about")).isEmpty() ||
-          ((String) this.entity.getProperty("webLink")).isEmpty() ||
-          !this.entity.hasProperty("classification")) {
-        return false;
-      }
-    } catch (NullPointerException ex) {
-      return false;
-    }
-    return true;
-  }
-
-  public void merge(Entity duplicate) {
-    this.entity.getProperties().forEach((property, value) -> {
-      if (Objects.isNull(value) && !Objects.isNull(duplicate.getProperty(property))) {
-        this.entity.setProperty(property, duplicate.getProperty(property));
-      } 
-      else if (!Objects.isNull(value) && !Objects.isNull(duplicate.getProperty(property))) {
-        //TODO: Handle case where fields are conflicting
-      }
-    });
-  }
-
-  public Entity getEntity() {
-    return this.entity;
-  }
-
-  public Query getQueryForDuplicates() {
-    return new Query("Organization").addFilter("name", Query.FilterOperator.EQUAL, entity.getProperty("name"));
-  }
-
-  public static OrganizationInfo createInstanceFrom(HttpServletRequest request) {
-    return new OrganizationInfo(getOrgEntityFrom(request));
-  }
-
-  public static List<OrganizationInfo> getOrganizationsFrom(CSVReader csvReader, long index) throws IOException {
-    List<OrganizationInfo> organizations = new ArrayList<>();
-    String[] nextRecord = new String[3]; 
-    try {
-      while ((nextRecord = csvReader.readNext()) != null) { 
-        try {
-          OrganizationInfo item = new OrganizationInfo(getOrganizationEntityFrom(nextRecord, index));
-          if (item.isValid()) { 
-            organizations.add(item);
-            index++;
-          } else {
-            index--;
-          }
-        } catch (Exception ex) {
-          System.err.println(ex);
-        }
-      }
-    } catch (CsvValidationException ex) {
-      System.err.println(ex);
-    } catch (DeadlineExceededException ex) {
-      return organizations;
-    }
-    return organizations;    
+  private OrganizationInfo(int id, String name, String link, String about, List<String> classification) {
+    this.id = id;
+    this.name = name;
+    this.link = link;
+    this.about = about;
+    this.classification = classification;
   }
 
   /** Detects categories in text using the Language Beta API. */
@@ -134,5 +54,26 @@ public final class OrganizationInfo {
           .collect(Collectors.toCollection(ArrayList::new));
     }
     // [END language_classify_text]
+  }
+
+  public static OrganizationInfo getClassifiedOrgFrom(String[] record, int index) throws Exception{
+    String name = record[0];
+    String link = record[1];
+    String about = record[2];
+    //Classify submission by name and about, stop if unclassifiable
+    List<String> classification = classifyText(name + " " + about);
+    if (classification.isEmpty()){
+      return null;
+    }  
+    return new OrganizationInfo(index, name, link, about, classification);
+  }
+
+  public void passInfoTo(PreparedStatement statement) throws SQLException {
+    statement.setInt(1, this.id);
+    statement.setString(2, this.name);
+    statement.setString(3, this.link);
+    statement.setString(4, this.about);
+    String classPath = String.join("/", this.classification);
+    statement.setString(5, classPath);
   }
 }
