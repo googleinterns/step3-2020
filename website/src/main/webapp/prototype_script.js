@@ -21,7 +21,6 @@ function searchOrgs(page) {
   addOrgs(qs);
 }
 
-
 function addPagination() {
   document.getElementById('pagination').style.display = 'inline-block';
 }

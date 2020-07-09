@@ -2,10 +2,10 @@ venv/
 .cache/
 __pycache__/
 target/
-<<<<<<< HEAD
-=======
 get-pip.py
 protobuf-3.12.3/
 google-chrome-stable_current_amd64.deb
 chromedriver
->>>>>>> 1c3801e507ff129cecabdd552b1e61c45e445cfc
+node_modules/
+uikit-3.5.4.zip
+uikit/
