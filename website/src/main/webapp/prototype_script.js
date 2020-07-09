@@ -89,9 +89,8 @@ function getClassifications() {
   const qs = '/data';
   const classDiv = document.getElementById("classifications");
   fetch(qs).then(response => response.json()).then(tree => {
-    console.log(tree);
     tree.roots.forEach(root=> {
-      classDiv.appendChild(addToClassTree(tree, root, root + "/"));
+      classDiv.appendChild(addToClassTree(tree, root, root));
     });
     var toggler = document.getElementsByClassName("caret");
     var i;
@@ -106,18 +105,19 @@ function getClassifications() {
 
 function addToClassTree(tree, parent, classPath) {
   const parentElem = document.createElement('li');
-  parentElem.value = classPath;
+  parentElem.setAttribute('value', classPath);
   if (!(tree[parent].length === 0)) {
     parentElem.innerHTML += '<span class=\"caret\">' + parent + '</span>';
     const nested = document.createElement('ul');
     nested.setAttribute('class', 'nested');
-    tree[parent].forEach(child => nested.appendChild(addToClassTree(tree, child, classPath.concat("/" + child))));
+    tree[parent].forEach(child => nested.appendChild(addToClassTree(tree, child, classPath + "/" + child)));
     parentElem.appendChild(nested);
   } else {
     parentElem.innerText = parent;
     parentElem.addEventListener('click', function() {
       const pageElement = document.getElementById('current-page');
-      const qs = '/sql?' + updateQueryString('keyword', this.value) + '&' + updateQueryString('page', pageElement.innerText);
+      const qs = '/sql?' + updateQueryString('keyword', classPath) + '&' + updateQueryString('page', pageElement.innerText);
+      removeOrgs();
       addTitle(keyword);
       addPagination();
       addOrgs(qs);
