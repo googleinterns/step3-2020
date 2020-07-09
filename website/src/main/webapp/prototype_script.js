@@ -89,6 +89,7 @@ function getClassifications() {
   const qs = '/data';
   const classDiv = document.getElementById("classifications");
   fetch(qs).then(response => response.json()).then(tree => {
+    console.log(tree);
     tree.roots.forEach(root=> {
       classDiv.appendChild(addToClassTree(tree, root, root));
     });
@@ -118,7 +119,7 @@ function addToClassTree(tree, parent, classPath) {
       const pageElement = document.getElementById('current-page');
       const qs = '/sql?' + updateQueryString('keyword', classPath) + '&' + updateQueryString('page', pageElement.innerText);
       removeOrgs();
-      addTitle(keyword);
+      addTitle(classPath);
       addPagination();
       addOrgs(qs);
     });
