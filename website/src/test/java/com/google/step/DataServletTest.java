@@ -20,7 +20,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 @RunWith(MockitoJUnitRunner.class)
 public final class DataServletTest {
   Map<String, Set<String>> testTree;
-  private List<List<String>> testClasses = Arrays.asList(
+  private static List<List<String>> testClasses = Arrays.asList(
       Arrays.asList("Coding","Testing","Test1"),
       Arrays.asList("Coding","Testing","Test2"),
       Arrays.asList("Coding","Testing","Test3"),
