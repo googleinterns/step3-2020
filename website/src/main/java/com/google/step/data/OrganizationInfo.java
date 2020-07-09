@@ -94,10 +94,10 @@ public final class OrganizationInfo {
     String name = rs.getString("name");
     String link = rs.getString("link");
     String about = rs.getString("about");
-    String neighbor1 = "SELECT name FROM org WHERE id = " + rs.getInt("neighbor1") + ";";
-    String neighbor2 = "SELECT name FROM org WHERE id = " + rs.getInt("neighbor2") + ";";
-    String neighbor3 = "SELECT name FROM org WHERE id = " + rs.getInt("neighbor3") + ";";
-    String neighbor4 = "SELECT name FROM org WHERE id = " + rs.getInt("neighbor4") + ";";
+    String neighbor1 = rs.getString("neighbor1");
+    String neighbor2 = rs.getString("neighbor2");
+    String neighbor3 = rs.getString("neighbor3");
+    String neighbor4 = rs.getString("neighbor4");
         
     return new OrganizationInfo(id, name, link, about, neighbor1, neighbor2, neighbor3, neighbor4);
   }
@@ -109,5 +109,9 @@ public final class OrganizationInfo {
     statement.setString(4, this.about);
     String classPath = String.join("/", this.classification);
     statement.setString(5, classPath);
+    statement.setInt(6, 6);
+    statement.setInt(7, 7);
+    statement.setInt(8, 8);
+    statement.setInt(9, 9);
   }
 }
