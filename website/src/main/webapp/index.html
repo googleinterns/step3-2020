@@ -3,9 +3,18 @@
   <head>
     <meta charset="UTF-8">
     <link rel="stylesheet" href="style.css">
-    <script src="prototype_script.js"></script>
+    <script src="script.js"></script>
+    <!-- Google Maps API Key -->
+    <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCRoWmpBfVbAdP17w7Lfnp6J7AiJ30nnCw&callback=initMap"
+        type="text/javascript"></script>
+    <!-- Google Charts -->
+    <script src="https://www.gstatic.com/charts/loader.js"></script>
+      
+    <!-- uikit framework   -->
+    <link rel="stylesheet" href="css/uikit.min.css" />
+    <script src="js/uikit.min.js"></script>
   </head>
-  
+
   <body id="body">
     <div class="navbar">
       <a href="#"> Home </a>
@@ -14,18 +23,32 @@
 
     <center>
     <h1>Nonprofit Finder</h2>
+
     <div id="search">
       <form id="searchForm" action="/data" method="GET">
         <input id="organization " name="organization" type="text" placeholder="search by issue">
         <input type="submit">
       </form>
     </div>
-    <div id="upload">
-      Know a smaller nonprofit?<br>
-      Or noticed we're missing any?
-      <br>
-      <button type="button">Add it to our databse!</button>
-    </div>
+
+    <div id= "side-nav">
+      <ul class="uk-nav-parent-icon" uk-nav>
+        <li class="uk-parent"><a href="#">Parent</a>
+        <ul class="uk-nav-parent-icon">
+          <li><a href="#">Sub item</a></li>
+          <liclass="uk-parent"><a href="#">Sub item</a>
+            <ul class=uk-nav-sub>
+              <li><a href="#">Sub item</a></li>
+              <li><a href="#">Sub item</a></li>
+            </ul>
+          </li>
+        </ul>
+        </li>
+       </ul>
+      </div>
+
+      
+
     </center>
   </body>
 </html>

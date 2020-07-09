@@ -6,3 +6,5 @@ get-pip.py
 protobuf-3.12.3/
 google-chrome-stable_current_amd64.deb
 chromedriver
+node_modules/
+uikit-3.5.4.zip

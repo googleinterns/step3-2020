@@ -21,6 +21,7 @@ function searchOrgs(page) {
   addOrgs(qs);
 }
 
+
 function addPagination() {
   document.getElementById('pagination').style.display = 'inline-block';
 }
@@ -33,7 +34,7 @@ function addOrgs(qs) {
     });
   });
 }
-
+ 
 function removeOrgs() {
   // remove previously displayed similar organizations
   var existingOrgs = document.getElementById('existing-organizations');
@@ -41,7 +42,7 @@ function removeOrgs() {
     existingOrgs.removeChild(existingOrgs.firstChild);
   }
 }
-
+ 
 /**
  * Returns an updated URL search param
  */
@@ -50,26 +51,37 @@ function updateQueryString(key, value) {
   searchParams.append(key, value);
   return searchParams;
 }
-
+ 
 /**
  * Creates list element from org
  */
 function getOrgAsHtmlDescription(org) {
   const orgElement = document.createElement('li');
+  orgElement.setAttribute("id", "org");
+
+  var newDiv = document.createElement("div"); 
+  newDiv.setAttribute("id", "name-about");
+
   const nameElement = document.createElement('a');
+  nameElement.setAttribute("id", "org-name");
   nameElement.setAttribute('href', 'https://' + org.link);
   nameElement.setAttribute('target', '_blank');
   nameElement.innerText = org.name;
-  orgElement.appendChild(nameElement);
+  newDiv.appendChild(nameElement);
+
   const aboutElement = document.createElement('p');
+  aboutElement.setAttribute("id", "about");
   aboutElement.innerText = org.about;
-  orgElement.appendChild(aboutElement);
+  newDiv.appendChild(aboutElement);
+  orgElement.appendChild(newDiv);
+
   const neighborElement = document.createElement('p');
+  neighborElement.setAttribute("id", "like-this");
   neighborElement.innerText = 'Like this: ' + org.neighbor1 + ', ' + org.neighbor2 + ', ' + org.neighbor3 + ', ' + org.neighbor4;
   orgElement.appendChild(neighborElement);
   return orgElement;
 }
-
+ 
 function addListener() {
   const inputBox = document.getElementById('keyword');
   inputBox.addEventListener('keyup', function(event) {
@@ -78,7 +90,7 @@ function addListener() {
       }
   });
 }
-
+ 
 function addTitle(keyword) {
   const element = document.getElementById('results-title');
   element.innerText = 'Results for [' + keyword + ']: ';
