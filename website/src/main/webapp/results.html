@@ -6,9 +6,9 @@
     <link rel="stylesheet" href="results.css">
     <script src="prototype_script.js"></script>
 
-<!-- uikit framework -->
-    <link rel="stylesheet" href="css/uikit.min.css" />
-    <script src="js/uikit.min.js"></script>
+    <!-- uikit framework -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/uikit/3.5.4/css/uikit.min.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/uikit/3.5.4/js/uikit.min.js"></script>
   </head>
   
   <!-- top navigation bar -->
@@ -30,24 +30,23 @@
       <h3 id="results-title"></h3>
       <ul id="existing-organizations"></ul>
 
-
       <!-- pagination -->
-   <div id="pagination">
-    <ul class="uk-pagination uk-flex-center" uk-margin>
-      <li onclick="searchOrgs(-1);"><span uk-pagination-previous></span></li>
-      <li onclick="searchOrgs(0);">1</li>
-      <li onclick="searchOrgs(1);">2</li>
-      <li onclick="searchOrgs(2);">3</li>
-      <li class="uk-active"><span>4</span></li>
-     <li onclick="searchOrgs(4);">5</li>
-     <li onclick="searchOrgs(-2);"><span uk-pagination-next></span></li>
-   </ul>
-  </div>
-</center>
+      <div id="pagination">
+        <ul class="uk-pagination uk-flex-center" uk-margin>
+          <li onclick="searchOrgs(-1);"><span uk-pagination-previous></span></li>
+          <li onclick="searchOrgs(0);">1</li>
+          <li onclick="searchOrgs(1);">2</li>
+          <li onclick="searchOrgs(2);">3</li>
+          <li class="uk-active"><span>4</span></li>
+          <li onclick="searchOrgs(4);">5</li>
+          <li onclick="searchOrgs(-2);"><span uk-pagination-next></span></li>
+        </ul>
+        <p id="current-page" class="hidden">0</p>
+      </div>
+    </center>
       
 
-  <!-- side navigation bar -->
-    
+    <!-- side navigation bar -->
     <div id= "side-nav">
       <ul class="uk-nav-parent-icon" uk-nav>
         <li class="uk-parent"><a href="#">Parent</a>
@@ -58,11 +57,10 @@
               <li><a href="#">Sub item</a></li>
               <li><a href="#">Sub item</a></li>
             </ul>
-          </li>
         </ul>
         </li>
-       </ul>
-      </div>
+      </ul>
+    </div>
 
 
   </body>
