@@ -88,6 +88,7 @@ public class DataServlet extends HttpServlet {
     } catch(Exception ex) {
       System.err.println(ex);
     }
+    response.sendRedirect("upload_sql.html");
   }
 
   //Helper functions for processing new CSV files
