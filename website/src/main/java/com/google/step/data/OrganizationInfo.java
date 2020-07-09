@@ -69,6 +69,7 @@ public final class OrganizationInfo {
 
       if (!response.getCategoriesList().isEmpty()) {
         String mainClassification = response.getCategoriesList().get(0).getName();
+        System.out.println(mainClassification);
         return Arrays.asList(mainClassification.split("/", 1))
             .stream()
             .filter(classification -> !classification.isEmpty())

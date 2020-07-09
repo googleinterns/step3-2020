@@ -3,18 +3,20 @@
   <head>
     <meta charset="UTF-8">
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="results.css">
     <script src="prototype_script.js"></script>
+
+    <!-- uikit framework -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/uikit/3.5.4/css/uikit.min.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/uikit/3.5.4/js/uikit.min.js"></script>
   </head>
-  
   <body id="body" onload="setUpPrototype();">
+  <!-- top navigation bar -->
     <div class="navbar">
       <a href="index.html"> Home </a>
       <a href="/login">Login</a>
     </div>
     <br><br>
-
-    <div id="classifications">
-    </div>
 
     <center>
       <!-- search by keyword -->
@@ -29,15 +31,27 @@
 
       <!-- pagination -->
       <div id="pagination">
-        <button onclick="searchOrgs(-1);">&laquo;</button>
-        <button onclick="searchOrgs(0);">1</button>
-        <button onclick="searchOrgs(1);">2</button>
-        <button onclick="searchOrgs(2);">3</button>
-        <button onclick="searchOrgs(3);">4</button>
-        <button onclick="searchOrgs(4);">5</button>
-        <button onclick="searchOrgs(-2);">&raquo;</button>
+        <ul class="uk-pagination uk-flex-center" uk-margin>
+          <li onclick="searchOrgs(-1);"><span uk-pagination-previous></span></li>
+          <li onclick="searchOrgs(0);">1</li>
+          <li onclick="searchOrgs(1);">2</li>
+          <li onclick="searchOrgs(2);">3</li>
+          <li onclick="searchOrgs(3);">4</li>
+          <li onclick="searchOrgs(4);">5</li>
+          <li onclick="searchOrgs(-2);"><span uk-pagination-next></span></li>
+        </ul>
         <p id="current-page" class="hidden">0</p>
       </div>
     </center>
+      
+
+    <!-- side navigation bar -->
+    <div id= "side-nav">
+      <li class="uk-active"><a href="#">Active</a></li>
+      <ul id="roots" class="uk-nav-default uk-nav-parent-icon" uk-nav>
+      </ul>
+    </div>
+
+
   </body>
 </html>

@@ -111,7 +111,7 @@ public final class CloudSQLManager {
 
   public ResultSet getOrgsWithNeighbors(String keyword, int offset) throws SQLException{ 
     String similarTo = (!keyword.isEmpty()) ? 
-        "WHERE (name LIKE '%" + keyword + "%' OR about LIKE '% " + keyword + "%' OR class ='" + keyword + "')" 
+        "WHERE (name LIKE '%" + keyword + "%' OR about LIKE '% " + keyword + "%' OR class LIKE '%" + keyword + "%')" 
         : "";
     String preliminaryQuery = String.format("(SELECT * FROM orgTable %sLIMIT " + offset + ", 10)", similarTo);    
     String query = String.join("\n","SELECT",

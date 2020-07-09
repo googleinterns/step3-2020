@@ -14,6 +14,17 @@
 
 package com.google.step.servlets;
 
+import java.io.IOException;
+import com.google.appengine.api.datastore.DatastoreService;
+import com.google.appengine.api.datastore.DatastoreServiceFactory;
+import com.google.appengine.api.datastore.Entity;
+import com.google.appengine.api.datastore.Query.SortDirection;
+import com.google.appengine.api.datastore.FetchOptions;
+import com.google.appengine.api.datastore.Key;
+import com.google.appengine.api.datastore.KeyFactory;
+import com.google.appengine.api.datastore.PreparedQuery;
+import com.google.appengine.api.datastore.Query;
+import com.google.step.data.OrganizationInfo;
 import com.google.gson.Gson;
 import com.google.step.data.*;
 import com.opencsv.*;
@@ -34,7 +45,7 @@ import org.apache.commons.fileupload.servlet.ServletFileUpload;
 /** Servlet that returns some example content. TODO: modify this file to handle comments data */
 @WebServlet("/data")
 public class DataServlet extends HttpServlet {
-  private static String orgsWithClass = "classifiedOrgs2";
+  private static String orgsWithClass = "classifiedOrgs";
     
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
@@ -55,6 +66,7 @@ public class DataServlet extends HttpServlet {
       System.err.println(ex);
     }
   }
+
 
   @Override
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
@@ -116,16 +128,42 @@ public class DataServlet extends HttpServlet {
       }
       if (index % batchAmount == 0){
         statement.executeBatch();
-      }
-      try {
-        Thread.sleep(100);
-      }  catch (InterruptedException e) {
-        Thread.currentThread().interrupt(); // restore interrupted status
-      }
+      } 
+      Thread.sleep(100);
     }
     orgsFileReader.close();
     statement.executeBatch();
   }
+
+  private static Set<String> hardCodedRoots = new TreeSet<>(Arrays.asList(
+      "Adult",
+      "Arts & Entertainment",
+      "Autos & Vehicles",
+      "Beauty & Fitness",
+      "Books & Literature",
+      "Business & Industrial",
+      "Computers & Electronics",
+      "Finance",
+      "Food & Drink",
+      "Health",
+      "Hobbies & Leisure",
+      "Home & Garden",
+      "Internet & Telecom",
+      "Jobs & Education",
+      "Law & Government",
+      "News",
+      "Online Communities",
+      "People & Society",
+      "Pets & Animals",
+      "Real Estate",
+      "Reference",
+      "Science",
+      "Sensitive Subjects",
+      "Shopping",
+      "Sports",
+      "Travel"
+    )
+  );
 
   //Developing classification tree from already processed org info
   public static Map<String, Set<String>> createClassificationTree(ResultSet classes) throws SQLException {
@@ -137,6 +175,16 @@ public class DataServlet extends HttpServlet {
         classTree.get("roots").add(parsed.peek());
         while (!parsed.isEmpty()) {
           String parent = parsed.remove();
+          try {
+            if (hardCodedRoots.contains(parsed.peek())) {
+              if (!classTree.containsKey(parent)) {
+                classTree.put(parent, new TreeSet<>());
+              }
+              break;
+            } 
+          } catch(NullPointerException ex){
+            System.err.println();
+          }
           List<String> child = (parsed.peek() != null) ? Arrays.asList(parsed.peek()) : new ArrayList<String>();
           if (classTree.containsKey(parent)) {
             classTree.get(parent).addAll(child);
