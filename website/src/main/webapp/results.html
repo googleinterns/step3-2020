@@ -5,8 +5,13 @@
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="results.css">
     <script src="prototype_script.js"></script>
+
+<!-- uikit framework -->
+    <link rel="stylesheet" href="css/uikit.min.css" />
+    <script src="js/uikit.min.js"></script>
   </head>
   
+  <!-- top navigation bar -->
   <body id="body" onload="addListener();">
     <div class="navbar">
       <a href="index.html"> Home </a>
@@ -18,7 +23,7 @@
       <!-- search by keyword -->
       <div id="results-search">
         <input type="text" id="keyword" placeholder="Search by keyword">
-        <button onclick="searchOrgs();">Search</button>
+        <button onclick="searchOrgs(0);">Search</button>
       </div>
 
       <!-- display results -->
@@ -26,6 +31,37 @@
       <ul id="existing-organizations"></ul>
 
 
+      <!-- pagination -->
+      <div id="pagination">
+        <button onclick="searchOrgs(-1);">&laquo;</button>
+        <button onclick="searchOrgs(0);">1</button>
+        <button onclick="searchOrgs(1);">2</button>
+        <button onclick="searchOrgs(2);">3</button>
+        <button onclick="searchOrgs(3);">4</button>
+        <button onclick="searchOrgs(4);">5</button>
+        <button onclick="searchOrgs(-2);">&raquo;</button>
+        <p id="current-page" class="hidden">0</p>
+      </div>
     </center>
+
+  <!-- side navigation bar -->
+    
+    <div id= "side-nav">
+      <ul class="uk-nav-parent-icon" uk-nav>
+        <li class="uk-parent"><a href="#">Parent</a>
+        <ul class="uk-nav-parent-icon">
+          <li><a href="#">Sub item</a></li>
+          <liclass="uk-parent"><a href="#">Sub item</a>
+            <ul class=uk-nav-sub>
+              <li><a href="#">Sub item</a></li>
+              <li><a href="#">Sub item</a></li>
+            </ul>
+          </li>
+        </ul>
+        </li>
+       </ul>
+      </div>
+
+
   </body>
 </html>

@@ -92,6 +92,12 @@
       <artifactId>mysql-connector-java</artifactId>
       <version>8.0.20</version>
     </dependency>
+    <!-- Mockito Unit Testing -->
+    <dependency>
+      <groupId>org.mockito</groupId>
+      <artifactId>mockito-core</artifactId>
+      <version>3.3.3</version>
+    </dependency>
     <!--Google Cloud SQL-->
     <dependency>
       <groupId>com.google.cloud.sql</groupId>

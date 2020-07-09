@@ -58,10 +58,18 @@ h1 {
 #side-nav{
   position: absolute;
   top: 30%;
-  left: 0%;
+  left: 2%;
   margin-right: -50%;
 }
 
 #existing-organizations {
   list-style-type: none;
+}
+
+#pagination {
+  display: none;
+}
+
+.hidden {
+  display: none;
 }
