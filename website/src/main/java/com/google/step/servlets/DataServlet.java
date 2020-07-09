@@ -132,7 +132,6 @@ public class DataServlet extends HttpServlet {
     Map<String, Set<String>> classTree = new HashMap<>();
     classTree.put("roots", new TreeSet<String>());
       while (classes.next()) {
-        System.out.println(classes.getString("class"));
         Queue<String> parsed = Arrays.stream(classes.getString("class").split("/", 0))
             .collect(Collectors.toCollection(LinkedList::new));
         classTree.get("roots").add(parsed.peek());
