@@ -34,7 +34,7 @@ import org.apache.commons.fileupload.servlet.ServletFileUpload;
 /** Servlet that returns some example content. TODO: modify this file to handle comments data */
 @WebServlet("/data")
 public class DataServlet extends HttpServlet {
-  private static String orgsWithClass = "orgTable";
+  private static String orgsWithClass = "classifiedOrgs2";
     
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
@@ -42,8 +42,10 @@ public class DataServlet extends HttpServlet {
       //Set up Proxy for handling SQL server
       CloudSQLManager database = CloudSQLManager.setUp();
       //Get all distinct classifications to develop tree
-      ResultSet classes = database.getDistinct(orgsWithClass, Arrays.asList("class"), null);
+      ResultSet classes = database.getDistinct(orgsWithClass, Arrays.asList("class"), Arrays.asList("class IS NOT NULL ORDER BY class DESC"));
       Map<String, Set<String>> classTree = createClassificationTree(classes);
+      // TreeSet<String> roots = new TreeSet(classTree.get("roots"));
+      // printClassTree(classTree, roots, roots.first(), "" );
       //Send out info
       response.setContentType("application/json; charset=UTF-8");
       response.setCharacterEncoding("UTF-8");
@@ -62,12 +64,7 @@ public class DataServlet extends HttpServlet {
         "name TEXT NOT NULL", 
         "link TEXT NOT NULL", 
         "about TEXT NOT NULL",
-        "class VARCHAR(255) NOT NULL",
-        "neighbor1 INTEGER",
-        "neighbor2 INTEGER",
-        "neighbor3 INTEGER",
-        "neighbor4 INTEGER"
-        );
+        "class VARCHAR(255) NOT NULL");
 
     try {
       //Set up Proxy for handling SQL server
@@ -79,10 +76,13 @@ public class DataServlet extends HttpServlet {
       //Classify each org from, file, and add to target table
       PreparedStatement statement = database.buildInsertStatement(orgsWithClass, columns);
       int startIndex = getLastEntryIndex(orgsWithClass, database) + 1;
+      System.out.println("/n" + Integer.toString(startIndex) + "/n");
       passFileToStatement(orgsNoClassification, statement, startIndex);
+      int totalOrgs = getLastEntryIndex(orgsWithClass, database);
+      String re = "?orgsTotal=" + Integer.toString(totalOrgs);
       //Wrap up
       database.tearDown();
-      response.sendRedirect("upload.html");
+      response.sendRedirect("upload.html" + re);
     } catch (SQLException ex) {
       System.err.println(ex);
     } catch(Exception ex) {
@@ -116,6 +116,11 @@ public class DataServlet extends HttpServlet {
       if (index % batchAmount == 0){
         statement.executeBatch();
       }
+      try {
+        Thread.sleep(100);
+      }  catch (InterruptedException e) {
+        Thread.currentThread().interrupt(); // restore interrupted status
+      }
     }
     orgsFileReader.close();
     statement.executeBatch();
@@ -126,6 +131,7 @@ public class DataServlet extends HttpServlet {
     Map<String, Set<String>> classTree = new HashMap<>();
     classTree.put("roots", new TreeSet<String>());
       while (classes.next()) {
+        System.out.println(classes.getString("class"));
         Queue<String> parsed = Arrays.stream(classes.getString("class").split("/", 0))
             .collect(Collectors.toCollection(LinkedList::new));
         classTree.get("roots").add(parsed.peek());
