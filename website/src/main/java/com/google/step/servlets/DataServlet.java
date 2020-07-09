@@ -62,7 +62,12 @@ public class DataServlet extends HttpServlet {
         "name TEXT NOT NULL", 
         "link TEXT NOT NULL", 
         "about TEXT NOT NULL",
-        "class VARCHAR(255) NOT NULL");
+        "class VARCHAR(255) NOT NULL",
+        "neighbor1 INTEGER",
+        "neighbor2 INTEGER",
+        "neighbor3 INTEGER",
+        "neighbor4 INTEGER"
+        );
 
     try {
       //Set up Proxy for handling SQL server
