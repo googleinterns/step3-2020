@@ -17,6 +17,7 @@
   line-height: 84px;
 }
 
+
 #search {
   position: absolute;
   top: 40%;
@@ -33,6 +34,7 @@
   font-size: 17px;
   vertical-align: center;
 }
+
 
 h1 {
   position: absolute;
@@ -52,23 +54,17 @@ h1 {
   color: #000000;
 }
 
-#upload {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-direction: column;
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  margin-right: -50%;
-  transform: translate(-50%, -50%);
+#upload{
+  color: #000000;
+}
 
-  font-family: Roboto;
-  font-style: normal;
-  font-weight: normal;
-  font-size: 30px;
-  line-height: 42px;
-  text-align: center;
+
+
+#side-nav{
+  position: absolute;
+  top: 30%;
+  left: 2%;
+  margin-right: -50%;
 }
 
 #existing-organizations {

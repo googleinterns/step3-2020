@@ -18,11 +18,12 @@ public class LoginServlet extends HttpServlet {
     UserService userService = UserServiceFactory.getUserService();
     if (userService.isUserLoggedIn()) {
       String logoutUrl = userService.createLogoutURL("/index.html");
-      response.getWriter().println("<p>Logout <a href=\"" + logoutUrl + "\">here</a>.</p>");
+      response.sendRedirect(logoutUrl);
     } else {
       String loginUrl = userService.createLoginURL("/index.html");
-      response.getWriter().println("<p>Login <a href=\"" + loginUrl + "\">here</a>.</p>");
+      response.sendRedirect(loginUrl);
     }
   }
 
+    
 }
