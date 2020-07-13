@@ -11,7 +11,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/uikit/3.5.4/js/uikit.min.js"></script>
   </head>
 
-  <body id="body" onload="setUpPrototype();">
+  <body id="body" onload="setUpDetailsPage();">
   <!-- top navigation bar -->
     <div class="navbar">
       <a href="index.html"> Home </a>
@@ -27,8 +27,7 @@
       </div>
 
       <!-- display results -->
-      <h3 id="results-title"></h3>
-      <ul id="existing-organizations"></ul>
+      <ul id="current-organizations"></ul>
 
       <!-- pagination -->
       <div id="pagination">
@@ -44,7 +43,6 @@
         <p id="current-page" class="hidden">0</p>
       </div>
     </center>
-      
 
     <!-- side navigation bar -->
     <div id= "side-nav">

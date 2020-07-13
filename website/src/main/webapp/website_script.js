@@ -88,8 +88,6 @@ function getOrgAsHtmlDescription(org) {
  * Redirects user to organization.html
  */
 function redirect(id) {
-  const url = new URL(window.location.href);
-  // console.log(url.searchParams.get("id"));
   const qs = updateQueryString('id', id);
   const redirect = '/organization.html?' + qs;
   window.location = redirect;
@@ -149,4 +147,18 @@ function addToClassTree(tree, parent, classPath) {
 function setUpPrototype() {
   addListener();
   getClassifications();
+}
+
+function setUpDetailsPage() {
+  addListener();
+  getClassifications();
+  loadOrg();
+}
+
+function loadOrg() {
+  const url = new URL(window.location.href);
+  const id = url.searchParams.get('id');
+  console.log(id);
+  const qs = '/sql?' + updateQueryString('id', id);
+  // addOrgs(qs);
 }

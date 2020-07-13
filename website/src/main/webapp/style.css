@@ -1,8 +1,8 @@
-<<<<<<< HEAD
 /* Remove default bullets */
 ul, #myUL {
   list-style-type: none;
 }
+
 #content {
   margin-left: auto;
   margin-right: auto;
@@ -22,7 +22,6 @@ ul, #myUL {
   line-height: 84px;
 }
 
-
 #search {
   position: absolute;
   top: 40%;
@@ -39,7 +38,6 @@ ul, #myUL {
   font-size: 17px;
   vertical-align: center;
 }
-
 
 h1 {
   position: absolute;
@@ -62,8 +60,6 @@ h1 {
 #upload{
   color: #000000;
 }
-
-
 
 #side-nav{
   position: absolute;
