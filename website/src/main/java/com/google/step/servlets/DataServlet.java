@@ -45,7 +45,7 @@ import org.apache.commons.fileupload.servlet.ServletFileUpload;
 /** Servlet that returns some example content. TODO: modify this file to handle comments data */
 @WebServlet("/data")
 public class DataServlet extends HttpServlet {
-  private static String orgsWithClass = "orgTable";
+  private static String orgsWithClass = "classifiedOrgs";
     
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
@@ -53,8 +53,10 @@ public class DataServlet extends HttpServlet {
       //Set up Proxy for handling SQL server
       CloudSQLManager database = CloudSQLManager.setUp();
       //Get all distinct classifications to develop tree
-      ResultSet classes = database.getDistinct(orgsWithClass, Arrays.asList("class"), null);
+      ResultSet classes = database.getDistinct(orgsWithClass, Arrays.asList("class"), Arrays.asList("class IS NOT NULL ORDER BY class DESC"));
       Map<String, Set<String>> classTree = createClassificationTree(classes);
+      // TreeSet<String> roots = new TreeSet(classTree.get("roots"));
+      // printClassTree(classTree, roots, roots.first(), "" );
       //Send out info
       response.setContentType("application/json; charset=UTF-8");
       response.setCharacterEncoding("UTF-8");
@@ -63,8 +65,6 @@ public class DataServlet extends HttpServlet {
     } catch (SQLException ex) {
       System.err.println(ex);
     }
-    response.setContentType("text/html");
-    response.getWriter().println("<p>Didn't Work</p>");
   }
 
 
@@ -88,10 +88,13 @@ public class DataServlet extends HttpServlet {
       //Classify each org from, file, and add to target table
       PreparedStatement statement = database.buildInsertStatement(orgsWithClass, columns);
       int startIndex = getLastEntryIndex(orgsWithClass, database) + 1;
+      System.out.println("/n" + Integer.toString(startIndex) + "/n");
       passFileToStatement(orgsNoClassification, statement, startIndex);
+      int totalOrgs = getLastEntryIndex(orgsWithClass, database);
+      String re = "?orgsTotal=" + Integer.toString(totalOrgs);
       //Wrap up
       database.tearDown();
-      response.sendRedirect("upload.html");
+      response.sendRedirect("upload.html" + re);
     } catch (SQLException ex) {
       System.err.println(ex);
     } catch(Exception ex) {
@@ -125,11 +128,42 @@ public class DataServlet extends HttpServlet {
       }
       if (index % batchAmount == 0){
         statement.executeBatch();
-      }
+      } 
+      Thread.sleep(100);
     }
     orgsFileReader.close();
     statement.executeBatch();
   }
+
+  private static Set<String> hardCodedRoots = new TreeSet<>(Arrays.asList(
+      "Adult",
+      "Arts & Entertainment",
+      "Autos & Vehicles",
+      "Beauty & Fitness",
+      "Books & Literature",
+      "Business & Industrial",
+      "Computers & Electronics",
+      "Finance",
+      "Food & Drink",
+      "Health",
+      "Hobbies & Leisure",
+      "Home & Garden",
+      "Internet & Telecom",
+      "Jobs & Education",
+      "Law & Government",
+      "News",
+      "Online Communities",
+      "People & Society",
+      "Pets & Animals",
+      "Real Estate",
+      "Reference",
+      "Science",
+      "Sensitive Subjects",
+      "Shopping",
+      "Sports",
+      "Travel"
+    )
+  );
 
   //Developing classification tree from already processed org info
   public static Map<String, Set<String>> createClassificationTree(ResultSet classes) throws SQLException {
@@ -141,11 +175,21 @@ public class DataServlet extends HttpServlet {
         classTree.get("roots").add(parsed.peek());
         while (!parsed.isEmpty()) {
           String parent = parsed.remove();
+          try {
+            if (hardCodedRoots.contains(parsed.peek())) {
+              if (!classTree.containsKey(parent)) {
+                classTree.put(parent, new TreeSet<>());
+              }
+              break;
+            } 
+          } catch(NullPointerException ex){
+            System.err.println();
+          }
           List<String> child = (parsed.peek() != null) ? Arrays.asList(parsed.peek()) : new ArrayList<String>();
           if (classTree.containsKey(parent)) {
             classTree.get(parent).addAll(child);
           } else {
-            classTree.put(parent, new HashSet<>(child));
+            classTree.put(parent, new TreeSet<>(child));
           }
         }
       }

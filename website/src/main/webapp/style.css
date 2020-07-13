@@ -1,3 +1,8 @@
+<<<<<<< HEAD
+/* Remove default bullets */
+ul, #myUL {
+  list-style-type: none;
+}
 #content {
   margin-left: auto;
   margin-right: auto;
