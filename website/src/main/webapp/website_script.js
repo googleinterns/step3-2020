@@ -158,7 +158,6 @@ function setUpDetailsPage() {
 function loadOrg() {
   const url = new URL(window.location.href);
   const id = url.searchParams.get('id');
-  console.log(id);
-  const qs = '/sql?' + updateQueryString('id', id);
-  // addOrgs(qs);
+  const qs = '/org?' + updateQueryString('id', id);
+  addOrgs(qs);
 }
