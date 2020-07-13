@@ -90,8 +90,9 @@ function getOrgAsHtmlDescription(org) {
 function redirect(id) {
   const url = new URL(window.location.href);
   // console.log(url.searchParams.get("id"));
-  console.log(id);
-  window.location = 'https://google.com';
+  const qs = updateQueryString('id', id);
+  const redirect = '/organization.html?' + qs;
+  window.location = redirect;
 }
  
 function addListener() {
@@ -110,19 +111,11 @@ function addTitle(keyword) {
 
 function getClassifications() {
   const qs = '/data';
-  const classDiv = document.getElementById("roots");
+  const classDiv = document.getElementById('roots');
   fetch(qs).then(response => response.json()).then(tree => {
     tree.roots.forEach(root=> {
       classDiv.appendChild(addToClassTree(tree, root, root));
     });
-    // var toggler = document.getElementsByClassName("uk-nav-parent-icon");
-    // var i;
-    // for (i = 0; i < toggler.length; i++) {
-    //   toggler[i].addEventListener('click', function() {
-    //     this.parentElement.querySelector('.uk-parent').classList.toggle("active");
-    //     this.classList.toggle("caret-down");
-    //   });
-    // }
   }); 
 }
 
@@ -132,12 +125,12 @@ function addToClassTree(tree, parent, classPath) {
   if (!(tree[parent].length === 0)) {
     const icon = document.createElement('a');
     icon.innerText = parent;
-    icon.href ="#";
+    icon.href = '#';
     parentElem.appendChild(icon);
     parentElem.setAttribute('class', 'uk-parent');
     const nested = document.createElement('ul');
     nested.setAttribute('class', 'uk-nav-sub');
-    tree[parent].forEach(child => nested.appendChild(addToClassTree(tree, child, classPath + "/" + child)));
+    tree[parent].forEach(child => nested.appendChild(addToClassTree(tree, child, classPath + '/' + child)));
     parentElem.appendChild(nested);
   } else {
     parentElem.innerText = parent;
