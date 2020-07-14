@@ -18,18 +18,18 @@ function searchOrgs(page) {
   const qs = '/sql?' + updateQueryString('keyword', keyword) + '&' + updateQueryString('page', pageElement.innerText);
   addTitle(keyword);
   addPagination();
-  addOrgs(qs);
+  addOrgs(qs, 1);
 }
 
 function addPagination() {
   document.getElementById('pagination').style.display = 'inline-block';
 }
 
-function addOrgs(qs) {
+function addOrgs(qs, results) {
   fetch(qs).then(response => response.json()).then(text => {
     const orgsContainer = document.getElementById('existing-organizations');
     text.forEach(entry => {
-      orgsContainer.appendChild(getOrgAsHtmlDescription(entry));
+      orgsContainer.appendChild(getOrgAsHtmlDescription(entry, results));
     });
   });
 }
@@ -54,7 +54,7 @@ function updateQueryString(key, value) {
 /**
  * Creates list element from org
  */
-function getOrgAsHtmlDescription(org) {
+function getOrgAsHtmlDescription(org, results) {
   const orgElement = document.createElement('li');
   orgElement.setAttribute('id', 'org');
 
@@ -80,7 +80,9 @@ function getOrgAsHtmlDescription(org) {
   orgElement.appendChild(neighborElement);
 
   // make the whole list element clickable and take user to organization.html pasing id as parameter
-  orgElement.onclick = function() { redirect(org.id); }
+  if (results) {
+    orgElement.onclick = function() { redirect(org.id); }
+  }
   return orgElement;
 }
 
@@ -138,7 +140,7 @@ function addToClassTree(tree, parent, classPath) {
       removeOrgs();
       addTitle(classPath);
       addPagination();
-      addOrgs(qs);
+      addOrgs(qs, 1);
     });
   }
   return parentElem;
@@ -159,5 +161,5 @@ function loadOrg() {
   const url = new URL(window.location.href);
   const id = url.searchParams.get('id');
   const qs = '/org?' + updateQueryString('id', id);
-  addOrgs(qs);
+  addOrgs(qs, 0);
 }
