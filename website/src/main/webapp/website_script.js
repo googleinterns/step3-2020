@@ -92,6 +92,13 @@ function getOrgAsHtmlDescription(org, results) {
   neighborElement.appendChild(getNeighborElement(1, org.neighbor4));
   orgElement.appendChild(neighborElement);
 
+  const upvoteElement = document.createElement('button');
+  upvoteElement.innerText = 'Good';
+  orgElement.appendChild(upvoteElement);
+  const downvoteElement = document.createElement('button');
+  downvoteElement.innerText = 'Bad';
+  orgElement.appendChild(downvoteElement);
+
   // make the whole list element clickable and take user to organization.html pasing id as parameter
   if (results) {
     orgElement.onclick = function() { redirectId(org.id); }
