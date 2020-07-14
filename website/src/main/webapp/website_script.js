@@ -159,7 +159,7 @@ function getClassifications() {
 function addToClassTree(tree, parent, classPath) {
   const parentElem = document.createElement('li');
   parentElem.setAttribute('value', classPath);
-  if ((tree[parent].length !== 0)) {
+  if (tree[parent].length !== 0) {
     const icon = document.createElement('a');
     icon.innerText = parent;
     icon.href = '#';
@@ -173,11 +173,15 @@ function addToClassTree(tree, parent, classPath) {
     parentElem.innerText = parent;
     parentElem.addEventListener('click', function() {
       const pageElement = document.getElementById('current-page');
-      const qs = '/sql?' + updateQueryString('keyword', classPath) + '&' + updateQueryString('page', pageElement.innerText);
-      removeOrgs();
-      addTitle(classPath);
-      addPagination();
-      addOrgs(qs, 1);
+      if (!pageElement) {
+        redirectKeyword(classPath);
+      } else {
+        const qs = '/sql?' + updateQueryString('keyword', classPath) + '&' + updateQueryString('page', pageElement.innerText);
+        removeOrgs();
+        addTitle(classPath);
+        addPagination();
+        addOrgs(qs, 1);
+      }
     });
   }
   return parentElem;
@@ -205,7 +209,6 @@ function loadOrg() {
 function getResults() {
   const url = new URL(window.location.href);
   const keyword = url.searchParams.get('keyword');
-  console.log(keyword);
   if (keyword) {
     searchOrgs(0, keyword);
   }
