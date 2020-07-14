@@ -86,10 +86,10 @@ function getOrgAsHtmlDescription(org, results) {
   neighborElement.setAttribute('id', 'like-this');
   neighborElement.innerText = 'Like this: ';
   // TODO: get actual neighboring org id number from CloudSQLManager.java
-  neighborElement.appendChild(getNeighborElement(1, org.neighbor1));
-  neighborElement.appendChild(getNeighborElement(1, org.neighbor2));
-  neighborElement.appendChild(getNeighborElement(1, org.neighbor3));
-  neighborElement.appendChild(getNeighborElement(1, org.neighbor4));
+  neighborElement.appendChild(getNeighborElement(org.neighbor1_id, org.neighbor1));
+  neighborElement.appendChild(getNeighborElement(org.neighbor2_id, org.neighbor2));
+  neighborElement.appendChild(getNeighborElement(org.neighbor3_id, org.neighbor3));
+  neighborElement.appendChild(getNeighborElement(org.neighbor4_id, org.neighbor4));
   orgElement.appendChild(neighborElement);
 
   const upvoteElement = document.createElement('button');

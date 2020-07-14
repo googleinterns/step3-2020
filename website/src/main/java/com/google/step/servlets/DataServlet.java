@@ -197,19 +197,6 @@ public class DataServlet extends HttpServlet {
       return classTree;
   }
 
-  
-  private void printClassTree(Map<String, Set<String>> classTree, Set<String> parents, String parent, String spacing) {
-    try {
-      System.out.println(spacing + parent);
-      parents.remove(parent);
-      if (classTree.get(parent).isEmpty()) {
-        return;
-      }
-      classTree.get(parent).forEach(child -> printClassTree(classTree, parents, child, spacing + "     "));
-    } catch(NullPointerException ex) {
-      System.err.println(ex);
-    }
-  }
   //Process HTTP Request for CSV file
   private CSVReader getCSVReaderFrom(HttpServletRequest request) throws FileUploadException, IOException {
     //create file upload handler
