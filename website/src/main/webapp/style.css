@@ -30,7 +30,7 @@ ul, #myUL {
   transform: translate(-50%, -50%);
 }
 
-#search, #results-search input[type=text] {
+#search input[type=text], #results-search input[type=text] {
   float:inherit;
   padding: 6px;
   border: 1px solid lightgrey;

@@ -1,7 +1,7 @@
 /**
  * Add the searched organizations by keyword
  */
-function searchOrgs(page) {
+function searchOrgs(page, key) {
   const pageElement = document.getElementById('current-page');
   // -1 for prev page and -2 for next page
   if (page === -1) {
@@ -14,11 +14,19 @@ function searchOrgs(page) {
     pageElement.innerText = page;
   }
   removeOrgs();
-  const keyword = document.getElementById('keyword').value;
+  const keyword = key;
+  if (!key) {
+    const keyword = document.getElementById('keyword').value;
+  }
   const qs = '/sql?' + updateQueryString('keyword', keyword) + '&' + updateQueryString('page', pageElement.innerText);
   addTitle(keyword);
   addPagination();
   addOrgs(qs, 1);
+}
+
+function indexPageSearch() {
+  const keyword = document.getElementById('keyword').value;
+  redirectKeyword(keyword);
 }
 
 function addPagination() {
@@ -86,7 +94,7 @@ function getOrgAsHtmlDescription(org, results) {
 
   // make the whole list element clickable and take user to organization.html pasing id as parameter
   if (results) {
-    orgElement.onclick = function() { redirect(org.id); }
+    orgElement.onclick = function() { redirectId(org.id); }
   }
   return orgElement;
 }
@@ -103,9 +111,15 @@ function getNeighborElement(neighborId, neighborName) {
 /**
  * Redirects user to organization.html
  */
-function redirect(id) {
+function redirectId(id) {
   const qs = updateQueryString('id', id);
   const redirect = '/organization.html?' + qs;
+  window.location = redirect;
+}
+
+function redirectKeyword(keyword) {
+  const qs = updateQueryString('keyword', keyword);
+  const redirect = '/results.html?' + qs;
   window.location = redirect;
 }
  
@@ -113,7 +127,16 @@ function addListener() {
   const inputBox = document.getElementById('keyword');
   inputBox.addEventListener('keyup', function(event) {
       if (event.key === 'Enter') {
-        searchOrgs(0);
+        searchOrgs(0, '');
+      }
+  });
+}
+
+function addIndexListener() {
+  const inputBox = document.getElementById('keyword');
+  inputBox.addEventListener('keyup', function(event) {
+      if (event.key === 'Enter') {
+        indexPageSearch();
       }
   });
 }
@@ -136,7 +159,7 @@ function getClassifications() {
 function addToClassTree(tree, parent, classPath) {
   const parentElem = document.createElement('li');
   parentElem.setAttribute('value', classPath);
-  if (!(tree[parent].length === 0)) {
+  if ((tree[parent].length !== 0)) {
     const icon = document.createElement('a');
     icon.innerText = parent;
     icon.href = '#';
@@ -160,9 +183,10 @@ function addToClassTree(tree, parent, classPath) {
   return parentElem;
 }
 
-function setUpPrototype() {
+function setUpResults() {
   addListener();
   getClassifications();
+  getResults();
 }
 
 function setUpDetailsPage() {
@@ -176,4 +200,18 @@ function loadOrg() {
   const id = url.searchParams.get('id');
   const qs = '/org?' + updateQueryString('id', id);
   addOrgs(qs, 0);
+}
+
+function getResults() {
+  const url = new URL(window.location.href);
+  const keyword = url.searchParams.get('keyword');
+  console.log(keyword);
+  if (keyword) {
+    searchOrgs(0, keyword);
+  }
+}
+
+function setUpIndexpage() {
+  addIndexListener();
+  getClassifications();
 }
