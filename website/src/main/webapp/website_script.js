@@ -191,12 +191,14 @@ function setUpResults() {
   addListener();
   getClassifications();
   getResults();
+  getLoginStatus();
 }
 
 function setUpDetailsPage() {
   addListener();
   getClassifications();
   loadOrg();
+  getLoginStatus();
 }
 
 function loadOrg() {
@@ -217,4 +219,31 @@ function getResults() {
 function setUpIndexpage() {
   addIndexListener();
   getClassifications();
+  getLoginStatus();
+}
+
+/**
+ * Fetches the login status of user
+ * if logged in, display logout button
+ * if logged out, display button redirect to login page
+ */
+function getLoginStatus() {
+  return fetch('/login').then(response => response.text()).then(link => {
+    // if user is logged in, server sends the logout link
+    if (link.includes('logout')) {
+      // is logged in 
+      const statusElement = document.getElementById('login-status');
+      statusElement.innerText = 'You are logged in';
+      const logoutElement = document.getElementById('login-link');
+      logoutElement.href = link;
+      logoutElement.innerText = 'Logout';
+    } else {
+      // is logged out
+      const statusElement = document.getElementById('login-status');
+      statusElement.innerText = 'You are logged out';
+      const loginElement = document.getElementById('login-link');
+      loginElement.href = link;
+      loginElement.innerText = 'Login';
+    }
+  });
 }
