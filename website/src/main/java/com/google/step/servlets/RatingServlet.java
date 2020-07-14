@@ -1,8 +1,6 @@
 package com.google.step.servlets;
 
-import com.google.appengine.api.datastore.DatastoreService;
-import com.google.appengine.api.datastore.DatastoreServiceFactory;
-import com.google.appengine.api.datastore.Entity;
+import com.google.appengine.api.datastore.*;
 import com.google.appengine.api.users.UserService;
 import com.google.appengine.api.users.UserServiceFactory;
 import java.io.IOException;
@@ -19,7 +17,6 @@ public class RatingServlet extends HttpServlet {
   @Override
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
     UserService userService = UserServiceFactory.getUserService();
-    String redirect = request.getParameter("redirect");
     if (userService.isUserLoggedIn()) {
       String ratingString = request.getParameter("rating");
       String org = request.getParameter("id");
@@ -30,17 +27,14 @@ public class RatingServlet extends HttpServlet {
       }
       // get email from userservice
       String userEmail = userService.getCurrentUser().getEmail();
-
+      DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
       Entity ratingEntity = new Entity("Rating");
       ratingEntity.setProperty("email", userEmail);
       ratingEntity.setProperty("id", id);
       ratingEntity.setProperty("rating", rating);
-
-      DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
       datastore.put(ratingEntity);
-
       response.setContentType("text/html");
-      response.getWriter().println("Rated Successfully ");
+      response.getWriter().println("Rated Successfully.");
     } else {
       response.setContentType("text/html");
       response.getWriter().println("Please login first.");

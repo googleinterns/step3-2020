@@ -128,12 +128,11 @@ function redirectId(id) {
 }
 
 function redirectRating(up, id) {
-  const rating = 'rating=good';
+  var rating = 'rating=good';
   if (!up) {
-    const rating = 'rating=bad';
+    rating = 'rating=bad';
   }
-  const uri = window.location.href;
-  const params = rating + '&id=' + id + '&redirect=' + uri;
+  const params = rating + '&id=' + id;
   fetch('/rating?' + params, {method: 'POST'}).then(response => response.text()).then(message => {
     alert(message);
   });
