@@ -30,6 +30,10 @@ public final class OrganizationInfo {
   private final String neighbor2;
   private final String neighbor3;
   private final String neighbor4;
+  private final Integer neighbor1_id;
+  private final Integer neighbor2_id;
+  private final Integer neighbor3_id;
+  private final Integer neighbor4_id;
 
   private OrganizationInfo(int id, String name, String link, String about, List<String> classification) {
     this.id = id;
@@ -38,21 +42,30 @@ public final class OrganizationInfo {
     this.about = about;
     this.classification = classification;
     this.neighbor1 = null;
+    this.neighbor1_id = null;
     this.neighbor2 = null;
+    this.neighbor2_id = null;
     this.neighbor3 = null;
+    this.neighbor3_id = null;
     this.neighbor4 = null;
+    this.neighbor4_id = null;
   }
 
   private OrganizationInfo(int id, String name, String link, String about, 
-        String neighbor1, String neighbor2, String neighbor3, String neighbor4) {
+        String neighbor1, String neighbor2, String neighbor3, String neighbor4,
+        int neighbor1ID, int neighbor2ID, int neighbor3ID, int neighbor4ID) {
     this.id = id;
     this.name = name;
     this.link = link;
     this.about = about;
     this.neighbor1 = neighbor1;
+    this.neighbor1_id = neighbor1ID;
     this.neighbor2 = neighbor2;
+    this.neighbor2_id = neighbor2ID;
     this.neighbor3 = neighbor3;
+    this.neighbor3_id = neighbor3ID;
     this.neighbor4 = neighbor4;
+    this.neighbor4_id = neighbor4ID;
     this.classification = null;
   }
 
@@ -125,12 +138,17 @@ public final class OrganizationInfo {
     String name = rs.getString("name");
     String link = rs.getString("link");
     String about = rs.getString("about");
-    String neighbor1 = rs.getString("neighbor1");
-    String neighbor2 = rs.getString("neighbor2");
-    String neighbor3 = rs.getString("neighbor3");
-    String neighbor4 = rs.getString("neighbor4");
+    String neighbor1 = rs.getString("neighbor1_name");
+    int neighbor1ID = rs.getInt("neighbor1");
+    String neighbor2 = rs.getString("neighbor2_name");
+    int neighbor2ID = rs.getInt("neighbor2");
+    String neighbor3 = rs.getString("neighbor3_name");
+    int neighbor3ID = rs.getInt("neighbor3");
+    String neighbor4 = rs.getString("neighbor4_name");
+    int neighbor4ID = rs.getInt("neighbor4");
         
-    return new OrganizationInfo(id, name, link, about, neighbor1, neighbor2, neighbor3, neighbor4);
+    return new OrganizationInfo(id, name, link, about, neighbor1, neighbor2, neighbor3, neighbor4,
+        neighbor1ID, neighbor2ID, neighbor3ID, neighbor4ID);
   }
 
   public void passInfoTo(PreparedStatement statement) throws SQLException {
