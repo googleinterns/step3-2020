@@ -98,6 +98,12 @@
       <artifactId>mockito-core</artifactId>
       <version>3.3.3</version>
     </dependency>
+    <!-- PowerMock for static method testing -->
+    <dependency>
+      <groupId>org.powermock</groupId>
+      <artifactId>powermock-reflect</artifactId>
+      <version>${project.version}</version>
+    </dependency>
     <!--Google Cloud SQL-->
     <dependency>
       <groupId>com.google.cloud.sql</groupId>
