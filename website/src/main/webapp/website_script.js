@@ -76,7 +76,12 @@ function getOrgAsHtmlDescription(org, results) {
 
   const neighborElement = document.createElement('p');
   neighborElement.setAttribute('id', 'like-this');
-  neighborElement.innerText = 'Like this: ' + org.neighbor1 + ', ' + org.neighbor2 + ', ' + org.neighbor3 + ', ' + org.neighbor4;
+  neighborElement.innerText = 'Like this: ';
+  // TODO: get actual neighboring org id number from CloudSQLManager.java
+  neighborElement.appendChild(getNeighborElement(1, org.neighbor1));
+  neighborElement.appendChild(getNeighborElement(1, org.neighbor2));
+  neighborElement.appendChild(getNeighborElement(1, org.neighbor3));
+  neighborElement.appendChild(getNeighborElement(1, org.neighbor4));
   orgElement.appendChild(neighborElement);
 
   // make the whole list element clickable and take user to organization.html pasing id as parameter
@@ -84,6 +89,15 @@ function getOrgAsHtmlDescription(org, results) {
     orgElement.onclick = function() { redirect(org.id); }
   }
   return orgElement;
+}
+
+function getNeighborElement(neighborId, neighborName) {
+  const element = document.createElement('a');
+  const qs = updateQueryString('id', neighborId);
+  const redirect = '/organization.html?' + qs;
+  element.setAttribute('href', redirect);
+  element.innerText = neighborName + ', ';
+  return element;
 }
 
 /**
