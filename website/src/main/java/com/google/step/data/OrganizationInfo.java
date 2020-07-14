@@ -133,6 +133,27 @@ public final class OrganizationInfo {
     return new OrganizationInfo(index, name, link, about, classification);
   }
 
+  public static OrganizationInfo getClassifiedOrgFrom(HttpServletRequest request, int index) {
+    String name  = request.getParameter("name ");
+    String link  = request.getParameter("link ");
+    String about = request.getParameter("about");
+    String sectionToClassify = name + " " + about;
+    if (sectionToClassify.split(" ").length <= 20) {
+        return null;
+    }
+    //Classify submission by name and about, stop if unclassifiable
+    List<String> classification = classifyText(sectionToClassify); //testClasses.get(index%13); //
+    try {
+      if (classification.isEmpty()) {
+        return null;
+      }  
+    } catch (NullPointerException ex) {
+      System.err.println(ex);
+      return null;
+    }
+    return new OrganizationInfo(index, name, link, about, classification);
+  }
+
   public static OrganizationInfo getResultOrgFrom(ResultSet rs) throws SQLException {
     int id = rs.getInt("id");
     String name = rs.getString("name");
