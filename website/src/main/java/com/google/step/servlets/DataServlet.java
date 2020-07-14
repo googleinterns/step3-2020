@@ -46,6 +46,7 @@ import org.apache.commons.fileupload.servlet.ServletFileUpload;
 @WebServlet("/data")
 public class DataServlet extends HttpServlet {
   private static String orgsWithClass = "classifiedOrgs";
+  private static String orgsToCheck = "submissionOrgs";
     
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
@@ -81,26 +82,26 @@ public class DataServlet extends HttpServlet {
     try {
       //Set up Proxy for handling SQL server
       CloudSQLManager database = CloudSQLManager.setUp();
-      //Create table for orgs with classification
-      database.createTable(orgsWithClass, columns);
       //Get file reader for orgs with no classifiation
       CSVReader orgsNoClassification = getCSVReaderFrom(request);
+      String targetTable = (orgsNoClassification != null) ? orgsWithClass : orgsToCheck;
+      //Create table for orgs with classification
+      database.createTable(targetTable, columns);
       //Classify each org from, file, and add to target table
-      PreparedStatement statement = database.buildInsertStatement(orgsWithClass, columns);
-      int startIndex = getLastEntryIndex(orgsWithClass, database) + 1;
-      System.out.println("/n" + Integer.toString(startIndex) + "/n");
-      passFileToStatement(orgsNoClassification, statement, startIndex);
-      int totalOrgs = getLastEntryIndex(orgsWithClass, database);
-      String re = "?orgsTotal=" + Integer.toString(totalOrgs);
+      PreparedStatement statement = database.buildInsertStatement(targetTable, columns);  
+      int startIndex = getLastEntryIndex(targetTable, database) + 1;
+      if (orgsNoClassification != null) {
+        passFileToStatement(orgsNoClassification, statement, startIndex);
+      } else {
+        passFileToStatement(request, statement, startIndex);
+      }
       //Wrap up
       database.tearDown();
-      response.sendRedirect("upload.html" + re);
     } catch (SQLException ex) {
       System.err.println(ex);
     } catch(Exception ex) {
       System.err.println(ex);
     }
-    response.sendRedirect("upload_sql.html");
   }
 
   //Helper functions for processing new CSV files
@@ -114,6 +115,12 @@ public class DataServlet extends HttpServlet {
       System.err.println(ex);
       return 0;
     }
+  }
+
+  //helper functions to process uploads
+  private void passSubmissionToStatement(HttpServletRequest request, PreparedStatement statement, int index) throws SQLException {
+    OrganizationInfo org = OrganizationInfo.getClassifiedOrgFrom(request, index);
+    org.passInfoTo(statement);
   }
 
   private void passFileToStatement(CSVReader orgsFileReader, PreparedStatement statement, int index) throws IOException, Exception, SQLException {
@@ -135,6 +142,8 @@ public class DataServlet extends HttpServlet {
     statement.executeBatch();
   }
 
+
+  //TODO: re upload orgs with fixed classifications to delete this
   private static Set<String> hardCodedRoots = new TreeSet<>(Arrays.asList(
       "Adult",
       "Arts & Entertainment",
