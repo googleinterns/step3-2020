@@ -10,9 +10,8 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/uikit/3.5.4/css/uikit.min.css" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/uikit/3.5.4/js/uikit.min.js"></script>
   </head>
-  
+  <body id="body" onload="setUpPrototype();">
   <!-- top navigation bar -->
-  <body id="body" onload="addListener();">
     <div class="navbar">
       <a href="index.html"> Home </a>
       <a href="/login">Login</a>
@@ -48,17 +47,8 @@
 
     <!-- side navigation bar -->
     <div id= "side-nav">
-      <ul class="uk-nav-parent-icon" uk-nav>
-        <li class="uk-parent"><a href="#">Parent</a>
-        <ul class="uk-nav-parent-icon">
-          <li><a href="#">Sub item</a></li>
-          <liclass="uk-parent"><a href="#">Sub item</a>
-            <ul class=uk-nav-sub>
-              <li><a href="#">Sub item</a></li>
-              <li><a href="#">Sub item</a></li>
-            </ul>
-        </ul>
-        </li>
+      <li class="uk-active"><a href="#">Active</a></li>
+      <ul id="roots" class="uk-nav-default uk-nav-parent-icon" uk-nav>
       </ul>
     </div>
 

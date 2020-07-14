@@ -27,6 +27,7 @@ function addPagination() {
 
 function addOrgs(qs) {
   fetch(qs).then(response => response.json()).then(text => {
+    console.log(text);
     const orgsContainer = document.getElementById('existing-organizations');
     text.forEach(entry => {
       orgsContainer.appendChild(getOrgAsHtmlDescription(entry));
@@ -93,4 +94,55 @@ function addListener() {
 function addTitle(keyword) {
   const element = document.getElementById('results-title');
   element.innerText = 'Results for [' + keyword + ']: ';
+}
+
+function getClassifications() {
+  const qs = '/data';
+  const classDiv = document.getElementById("roots");
+  fetch(qs).then(response => response.json()).then(tree => {
+    console.log(tree);
+    tree.roots.forEach(root=> {
+      classDiv.appendChild(addToClassTree(tree, root, root));
+    });
+    // var toggler = document.getElementsByClassName("uk-nav-parent-icon");
+    // var i;
+    // for (i = 0; i < toggler.length; i++) {
+    //   toggler[i].addEventListener('click', function() {
+    //     this.parentElement.querySelector('.uk-parent').classList.toggle("active");
+    //     this.classList.toggle("caret-down");
+    //   });
+    // }
+  }); 
+}
+
+function addToClassTree(tree, parent, classPath) {
+  const parentElem = document.createElement('li');
+  parentElem.setAttribute('value', classPath);
+  if (!(tree[parent].length === 0)) {
+    const icon = document.createElement('a');
+    icon.innerText = parent;
+    icon.href ="#";
+    parentElem.appendChild(icon);
+    parentElem.setAttribute('class', 'uk-parent');
+    const nested = document.createElement('ul');
+    nested.setAttribute('class', 'uk-nav-sub');
+    tree[parent].forEach(child => nested.appendChild(addToClassTree(tree, child, classPath + "/" + child)));
+    parentElem.appendChild(nested);
+  } else {
+    parentElem.innerText = parent;
+    parentElem.addEventListener('click', function() {
+      const pageElement = document.getElementById('current-page');
+      const qs = '/sql?' + updateQueryString('keyword', classPath) + '&' + updateQueryString('page', pageElement.innerText);
+      removeOrgs();
+      addTitle(classPath);
+      addPagination();
+      addOrgs(qs);
+    });
+  }
+  return parentElem;
+}
+
+function setUpPrototype() {
+  addListener();
+  getClassifications();
 }
