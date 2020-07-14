@@ -94,10 +94,13 @@ function getOrgAsHtmlDescription(org, results) {
 
   const upvoteElement = document.createElement('button');
   upvoteElement.innerText = 'Good';
+  upvoteElement.onclick = function() { redirectRating(1, org.id); }
   orgElement.appendChild(upvoteElement);
   const downvoteElement = document.createElement('button');
   downvoteElement.innerText = 'Bad';
+  downvoteElement.onclick = function() { redirectRating(0, org.id); }
   orgElement.appendChild(downvoteElement);
+  orgElement.appendChild(document.createElement('p'));
 
   // make the whole list element clickable and take user to organization.html pasing id as parameter
   if (results) {
@@ -122,6 +125,19 @@ function redirectId(id) {
   const qs = updateQueryString('id', id);
   const redirect = '/organization.html?' + qs;
   window.location = redirect;
+}
+
+function redirectRating(up, id) {
+  const rating = 'rating=good';
+  if (!up) {
+    const rating = 'rating=bad';
+  }
+  const uri = window.location.href;
+  const params = rating + '&id=' + id + '&redirect=' + uri;
+  fetch('/rating?' + params, {method: 'POST'}).then(response => response.text()).then(message => {
+    alert(message);
+  });
+  event.stopPropagation();
 }
 
 function redirectKeyword(keyword) {

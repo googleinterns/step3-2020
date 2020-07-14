@@ -88,7 +88,6 @@ public class DataServlet extends HttpServlet {
       //Classify each org from, file, and add to target table
       PreparedStatement statement = database.buildInsertStatement(orgsWithClass, columns);
       int startIndex = getLastEntryIndex(orgsWithClass, database) + 1;
-      System.out.println("/n" + Integer.toString(startIndex) + "/n");
       passFileToStatement(orgsNoClassification, statement, startIndex);
       int totalOrgs = getLastEntryIndex(orgsWithClass, database);
       String re = "?orgsTotal=" + Integer.toString(totalOrgs);
