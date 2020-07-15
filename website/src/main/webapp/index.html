@@ -3,14 +3,14 @@
   <head>
     <meta charset="UTF-8">
     <link rel="stylesheet" href="style.css">
-    <script src="script.js"></script>
+    <script src="website_script.js"></script>
       
     <!-- uikit framework   -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/uikit/3.5.4/css/uikit.min.css" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/uikit/3.5.4/js/uikit.min.js"></script>
   </head>
 
-  <body id="body">
+  <body id="body" onload="setUpIndexpage();">
     <div class="navbar">
       <a href="#"> Home </a>
       <a href="/login">Login</a>
@@ -20,24 +20,12 @@
     <h1>Nonprofit Finder</h2>
 
     <div id="search">
-      <form id="searchForm" action="/data" method="GET">
-        <input id="organization " name="organization" type="text" placeholder="search by issue">
-        <input type="submit">
-      </form>
+      <input type="text" id="keyword" placeholder="Search by keyword">
+      <button onclick="indexPageSearch();">Search</button>
     </div>
 
     <div id= "side-nav">
-      <ul class="uk-nav-parent-icon" uk-nav>
-        <li class="uk-parent"><a href="#">Parent</a>
-        <ul class="uk-nav-parent-icon">
-          <li><a href="#">Sub item</a></li>
-          <liclass="uk-parent"><a href="#">Sub item</a>
-            <ul class=uk-nav-sub>
-              <li><a href="#">Sub item</a></li>
-              <li><a href="#">Sub item</a></li>
-            </ul>
-        </ul>
-        </li>
+      <ul id="roots" class="uk-nav-default uk-nav-parent-icon" uk-nav>
       </ul>
     </div>
 
