@@ -1,9 +1,11 @@
 package com.google.step.servlets;
 
-import com.google.appengine.api.datastore.*;
 import com.google.appengine.api.users.UserService;
 import com.google.appengine.api.users.UserServiceFactory;
+import com.google.step.data.*;
 import java.io.IOException;
+import java.sql.*;
+import java.util.*;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -27,12 +29,33 @@ public class RatingServlet extends HttpServlet {
       }
       // get email from userservice
       String userEmail = userService.getCurrentUser().getEmail();
-      DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
-      Entity ratingEntity = new Entity("Rating");
-      ratingEntity.setProperty("email", userEmail);
-      ratingEntity.setProperty("id", id);
-      ratingEntity.setProperty("rating", rating);
-      datastore.put(ratingEntity);
+      
+      try {
+        // Set up Proxy for handling SQL server
+        CloudSQLManager database = CloudSQLManager.setUp();
+        // Column Information for database to be created
+        List<String> columns = Arrays.asList(
+            "email VARCHAR(255) NOT NULL", 
+            "id INT NOT NULL", 
+            "rating INT NOT NULL");
+        // Create table for user ratings
+        database.createTable("ratings", columns);
+        
+        // query user email
+        ResultSet rs = database.getUserWithEmail(userEmail, id);
+        String query = "INSERT INTO ratings (email, id, rating) VALUES ('" + userEmail + "', " + id + ", " + rating + ");";
+        if (rs.next()) { 
+          query = "UPDATE ratings SET rating = " + rating + " WHERE email = '" + userEmail + "' AND id = " + id;
+        } 
+        database.executeStatement(query);
+
+        database.tearDown();
+      } catch (SQLException ex) {
+        System.err.println(ex);
+      } catch(Exception ex) {
+        System.err.println(ex);
+      }
+      
       response.setContentType("text/html");
       response.getWriter().println("Rated Successfully.");
     } else {
