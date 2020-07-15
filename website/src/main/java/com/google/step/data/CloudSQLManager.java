@@ -113,7 +113,7 @@ public final class CloudSQLManager {
     String similarTo = (!keyword.isEmpty()) ? 
         "WHERE (name LIKE '%" + keyword + "%' OR about LIKE '% " + keyword + "%' OR class LIKE '%" + keyword + "%')" 
         : "";
-    String preliminaryQuery = String.format("(SELECT * FROM orgTable %sLIMIT " + offset + ", 10)", similarTo);    
+    String preliminaryQuery = String.format("(SELECT * FROM orgTable %s LIMIT " + offset + ", 10)", similarTo);    
     String query = String.join("\n","SELECT",
             "preliminary.*, "  ,
             "n1.name AS neighbor1_name, ",
@@ -121,14 +121,16 @@ public final class CloudSQLManager {
             "n3.name AS neighbor3_name, ",
             "n4.name AS neighbor4_name ",
         String.format("FROM (%s) AS preliminary", preliminaryQuery),
-        "INNER JOIN orgTable AS n1" ,
+        "INNER JOIN orgTable AS n1 ",
             "ON preliminary.neighbor1 = n1.id",
-        "INNER JOIN orgTable AS n2" ,
+        "INNER JOIN orgTable AS n2 ",
             "ON preliminary.neighbor2 = n2.id",
-        "INNER JOIN orgTable AS n3" ,
+        "INNER JOIN orgTable AS n3 ",
             "ON preliminary.neighbor3 = n3.id",
-        "INNER JOIN orgTable AS n4" ,
-            "ON preliminary.neighbor4 = n4.id;");
+        "INNER JOIN orgTable AS n4 ",
+            "ON preliminary.neighbor4 = n4.id",
+        "ORDER BY upvotes DESC;");
+    System.out.println(query);
     Statement stmt = this.conn.createStatement();
     return stmt.executeQuery(query);
   }
@@ -142,13 +144,13 @@ public final class CloudSQLManager {
             "n3.name AS neighbor3_name, ",
             "n4.name AS neighbor4_name ",
         String.format("FROM (%s) AS preliminary", preliminaryQuery),
-        "INNER JOIN orgTable AS n1" ,
+        "INNER JOIN orgTable AS n1 ",
             "ON preliminary.neighbor1 = n1.id",
-        "INNER JOIN orgTable AS n2" ,
+        "INNER JOIN orgTable AS n2 ",
             "ON preliminary.neighbor2 = n2.id",
-        "INNER JOIN orgTable AS n3" ,
+        "INNER JOIN orgTable AS n3 ",
             "ON preliminary.neighbor3 = n3.id",
-        "INNER JOIN orgTable AS n4" ,
+        "INNER JOIN orgTable AS n4 ",
             "ON preliminary.neighbor4 = n4.id;");
     Statement stmt = this.conn.createStatement();
     return stmt.executeQuery(query);
@@ -180,7 +182,6 @@ public final class CloudSQLManager {
 
   public void setUpvotes(int id, int votes) throws SQLException {
     String query = "UPDATE orgTable SET upvotes = " + votes + " WHERE id = " + id;
-    System.out.println(votes);
     executeStatement(query);
   }
 
