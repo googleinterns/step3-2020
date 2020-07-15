@@ -63,33 +63,44 @@ function updateQueryString(key, value) {
  * Creates list element from org
  */
 function getOrgAsHtmlDescription(org, results) {
-  const orgElement = document.createElement('li');
-  orgElement.setAttribute('id', 'org');
-
-  var newDiv = document.createElement('div'); 
-  newDiv.setAttribute('id', 'name-about');
-
+  const orgElement = document.createElement('div');
+  orgElement.setAttribute("class", "mdc-card");
+//org name
   const nameElement = document.createElement('a');
-  nameElement.setAttribute('id', 'org-name');
+  nameElement.setAttribute("id", "org-name");
   nameElement.setAttribute('href', 'https://' + org.link);
   nameElement.setAttribute('target', '_blank');
   nameElement.innerText = org.name;
-  newDiv.appendChild(nameElement);
-
+  orgElement.appendChild(nameElement);
+//about
   const aboutElement = document.createElement('p');
-  aboutElement.setAttribute('id', 'about');
+  aboutElement.setAttribute("id", "about");
   aboutElement.innerText = org.about;
-  newDiv.appendChild(aboutElement);
-  orgElement.appendChild(newDiv);
-
+  orgElement.appendChild(aboutElement);
+  // like this in chip format
   const neighborElement = document.createElement('p');
   neighborElement.setAttribute('id', 'like-this');
   neighborElement.innerText = 'Like this: ';
+  const chipElement = document.createElement("div");
+  chipElement.setAttribute("class", "mdc-chip-set");
+  const org1 = document.createElement("span");
+  org1.setAttribute("class", "mdc-chip");
+  neighborElement.appendChild(org1);
+  const org2 = document.createElement("span");
+  org2.setAttribute("class", "mdc-chip");
+  neighborElement.appendChild(org2);
+  const org3 = document.createElement("span");
+  org3.setAttribute("class", "mdc-chip");
+  neighborElement.appendChild(org3);
+  const org4 = document.createElement("span");
+  org4.setAttribute("class", "mdc-chip");
+  neighborElement.appendChild(org4);
+
   // TODO: get actual neighboring org id number from CloudSQLManager.java
-  neighborElement.appendChild(getNeighborElement(org.neighbor1_id, org.neighbor1));
-  neighborElement.appendChild(getNeighborElement(org.neighbor2_id, org.neighbor2));
-  neighborElement.appendChild(getNeighborElement(org.neighbor3_id, org.neighbor3));
-  neighborElement.appendChild(getNeighborElement(org.neighbor4_id, org.neighbor4));
+  org1.appendChild(getNeighborElement(org.neighbor1_id, org.neighbor1));
+  org2.appendChild(getNeighborElement(org.neighbor2_id, org.neighbor2));
+  org3.appendChild(getNeighborElement(org.neighbor3_id, org.neighbor3));
+  org4.appendChild(getNeighborElement(org.neighbor4_id, org.neighbor4));
   orgElement.appendChild(neighborElement);
 
   // make the whole list element clickable and take user to organization.html pasing id as parameter
@@ -217,4 +228,14 @@ function getResults() {
 function setUpIndexpage() {
   addIndexListener();
   getClassifications();
+}
+
+/**  Open the search box */
+function openSearch() {
+  document.getElementById("myOverlay").style.display = "block";
+}
+
+/** Close the search box */
+function closeSearch() {
+  document.getElementById("myOverlay").style.display = "none";
 }
