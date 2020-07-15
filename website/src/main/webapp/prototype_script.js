@@ -56,29 +56,44 @@ function updateQueryString(key, value) {
  * Creates list element from org
  */
 function getOrgAsHtmlDescription(org) {
-  const orgElement = document.createElement('li');
-  orgElement.setAttribute("id", "org");
-
-  var newDiv = document.createElement("div"); 
-  newDiv.setAttribute("id", "name-about");
-
+  const orgElement = document.createElement('div');
+  orgElement.setAttribute("class", "mdc-card");
+  //org name
   const nameElement = document.createElement('a');
   nameElement.setAttribute("id", "org-name");
   nameElement.setAttribute('href', 'https://' + org.link);
   nameElement.setAttribute('target', '_blank');
   nameElement.innerText = org.name;
-  newDiv.appendChild(nameElement);
-
+  orgElement.appendChild(nameElement);
+  //about
   const aboutElement = document.createElement('p');
   aboutElement.setAttribute("id", "about");
   aboutElement.innerText = org.about;
-  newDiv.appendChild(aboutElement);
-  orgElement.appendChild(newDiv);
-
+  orgElement.appendChild(aboutElement);
+  // like this in chip format
   const neighborElement = document.createElement('p');
   neighborElement.setAttribute("id", "like-this");
-  neighborElement.innerText = 'Like this: ' + org.neighbor1 + ', ' + org.neighbor2 + ', ' + org.neighbor3 + ', ' + org.neighbor4;
+  neighborElement.innerText = 'Like this: '
+  const chipElement = document.createElement("div");
+  chipElement.setAttribute("class", "mdc-chip-set");
+  const org1 = document.createElement("span");
+  org1.setAttribute("class", "mdc-chip");
+  org1.innerText = org.neighbor1;
+  neighborElement.appendChild(org1);
+  const org2 = document.createElement("span");
+  org2.setAttribute("class", "mdc-chip");
+  org2.innerText = org.neighbor2;
+  neighborElement.appendChild(org2);
+  const org3 = document.createElement("span");
+  org3.setAttribute("class", "mdc-chip");
+  org3.innerText = org.neighbor3;
+  neighborElement.appendChild(org3);
+  const org4 = document.createElement("span");
+  org4.setAttribute("class", "mdc-chip");
+  org4.innerText = org.neighbor4;
+  neighborElement.appendChild(org4);
   orgElement.appendChild(neighborElement);
+
   return orgElement;
 }
  
@@ -145,4 +160,14 @@ function addToClassTree(tree, parent, classPath) {
 function setUpPrototype() {
   addListener();
   getClassifications();
+}
+
+/**  Open the search box */
+function openSearch() {
+  document.getElementById("myOverlay").style.display = "block";
+}
+
+/** Close the search box */
+function closeSearch() {
+  document.getElementById("myOverlay").style.display = "none";
 }
