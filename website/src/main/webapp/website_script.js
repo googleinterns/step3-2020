@@ -103,6 +103,16 @@ function getOrgAsHtmlDescription(org, results) {
   org4.appendChild(getNeighborElement(org.neighbor4_id, org.neighbor4));
   orgElement.appendChild(neighborElement);
 
+  const upvoteElement = document.createElement('button');
+  upvoteElement.innerText = 'Good';
+  upvoteElement.onclick = function() { redirectRating(1, org.id); }
+  orgElement.appendChild(upvoteElement);
+  const downvoteElement = document.createElement('button');
+  downvoteElement.innerText = 'Bad';
+  downvoteElement.onclick = function() { redirectRating(0, org.id); }
+  orgElement.appendChild(downvoteElement);
+  orgElement.appendChild(document.createElement('p'));
+
   // make the whole list element clickable and take user to organization.html pasing id as parameter
   if (results) {
     orgElement.onclick = function() { redirectId(org.id); }
@@ -126,6 +136,18 @@ function redirectId(id) {
   const qs = updateQueryString('id', id);
   const redirect = '/organization.html?' + qs;
   window.location = redirect;
+}
+
+function redirectRating(up, id) {
+  var rating = 'rating=good';
+  if (!up) {
+    rating = 'rating=bad';
+  }
+  const params = rating + '&id=' + id;
+  fetch('/rating?' + params, {method: 'POST'}).then(response => response.text()).then(message => {
+    alert(message);
+  });
+  event.stopPropagation();
 }
 
 function redirectKeyword(keyword) {
@@ -202,12 +224,14 @@ function setUpResults() {
   addListener();
   getClassifications();
   getResults();
+  getLoginStatus();
 }
 
 function setUpDetailsPage() {
   addListener();
   getClassifications();
   loadOrg();
+  getLoginStatus();
 }
 
 function loadOrg() {
@@ -228,6 +252,33 @@ function getResults() {
 function setUpIndexpage() {
   addIndexListener();
   getClassifications();
+  getLoginStatus();
+}
+
+/**
+ * Fetches the login status of user
+ * if logged in, display logout button
+ * if logged out, display button redirect to login page
+ */
+function getLoginStatus() {
+  return fetch('/login').then(response => response.text()).then(link => {
+    // if user is logged in, server sends the logout link
+    if (link.includes('logout')) {
+      // is logged in 
+      const statusElement = document.getElementById('login-status');
+      statusElement.innerText = 'You are logged in';
+      const logoutElement = document.getElementById('login-link');
+      logoutElement.href = link;
+      logoutElement.innerText = 'Logout';
+    } else {
+      // is logged out
+      const statusElement = document.getElementById('login-status');
+      statusElement.innerText = 'You are logged out';
+      const loginElement = document.getElementById('login-link');
+      loginElement.href = link;
+      loginElement.innerText = 'Login';
+    }
+  });
 }
 
 /**  Open the search box */
