@@ -155,7 +155,7 @@ public final class CloudSQLManager {
   }
 
   public ResultSet getUserWithEmail(String email, int id) throws SQLException {
-    String query = "SELECT * FROM ratings WHERE email = '" + email + "' AND id = " + id;
+    String query = "SELECT rating FROM ratings WHERE email = '" + email + "' AND id = " + id;
     Statement stmt = this.conn.createStatement();
     return stmt.executeQuery(query);
   }
@@ -164,6 +164,24 @@ public final class CloudSQLManager {
     // create the java mysql update preparedstatement
     Statement stmt = this.conn.createStatement();
     stmt.executeUpdate(query);
+  }
+
+  public void alterTable() throws SQLException {
+    String sql = "ALTER TABLE orgTable ADD (upvotes INTEGER);";
+    PreparedStatement stmt = conn.prepareStatement(sql);
+    stmt.execute();
+  }
+
+  public ResultSet getUpvotes(int id) throws SQLException {
+    String query = "SELECT upvotes FROM orgTable WHERE id = " + id;
+    Statement stmt = this.conn.createStatement();
+    return stmt.executeQuery(query);
+  }
+
+  public void setUpvotes(int id, int votes) throws SQLException {
+    String query = "UPDATE orgTable SET upvotes = " + votes + " WHERE id = " + id;
+    System.out.println(votes);
+    executeStatement(query);
   }
 
 }
