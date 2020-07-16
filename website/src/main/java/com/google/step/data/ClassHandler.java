@@ -43,7 +43,7 @@ public interface ClassHandler {
 
   public static ClassifyTextResponse getTestCategory() {
     ClassificationCategory c = ClassificationCategory.newBuilder().build()
-        .toBuilder().setName("/Coding/Java/Testing/Unit").build();
+        .toBuilder().setName("/Fake/Fake1/Fake2/Fake3").build();
     return ClassifyTextResponse.newBuilder().addCategories(c).build();
   }
 }
