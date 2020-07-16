@@ -15,6 +15,7 @@
 package com.google.step.servlets;
 
 import java.io.IOException;
+
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
@@ -24,6 +25,9 @@ import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
 import com.google.appengine.api.datastore.PreparedQuery;
 import com.google.appengine.api.datastore.Query;
+import com.google.cloud.language.v1.ClassifyTextRequest;
+import com.google.cloud.language.v1.ClassifyTextResponse;
+import com.google.cloud.language.v1.LanguageServiceClient;
 import com.google.step.data.OrganizationInfo;
 import com.google.gson.Gson;
 import com.google.step.data.*;
@@ -90,10 +94,11 @@ public class DataServlet extends HttpServlet {
       //Classify each org from, file, and add to target table
       PreparedStatement statement = database.buildInsertStatement(targetTable, columns);  
       int startIndex = getLastEntryIndex(targetTable, database) + 1;
+      NLPService service = new NLPService();
       if (orgsNoClassification != null) {
-        passFileToStatement(orgsNoClassification, statement, startIndex);
+        passFileToStatement(orgsNoClassification, statement, startIndex, service);
       } else {
-        passFileToStatement(request, statement, startIndex);
+        passSubmissionToStatement(request, statement, startIndex, service);
       }
       //Wrap up
       database.tearDown();
@@ -118,24 +123,35 @@ public class DataServlet extends HttpServlet {
   }
 
   //helper functions to process uploads
-  private void passSubmissionToStatement(HttpServletRequest request, PreparedStatement statement, int index) throws SQLException {
-    OrganizationInfo org = OrganizationInfo.getClassifiedOrgFrom(request, index);
-    org.passInfoTo(statement);
+  private class NLPService implements ClassHandler{
+    private LanguageServiceClient service;
+    NLPService() throws IOException {
+      this.service = LanguageServiceClient.create();
+    }
+
+    @Override
+    public ClassifyTextResponse classifyRequest(ClassifyTextRequest request) {
+      return this.service.classifyText(request);
+    }
   }
 
-  private void passFileToStatement(CSVReader orgsFileReader, PreparedStatement statement, int index) throws IOException, Exception, SQLException {
+  private void passSubmissionToStatement(HttpServletRequest request, PreparedStatement statement, int index, ClassHandler classHandler) throws IOException, SQLException {
+    OrganizationInfo org = OrganizationInfo.getClassifiedOrgFrom(request, index, classHandler);
+    org.passInfoTo(statement);
+    statement.executeBatch();
+  }
+
+  private void passFileToStatement(CSVReader orgsFileReader, PreparedStatement statement, int index, ClassHandler classHandler) throws IOException, Exception, SQLException {
     String[] nextRecord = new String[2]; 
-    int batchAmount = 500;
     while ((nextRecord = orgsFileReader.readNext()) != null) {
-      OrganizationInfo org = OrganizationInfo.getClassifiedOrgFrom(nextRecord, index);
+      //Create a classified Org from record
+      OrganizationInfo org = OrganizationInfo.getClassifiedOrgFrom(nextRecord, index, classHandler);
+      //If valid pass to SQL statement
       if (org != null) {
         org.passInfoTo(statement);
-        statement.addBatch();
         index ++;
       }
-      if (index % batchAmount == 0){
-        statement.executeBatch();
-      } 
+      //Throttles calls to NLP API
       Thread.sleep(100);
     }
     orgsFileReader.close();
