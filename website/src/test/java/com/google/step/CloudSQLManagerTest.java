@@ -84,9 +84,9 @@ public final class CloudSQLManagerTest {
     OrganizationInfo fakeOrg = 
         OrganizationInfo.getClassifiedOrgFrom(record, 0, new MockClassHandler());
     mockSQLManager.getPossibleComparisons("fakeTable", fakeOrg);
-    String nme = "%" + orgName + "%";
-    String abt = "%" + orgMission + "%";
-    String lnk = "%" + orgLink + "%";
+    String nme = "'%" + orgName + "%'";
+    String abt = "'%" + orgMission + "%'";
+    String lnk = "'%" + orgLink + "%'";
     String expected = String.format("SELECT DISTINCT * FROM fakeTable WHERE name LIKE %s OR link LIKE %s OR about LIKE %s;",
         nme, lnk, abt);
 
