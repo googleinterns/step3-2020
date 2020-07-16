@@ -35,6 +35,7 @@ public final class OrganizationInfo {
   private final Integer neighbor3_id;
   private final Integer neighbor4_id;
 
+  //Constructor for CSVs to classification table waiting for KNN neighbors
   private OrganizationInfo(int id, String name, String link, String about, List<String> classification) {
     this.id = id;
     this.name = name;
@@ -51,6 +52,7 @@ public final class OrganizationInfo {
     this.neighbor4_id = null;
   }
 
+  //Constructor for SQL records to front end results
   private OrganizationInfo(int id, String name, String link, String about, 
         String neighbor1, String neighbor2, String neighbor3, String neighbor4,
         int neighbor1ID, int neighbor2ID, int neighbor3ID, int neighbor4ID) {
@@ -70,7 +72,7 @@ public final class OrganizationInfo {
   }
 
 
-
+  //Develop org CSV record
   public static OrganizationInfo getClassifiedOrgFrom(String[] record, int index, ClassHandler classHandler) {
     String name = record[0];
     String link = record[1];
@@ -92,16 +94,17 @@ public final class OrganizationInfo {
     return new OrganizationInfo(index, name, link, about, category);
   }
 
+  //Develop org from single upload submission
   public static OrganizationInfo getClassifiedOrgFrom(HttpServletRequest request, int index, ClassHandler classHandler) {
-    String name  = request.getParameter("name ");
-    String link  = request.getParameter("link ");
+    String name  = request.getParameter("name");
+    String link  = request.getParameter("link");
     String about = request.getParameter("about");
     String sectionToClassify = name + " " + about;
     if (sectionToClassify.split(" ").length <= 20) {
         return null;
     }
     //Classify submission by name and about, stop if unclassifiable
-    List<String> category = classHandler.getCategoryFrom(-ectionToClassify); 
+    List<String> category = classHandler.getCategoryFrom(sectionToClassify); 
     try {
       if (category.isEmpty()) {
         return null;
@@ -113,6 +116,7 @@ public final class OrganizationInfo {
     return new OrganizationInfo(index, name, link, about, category);
   }
 
+  //Get org from SQL result to send to front end
   public static OrganizationInfo getResultOrgFrom(ResultSet rs) throws SQLException {
     int id = rs.getInt("id");
     String name = rs.getString("name");
@@ -131,6 +135,7 @@ public final class OrganizationInfo {
         neighbor1ID, neighbor2ID, neighbor3ID, neighbor4ID);
   }
 
+  //Pass a newly classified org to SQL statement to update table
   public void passInfoTo(PreparedStatement statement) throws SQLException {
     statement.setInt(1, this.id);
     statement.setString(2, this.name);
@@ -144,4 +149,11 @@ public final class OrganizationInfo {
         statement.executeBatch();
       } 
   }
+
+  //Getters for testing
+  public int getID() {return this.id;}
+  public String getName() {return this.name;}
+  public String getAbout() {return this.about;}
+  public String getLink() {return this.link;}
+  public List<String> getCategory() {return this.classification;}
 }
