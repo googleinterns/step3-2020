@@ -27,19 +27,27 @@ public class VerifyUploadServlet extends HttpServlet {
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
     try {
-      Map<OrganizationInfo, List<OrganizationInfo>> comparisonMap = new HashMap<>();
+      Map<String, List<OrganizationInfo>> comparisonMap = new HashMap<>();
       //Set up SQL proxy
       CloudSQLManager database = CloudSQLManager.setUp();
       //Get all current submissions to check
       ResultSet uploads = database.get(orgsToCheck); 
+      System.out.println("\nSelected submissions;\n");
       while (uploads.next()) {
         OrganizationInfo upload = OrganizationInfo.getSubmissionOrgFrom(uploads);
+        String key = "Comparison_" + Integer.toString(upload.getID());
         List<OrganizationInfo> orgs = new ArrayList<>();
+        orgs.add(upload);
+        
+        System.out.println("\nParsed submission from result set;\n");
+        
         ResultSet rs = database.getPossibleComparisons(gNP4Table, upload);
+        System.out.println("\n Selected similar orgs;\n");
         while (rs.next()) { 
           orgs.add(OrganizationInfo.getResultOrgFrom(rs));
+          System.out.println("\n Added similar orgs to value list;\n");
         }
-        comparisonMap.put(upload, orgs);
+        comparisonMap.put(key, orgs);
       }
 
       // Send the JSON as the response
@@ -50,5 +58,16 @@ public class VerifyUploadServlet extends HttpServlet {
     } catch (SQLException ex) {
       System.err.println(ex);
     }
+  }
+
+  @Override
+  public void doPost(HttpServletRequest request, HttpServletResponse response) {
+     try {
+       //Set up SQL proxy
+      CloudSQLManager database = CloudSQLManager.setUp();
+      
+     } catch (SQLException ex) {
+
+     }
   }
 }
