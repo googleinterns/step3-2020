@@ -154,4 +154,16 @@ public final class CloudSQLManager {
     return stmt.executeQuery(query);
   }
 
+  public ResultSet getUserWithEmail(String email, int id) throws SQLException {
+    String query = "SELECT * FROM ratings WHERE email = '" + email + "' AND id = " + id;
+    Statement stmt = this.conn.createStatement();
+    return stmt.executeQuery(query);
+  }
+
+  public void executeStatement(String query) throws SQLException {
+    // create the java mysql update preparedstatement
+    Statement stmt = this.conn.createStatement();
+    stmt.executeUpdate(query);
+  }
+
 }
