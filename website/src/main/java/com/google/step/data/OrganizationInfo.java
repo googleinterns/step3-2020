@@ -116,6 +116,15 @@ public final class OrganizationInfo {
     return new OrganizationInfo(index, name, link, about, category);
   }
 
+  public static OrganizationInfo getSubmissionOrgFrom(ResultSet rs) throws SQLException {
+    int id = rs.getInt("id");
+    String name = rs.getString("name");
+    String link = rs.getString("link");
+    String about = rs.getString("about");
+    String categoryString = rs.getString(rs.getString("class"));
+    List<String> category = Arrays.asList(categoryString.split("/",0));
+    return new OrganizationInfo(id, name, link, about, category);
+  }
   //Get org from SQL result to send to front end
   public static OrganizationInfo getResultOrgFrom(ResultSet rs) throws SQLException {
     int id = rs.getInt("id");
