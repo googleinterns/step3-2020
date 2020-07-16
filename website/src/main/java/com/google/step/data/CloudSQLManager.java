@@ -88,9 +88,9 @@ public final class CloudSQLManager {
   //Get all GN4P orgs similar to org
   public ResultSet getPossibleComparisons(String tableName, OrganizationInfo org) throws SQLException {
     List<String> attributes = Arrays.asList(
-        String.format("name LIKE %s", "%" + org.getName() + "%"),
-        String.format("link LIKE %s", "%" + org.getLink() + "%"),
-        String.format("about LIKE %s", "%" + org.getAbout() + "%"));
+        String.format("name LIKE %s", "'%" + org.getName() + "%'"),
+        String.format("link LIKE %s", "'%" + org.getLink() + "%'"),
+        String.format("about LIKE %s", "'%" + org.getAbout() + "%'"));
     return this.getDistinct(tableName, Arrays.asList("*"), attributes);
   } 
 
