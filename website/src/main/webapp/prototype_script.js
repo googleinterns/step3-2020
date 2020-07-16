@@ -171,3 +171,48 @@ function openSearch() {
 function closeSearch() {
   document.getElementById("myOverlay").style.display = "none";
 }
+
+function getUploads() {
+  const qs = "/verify";
+  fetch(qs).then(response => response.json()).then(comparisonMap => {
+    console.log(comparisonMap);
+    const orgsContainer = document.getElementById('submission');
+    orgsContainer.appendChild(getOrgUploadHtmlDescription(comparisonMap["Comparison_1"][0]));
+  });
+}
+
+
+
+/**
+ * Creates list element from org
+ */
+function getOrgUploadHtmlDescription(org) {
+  const orgElement = document.createElement('div');
+  orgElement.setAttribute("class", "mdc-card");
+  //org name
+  const nameElement = document.createElement('h3');
+  nameElement.setAttribute("id", "org-name");
+  nameElement.innerText = org.name;
+  orgElement.appendChild(nameElement);
+  //org link
+  const linkElement = document.createElement('a');
+  linkElement.setAttribute("id", "org-link");
+  linkElement.setAttribute('href', 'https://' + org.link);
+  linkElement.setAttribute('target', '_blank');
+  linkElement.innerText = 'https://' + org.link;
+  orgElement.appendChild(linkElement);
+  //about
+  const aboutElement = document.createElement('p');
+  aboutElement.setAttribute("id", "about");
+  aboutElement.innerText = org.about;
+  orgElement.appendChild(aboutElement);
+
+  const approve = document.createElement('button');
+  approve.innerText = 'Approve';
+  const discard = document.createElement('button');
+  discard.innerText = 'Discard';
+
+  orgElement.appendChild(approve);
+  orgElement.appendChild(discard);
+  return orgElement;
+}
