@@ -23,6 +23,7 @@ public class VerifyUploadServlet extends HttpServlet {
   private static String orgsWithClass = "classifiedOrgs";
   private static String gNP4Table = "classifiedOrgs";
   private static String orgsToCheck = "submissionOrgs";
+  private static String finalOrgTable = "orgTable";
 
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
@@ -31,23 +32,22 @@ public class VerifyUploadServlet extends HttpServlet {
       //Set up SQL proxy
       CloudSQLManager database = CloudSQLManager.setUp();
       //Get all current submissions to check
-      ResultSet uploads = database.get(orgsToCheck); 
+      ResultSet uploads = database.getFirstUploadOrg(orgsToCheck); 
       System.out.println("\nSelected submissions;\n");
       while (uploads.next()) {
         OrganizationInfo upload = OrganizationInfo.getSubmissionOrgFrom(uploads);
-        String key = "Comparison_" + Integer.toString(upload.getID());
+        comparisonMap.put("submission", Arrays.asList(upload));
         List<OrganizationInfo> orgs = new ArrayList<>();
-        orgs.add(upload);
         
         System.out.println("\nParsed submission from result set;\n");
         
-        ResultSet rs = database.getPossibleComparisons(gNP4Table, upload);
+        ResultSet rs = database.getPossibleComparisons(finalOrgTable, upload);
         System.out.println("\n Selected similar orgs;\n");
         while (rs.next()) { 
-          orgs.add(OrganizationInfo.getResultOrgFrom(rs));
+          orgs.add(OrganizationInfo.getSubmissionOrgFrom(rs));
           System.out.println("\n Added similar orgs to value list;\n");
         }
-        comparisonMap.put(key, orgs);
+        comparisonMap.put("similar", orgs);
       }
 
       // Send the JSON as the response
@@ -62,12 +62,36 @@ public class VerifyUploadServlet extends HttpServlet {
 
   @Override
   public void doPost(HttpServletRequest request, HttpServletResponse response) {
-     try {
-       //Set up SQL proxy
+    try {
+      //Set up SQL proxy
       CloudSQLManager database = CloudSQLManager.setUp();
-      
-     } catch (SQLException ex) {
+      System.out.println(request.getParameter("do") + " " + request.getParameter("id"));
+      ResultSet submission = database.getFirstUploadOrg(orgsToCheck); 
+      submission.next();
+      database.deleteOrg(orgsToCheck, Integer.parseInt(request.getParameter("id")));    
 
-     }
+      String decision = request.getParameter("do");
+      if (decision.equals("approve")) {
+        List<String> columns = Arrays.asList(
+            "id INTEGER PRIMARY KEY", 
+            "name TEXT NOT NULL", 
+            "link TEXT NOT NULL", 
+            "about TEXT NOT NULL",
+            "class VARCHAR(255) NOT NULL");
+        OrganizationInfo orgToUpload = OrganizationInfo.getSubmissionOrgFrom(submission);
+        System.out.println("\nOrg parsed;\n");
+        submission.close();
+        int latestEntry = database.getLastEntryIndex(finalOrgTable);
+        System.out.println("\n Selected latest index;\n");
+        orgToUpload.setID(latestEntry + 1);
+        PreparedStatement statement = database.buildInsertStatement(finalOrgTable, columns);
+        System.out.println("\nInsert statement built;\n");
+        orgToUpload.passInfoTo(statement);
+        statement.executeBatch();
+        System.out.println("\nStatement executed\n");
+      }
+    } catch (SQLException ex) {
+      System.err.println(ex);
+    }
   }
 }
