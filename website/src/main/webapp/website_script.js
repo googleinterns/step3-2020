@@ -15,7 +15,7 @@ function searchOrgs(page, key) {
   }
   removeOrgs();
   const keyword = key;
-  if (!key) {
+  if (key=='') {
     const keyword = document.getElementById('keyword').value;
   }
   const qs = '/sql?' + updateQueryString('keyword', keyword) + '&' + updateQueryString('page', pageElement.innerText);
@@ -103,15 +103,24 @@ function getOrgAsHtmlDescription(org, results) {
   org4.appendChild(getNeighborElement(org.neighbor4_id, org.neighbor4));
   orgElement.appendChild(neighborElement);
 
-  const upvoteElement = document.createElement('button');
-  upvoteElement.innerText = 'Good';
+  const ratingElement = document.createElement('div');
+  ratingElement.innerText = "Do you like this organization? ";
+  // const upvoteElement = document.createElement('button');
+  // upvoteElement.innerText = 'Good';
+  const upvoteElement = document.createElement('span');
+  upvoteElement.setAttribute('class', 'material-icons rating')
+  upvoteElement.innerText = 'thumb_up';
+
   upvoteElement.onclick = function() { redirectRating(1, org.id); }
-  orgElement.appendChild(upvoteElement);
-  const downvoteElement = document.createElement('button');
-  downvoteElement.innerText = 'Bad';
+  ratingElement.appendChild(upvoteElement);
+  // const downvoteElement = document.createElement('button');
+  // downvoteElement.innerText = 'Bad';
+  const downvoteElement = document.createElement('span');
+  downvoteElement.setAttribute('class', 'material-icons rating')
+  downvoteElement.innerText = 'thumb_down';
   downvoteElement.onclick = function() { redirectRating(0, org.id); }
-  orgElement.appendChild(downvoteElement);
-  orgElement.appendChild(document.createElement('p'));
+  ratingElement.appendChild(downvoteElement);
+  orgElement.appendChild(ratingElement);
 
   // make the whole list element clickable and take user to organization.html pasing id as parameter
   if (results) {
@@ -160,7 +169,9 @@ function addListener() {
   const inputBox = document.getElementById('keyword');
   inputBox.addEventListener('keyup', function(event) {
       if (event.key === 'Enter') {
-        searchOrgs(0, '');
+        const keyword = document.getElementById('keyword').value;
+        searchOrgs(0, keyword);
+        closeSearch();
       }
   });
 }
