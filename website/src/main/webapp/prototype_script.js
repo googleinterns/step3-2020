@@ -208,10 +208,10 @@ function getOrgUploadHtmlDescription(org) {
   orgElement.appendChild(aboutElement);
 
   const approve = document.createElement('button');
-  approve.onclick = function() { sendUploadDecision("approve"); }
+  approve.onclick = function() { sendUploadDecision("approve", org.id); }
   approve.innerText = 'Approve';
   const discard = document.createElement('button');
-  discard.onclick = function() { sendUploadDecision("discard"); }
+  discard.onclick = function() { sendUploadDecision("discard", org.id); }
   discard.innerText = 'Discard';
 
   orgElement.appendChild(approve);
@@ -219,11 +219,9 @@ function getOrgUploadHtmlDescription(org) {
   return orgElement;
 }
 
-function sendUploadDecision(decision) { 
-  fetch("/verify", {
-    method: "POST", 
-    body: "do:" + decision
-  }).then(res => {
-    console.log("Request complete! response:", res);
+function sendUploadDecision(decision, id) { 
+  const params = "do=" + decision + '&id=' + id;
+  fetch('/verify?' + params, {method: 'POST'}).then(response => {
+    console.log("Request complete! response:", res[onse]);
   });
 }
