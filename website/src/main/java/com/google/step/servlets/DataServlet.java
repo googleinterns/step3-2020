@@ -59,7 +59,7 @@ public class DataServlet extends HttpServlet {
       //Set up Proxy for handling SQL server
       CloudSQLManager database = CloudSQLManager.setUp();
       //Get all distinct classifications to develop tree
-      ResultSet classes = database.getDistinct(orgsWithClass, Arrays.asList("class"), Arrays.asList("class IS NOT NULL ORDER BY class DESC"));
+      ResultSet classes = database.getDistinct("orgTable", Arrays.asList("class"), Arrays.asList("class IS NOT NULL ORDER BY class DESC"));
       Map<String, Set<String>> classTree = createClassificationTree(classes);
       // TreeSet<String> roots = new TreeSet(classTree.get("roots"));
       // printClassTree(classTree, roots, roots.first(), "" );
@@ -94,7 +94,7 @@ public class DataServlet extends HttpServlet {
       database.createTable(targetTable, columns);
       //Classify each org from, file, and add to target table
       PreparedStatement statement = database.buildInsertStatement(targetTable, columns);  
-      int startIndex = getLastEntryIndex(targetTable, database) + 1;
+      int startIndex = database.getLastEntryIndex(targetTable) + 1;
       NLPService service = new NLPService();
       if (orgsNoClassification != null) {
         passFileToStatement(orgsNoClassification, statement, startIndex, service);
@@ -108,19 +108,7 @@ public class DataServlet extends HttpServlet {
     } catch(Exception ex) {
       System.err.println(ex);
     }
-  }
-
-  //Helper functions for processing new CSV files
-  private int getLastEntryIndex(String tableName, CloudSQLManager database) {
-    try {
-      ResultSet maxIndexSet = database.getDistinct(tableName, Arrays.asList("MAX(id) AS id"), null); 
-      maxIndexSet.next();
-      int lastEntryIndex = maxIndexSet.getInt("id");
-    return lastEntryIndex;
-    } catch (SQLException ex) {
-      System.err.println(ex);
-      return 0;
-    }
+    response.sendRedirect("/admin.html");
   }
 
   //helper functions to process uploads
