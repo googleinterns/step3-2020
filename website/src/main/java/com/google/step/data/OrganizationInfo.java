@@ -21,7 +21,7 @@ import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletRequest;
 
 public final class OrganizationInfo {
-  private final int id;
+  private int id;
   private final String name;
   private final String link;
   private final String about;
@@ -165,4 +165,6 @@ public final class OrganizationInfo {
   public String getAbout() {return this.about;}
   public String getLink() {return this.link;}
   public List<String> getCategory() {return this.classification;}
+
+  public void setID(int index) {this.id = index;} 
 }
