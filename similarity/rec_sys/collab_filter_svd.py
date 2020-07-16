@@ -24,15 +24,23 @@ def svd(df, k):
 
   return prediction
 
+def edit_data(input, prediction):
+  output = input.copy()
+  for row_i, row in input.iterrows():
+    for col_i, col in enumerate(row):
+      # row (feature), col (user), num == 0
+      if not col:
+        output.at[row_i, input.columns.values[col_i]] = prediction[row_i, col_i - 1]
+  return output
+
 def main():
   df = read_data('theoretical_data.csv')
   print(df)
   # matrix decomposition with SVD
   prediction = svd(df, 2)
   int_result = np.rint(prediction)
-  print(int_result)
-  # processed = edit_data(df, int_result)
-  # print(processed)
+  processed = edit_data(df, int_result)
+  print(processed)
 
 
 if __name__ == '__main__':
