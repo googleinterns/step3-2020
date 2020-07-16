@@ -35,6 +35,7 @@ public final class OrganizationInfo {
   private final Integer neighbor3_id;
   private final Integer neighbor4_id;
 
+  //Constructor for CSVs to classification table waiting for KNN neighbors
   private OrganizationInfo(int id, String name, String link, String about, List<String> classification) {
     this.id = id;
     this.name = name;
@@ -51,6 +52,7 @@ public final class OrganizationInfo {
     this.neighbor4_id = null;
   }
 
+  //Constructor for SQL records to front end results
   private OrganizationInfo(int id, String name, String link, String about, 
         String neighbor1, String neighbor2, String neighbor3, String neighbor4,
         int neighbor1ID, int neighbor2ID, int neighbor3ID, int neighbor4ID) {
@@ -69,50 +71,9 @@ public final class OrganizationInfo {
     this.classification = null;
   }
 
-  /** Detects categories in text using the Language Beta API. */
-  private static List<String> classifyText(String text) {
-    // [START language_classify_text]
-    // Instantiate the Language client com.google.cloud.language.v1.LanguageServiceClient
-    try (LanguageServiceClient language = LanguageServiceClient.create()) {
-      // set content to the text string
-      Document doc = Document.newBuilder().setContent(text).setType(Type.PLAIN_TEXT).build();
-      ClassifyTextRequest request = ClassifyTextRequest.newBuilder().setDocument(doc).build();
-      // detect categories in the given text
-      ClassifyTextResponse response = language.classifyText(request);
 
-      if (!response.getCategoriesList().isEmpty()) {
-        String mainClassification = response.getCategoriesList().get(0).getName();
-        System.out.println(mainClassification);
-        return Arrays.asList(mainClassification.split("/", 1))
-            .stream()
-            .filter(classification -> !classification.isEmpty())
-            .collect(Collectors.toList());
-      } else {
-        return null;
-      }
-    } catch (Exception ex) {
-      System.err.println(ex);
-      return null;
-    } 
-    // [END language_classify_text]
-  }
-
-   private static List<List<String>> testClasses = Arrays.asList(
-      Arrays.asList("Coding","Testing","Test1"),
-      Arrays.asList("Coding","Testing","Test2"),
-      Arrays.asList("Coding","Testing","Test3"),
-      Arrays.asList("Coding1","1Testing1","8Test1"),
-      Arrays.asList("Coding1","1Testing1","8Test2"),
-      Arrays.asList("Coding1","1Testing3","8Test3"),
-      Arrays.asList("Coding2","2Testing2","2Test"),
-      Arrays.asList("Coding2","2Testing2","2Test"),
-      Arrays.asList("Coding2","2Testing2","2Test"),
-      Arrays.asList("Coding3","3Testing3","3Test"),
-      Arrays.asList("Coding3","3Testing3","3Test"),
-      Arrays.asList("Coding3","3Testing4","3Test4"),
-      Arrays.asList("Coding3","3Testing4","3Test5"));
-
-  public static OrganizationInfo getClassifiedOrgFrom(String[] record, int index) {
+  //Develop org CSV record
+  public static OrganizationInfo getClassifiedOrgFrom(String[] record, int index, ClassHandler classHandler) {
     String name = record[0];
     String link = record[1];
     String about = record[2];
@@ -121,18 +82,41 @@ public final class OrganizationInfo {
         return null;
     }
     //Classify submission by name and about, stop if unclassifiable
-    List<String> classification = classifyText(sectionToClassify); //testClasses.get(index%13); //
+    List<String> category = classHandler.getCategoryFrom(sectionToClassify); 
     try {
-      if (classification.isEmpty()) {
+      if (category.isEmpty()) {
         return null;
       }  
     } catch (NullPointerException ex) {
       System.err.println(ex);
       return null;
     }
-    return new OrganizationInfo(index, name, link, about, classification);
+    return new OrganizationInfo(index, name, link, about, category);
   }
 
+  //Develop org from single upload submission
+  public static OrganizationInfo getClassifiedOrgFrom(HttpServletRequest request, int index, ClassHandler classHandler) {
+    String name  = request.getParameter("name");
+    String link  = request.getParameter("link");
+    String about = request.getParameter("about");
+    String sectionToClassify = name + " " + about;
+    if (sectionToClassify.split(" ").length <= 20) {
+        return null;
+    }
+    //Classify submission by name and about, stop if unclassifiable
+    List<String> category = classHandler.getCategoryFrom(sectionToClassify); 
+    try {
+      if (category.isEmpty()) {
+        return null;
+      }  
+    } catch (NullPointerException ex) {
+      System.err.println(ex);
+      return null;
+    }
+    return new OrganizationInfo(index, name, link, about, category);
+  }
+
+  //Get org from SQL result to send to front end
   public static OrganizationInfo getResultOrgFrom(ResultSet rs) throws SQLException {
     int id = rs.getInt("id");
     String name = rs.getString("name");
@@ -151,6 +135,7 @@ public final class OrganizationInfo {
         neighbor1ID, neighbor2ID, neighbor3ID, neighbor4ID);
   }
 
+  //Pass a newly classified org to SQL statement to update table
   public void passInfoTo(PreparedStatement statement) throws SQLException {
     statement.setInt(1, this.id);
     statement.setString(2, this.name);
@@ -158,5 +143,17 @@ public final class OrganizationInfo {
     statement.setString(4, this.about);
     String classPath = String.join("/", this.classification);
     statement.setString(5, classPath);
+    statement.addBatch();
+
+    if (this.id % 500 == 0){
+        statement.executeBatch();
+      } 
   }
+
+  //Getters for testing
+  public int getID() {return this.id;}
+  public String getName() {return this.name;}
+  public String getAbout() {return this.about;}
+  public String getLink() {return this.link;}
+  public List<String> getCategory() {return this.classification;}
 }
