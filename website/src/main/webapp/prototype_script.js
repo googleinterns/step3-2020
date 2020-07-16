@@ -208,11 +208,22 @@ function getOrgUploadHtmlDescription(org) {
   orgElement.appendChild(aboutElement);
 
   const approve = document.createElement('button');
+  approve.onclick = function() { sendUploadDecision("approve"); }
   approve.innerText = 'Approve';
   const discard = document.createElement('button');
+  discard.onclick = function() { sendUploadDecision("discard"); }
   discard.innerText = 'Discard';
 
   orgElement.appendChild(approve);
   orgElement.appendChild(discard);
   return orgElement;
+}
+
+function sendUploadDecision(decision) { 
+  fetch("/verify", {
+    method: "POST", 
+    body: "do:" + decision
+  }).then(res => {
+    console.log("Request complete! response:", res);
+  });
 }
