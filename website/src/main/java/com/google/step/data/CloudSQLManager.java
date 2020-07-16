@@ -1,5 +1,6 @@
 package com.google.step.data;
 
+import com.google.step.data.*;
 import com.opencsv.*;
 import com.opencsv.exceptions.CsvValidationException;
 import com.zaxxer.hikari.HikariConfig;
@@ -7,8 +8,7 @@ import com.zaxxer.hikari.HikariDataSource;
 import java.io.*;
 import java.sql.*;
 import javax.sql.DataSource;
-import java.util.List;
-import java.util.ArrayList;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public final class CloudSQLManager {
@@ -79,11 +79,20 @@ public final class CloudSQLManager {
   //Get distinct specifcied columns from table matching given clauses if any
   public ResultSet getDistinct(String tableName, List<String> columns, List<String> clauses) throws SQLException {
     String values = String.join(", ", columns);
-    String where = (clauses == null) ? ";" : String.format(" WHERE %s;", String.join("AND", clauses)); 
+    String where = (clauses == null) ? ";" : String.format(" WHERE %s;", String.join("OR", clauses)); 
     String query = String.format("SELECT DISTINCT %s FROM %s%s", values, tableName, where);
     Statement stmt = this.conn.createStatement();
     return stmt.executeQuery(query);
   }
+
+  //Get all GN4P orgs similar to org
+  public ResultSet getPossibleComparisons(String tableName, OrganizationInfo org) throws SQLException {
+    List<String> attributes = Arrays.asList(
+        String.format("name LIKE %%s%", org.getName()),
+        String.format("link LIKE %%s%", org.getLink()),
+        String.format("about LIKE %%s%", org.getAbout()));
+    return this.getDistinct(tableName, Arrays.asList("*"), attributes);
+  } 
 
   //create a prepared statement for insertion into a preexisting table
   public PreparedStatement buildInsertStatement(String tableName, List<String> columns) throws SQLException {
