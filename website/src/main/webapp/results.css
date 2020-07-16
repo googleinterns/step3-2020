@@ -109,3 +109,10 @@ mix-blend-mode: normal;
   display: none;
 }
 
+#submission {
+  float: left;
+}
+
+#comparisons {
+  float:  right;
+}
