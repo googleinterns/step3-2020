@@ -121,7 +121,7 @@ public final class OrganizationInfo {
     String name = rs.getString("name");
     String link = rs.getString("link");
     String about = rs.getString("about");
-    String categoryString = rs.getString(rs.getString("class"));
+    String categoryString = rs.getString("class");
     List<String> category = Arrays.asList(categoryString.split("/",0));
     return new OrganizationInfo(id, name, link, about, category);
   }
