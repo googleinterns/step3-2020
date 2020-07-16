@@ -277,17 +277,21 @@ function getLoginStatus() {
     if (link.includes('logout')) {
       // is logged in 
       const statusElement = document.getElementById('login-status');
-      statusElement.innerText = 'You are logged in';
+      statusElement.innerText = 'Hello!  ';
       const logoutElement = document.getElementById('login-link');
       logoutElement.href = link;
       logoutElement.innerText = 'Logout';
+      const loginIcon = document.getElementById('loginIcon')
+      loginIcon.href = link;
+
     } else {
       // is logged out
       const statusElement = document.getElementById('login-status');
-      statusElement.innerText = 'You are logged out';
       const loginElement = document.getElementById('login-link');
       loginElement.href = link;
       loginElement.innerText = 'Login';
+      const loginIcon = document.getElementById('loginIcon')
+      loginIcon.href = link;
     }
   });
 }
