@@ -44,6 +44,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.fileupload.FileItemStream;
 import org.apache.commons.fileupload.FileItemIterator;
 import org.apache.commons.fileupload.FileUploadException;
+import org.apache.commons.fileupload.FileUploadBase.InvalidContentTypeException;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 
 /** Servlet that returns some example content. TODO: modify this file to handle comments data */
@@ -125,13 +126,16 @@ public class DataServlet extends HttpServlet {
   //helper functions to process uploads
   private class NLPService implements ClassHandler{
     private LanguageServiceClient service;
+    private boolean localTesting = true;
+
     NLPService() throws IOException {
       this.service = LanguageServiceClient.create();
     }
 
     @Override
     public ClassifyTextResponse classifyRequest(ClassifyTextRequest request) {
-      return this.service.classifyText(request);
+      return (!localTesting) ? this.service.classifyText(request)
+          : ClassHandler.getTestCategory();
     }
   }
 
@@ -226,15 +230,19 @@ public class DataServlet extends HttpServlet {
   private CSVReader getCSVReaderFrom(HttpServletRequest request) throws FileUploadException, IOException {
     //create file upload handler
     ServletFileUpload upload = new ServletFileUpload();
-    //Search request for file
-    FileItemIterator iter = upload.getItemIterator(request);
-    while (iter.hasNext()) {
-      FileItemStream item = iter.next();
-      if (!item.isFormField()) {
-        InputStreamReader fileStreamReader = new InputStreamReader(item.openStream()); 
-        return new CSVReaderBuilder(fileStreamReader).withSkipLines(1).build();
+    try {
+      //Search request for file
+      FileItemIterator iter = upload.getItemIterator(request);
+      while (iter.hasNext()) {
+        FileItemStream item = iter.next();
+        if (!item.isFormField()) {
+          InputStreamReader fileStreamReader = new InputStreamReader(item.openStream()); 
+          return new CSVReaderBuilder(fileStreamReader).withSkipLines(1).build();
+        }
       }
-    }
+    } catch(InvalidContentTypeException ex) {
+      return null;
+    } 
     return null;
   }
 }
