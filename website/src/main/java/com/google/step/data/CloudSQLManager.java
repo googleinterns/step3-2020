@@ -175,4 +175,28 @@ public final class CloudSQLManager {
     stmt.executeUpdate(query);
   }
 
+  public ResultSet getFirstUploadOrg(String tableName) throws SQLException {
+    String query = String.format("SELECT * FROM %s ORDER BY id LIMIT 0, 1", tableName);
+    Statement stmt = this.conn.createStatement();
+    return stmt.executeQuery(query);
+  } 
+
+  public void deleteOrg(String tableName, int id) throws SQLException {
+    String updateQuery = String.format("DELETE FROM %s WHERE id=%d;", tableName, id);
+    Statement stmt = this.conn.createStatement();
+    stmt.executeUpdate(updateQuery);
+  }
+
+  //Helper functions for processing new CSV files
+  public int getLastEntryIndex(String tableName) {
+    try {
+      ResultSet maxIndexSet = this.getDistinct(tableName, Arrays.asList("MAX(id) AS id"), null); 
+      maxIndexSet.next();
+      int lastEntryIndex = maxIndexSet.getInt("id");
+    return lastEntryIndex;
+    } catch (SQLException ex) {
+      System.err.println(ex);
+      return 0;
+    }
+  }
 }
