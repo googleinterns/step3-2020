@@ -10,16 +10,16 @@ def read_data(filename):
 
 def svd(df):
   data = df.drop(columns=['Name'])
-  print(data)
   u, s, v = np.linalg.svd(data, full_matrices=False)
-  print(u.shape, s.shape, v.shape)
-  prediction = u.dot(s)
-  print(prediction)
+  prediction = np.dot(u * s, v)
+  return np.rint(prediction)
 
 def main():
   df = read_data('theoretical_data.csv')
-  svd(df)
+  print(df)
   # matrix decomposition with SVD
+  prediction = svd(df)
+  print(prediction)
 
 
 if __name__ == '__main__':
