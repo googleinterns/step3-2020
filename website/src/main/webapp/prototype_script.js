@@ -176,8 +176,10 @@ function getUploads() {
   const qs = "/verify";
   fetch(qs).then(response => response.json()).then(comparisonMap => {
     console.log(comparisonMap);
-    const orgsContainer = document.getElementById('submission');
-    orgsContainer.appendChild(getOrgUploadHtmlDescription(comparisonMap["Comparison_1"][0]));
+    const submission = document.getElementById('submission');
+    const comparisons = document.getElementById('comparisons');
+    submission.appendChild(getOrgUploadHtmlDescription(comparisonMap["submission"][0], true));
+    comparisonMap["similar"].forEach( org => comparisons.appendChild(getOrgUploadHtmlDescription(org, false)));
   });
 }
 
@@ -186,7 +188,7 @@ function getUploads() {
 /**
  * Creates list element from org
  */
-function getOrgUploadHtmlDescription(org) {
+function getOrgUploadHtmlDescription(org, submission) {
   const orgElement = document.createElement('div');
   orgElement.setAttribute("class", "mdc-card");
   //org name
@@ -206,22 +208,26 @@ function getOrgUploadHtmlDescription(org) {
   aboutElement.setAttribute("id", "about");
   aboutElement.innerText = org.about;
   orgElement.appendChild(aboutElement);
+  
+  if (submission) {
+    const approve = document.createElement('button');
+    approve.onclick = function() { sendUploadDecision("approve", org.id); }
+    approve.innerText = 'Approve';
+    const discard = document.createElement('button');
+    discard.onclick = function() { sendUploadDecision("discard", org.id); }
+    discard.innerText = 'Discard';
 
-  const approve = document.createElement('button');
-  approve.onclick = function() { sendUploadDecision("approve", org.id); }
-  approve.innerText = 'Approve';
-  const discard = document.createElement('button');
-  discard.onclick = function() { sendUploadDecision("discard", org.id); }
-  discard.innerText = 'Discard';
+    orgElement.appendChild(approve);
+    orgElement.appendChild(discard);
+  }
 
-  orgElement.appendChild(approve);
-  orgElement.appendChild(discard);
   return orgElement;
 }
 
 function sendUploadDecision(decision, id) { 
   const params = "do=" + decision + '&id=' + id;
   fetch('/verify?' + params, {method: 'POST'}).then(response => {
-    console.log("Request complete! response:", res[onse]);
+    console.log("Request complete! response:", response);
+    location.reload();
   });
 }
