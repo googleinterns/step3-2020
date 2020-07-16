@@ -126,4 +126,42 @@ public final class OrganizationInfoTest {
         });
     Assert.assertNull(result);
   }
+
+  // statement.setInt(1, this.id);
+  //   statement.setString(2, this.name);
+  //   statement.setString(3, this.link);
+  //   statement.setString(4, this.about);
+  //   String classPath = String.join("/", this.classification);
+  //   statement.setString(5, classPath);
+  //   statement.addBatch();
+
+  //   if (this.id % 500 == 0){
+  //       statement.executeBatch();
+  //     } 
+
+  @Test
+  public void passInfoTest() throws SQLException {
+    String[] record = {orgName, orgLink, orgMission};
+    OrganizationInfo testOrg = 
+        OrganizationInfo.getClassifiedOrgFrom(record, 0, mockHandler);
+
+    PreparedStatement mockStatement = Mockito.mock(PreparedStatement.class);
+    testOrg.passInfoTo(mockStatement);
+    Mockito.verify(mockStatement).setInt(1, testOrg.getID());
+    Mockito.verify(mockStatement).setString(2, testOrg.getName());
+    Mockito.verify(mockStatement).setString(3, testOrg.getLink());
+    Mockito.verify(mockStatement).setString(4, testOrg.getAbout());
+    Mockito.verify(mockStatement).setString(5, "Coding/Java/Testing/Unit");
+  }
+
+  @Test
+  public void passInfoExecuteTest() throws SQLException {
+    String[] record = {orgName, orgLink, orgMission};
+    OrganizationInfo testOrg = 
+        OrganizationInfo.getClassifiedOrgFrom(record, 500, mockHandler);
+
+    PreparedStatement mockStatement = Mockito.mock(PreparedStatement.class);
+    testOrg.passInfoTo(mockStatement);
+    Mockito.verify(mockStatement).executeBatch();
+  }
 }
