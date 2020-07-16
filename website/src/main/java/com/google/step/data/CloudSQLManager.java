@@ -79,7 +79,7 @@ public final class CloudSQLManager {
   //Get distinct specifcied columns from table matching given clauses if any
   public ResultSet getDistinct(String tableName, List<String> columns, List<String> clauses) throws SQLException {
     String values = String.join(", ", columns);
-    String where = (clauses == null) ? ";" : String.format(" WHERE %s;", String.join("OR", clauses)); 
+    String where = (clauses == null) ? ";" : String.format(" WHERE %s;", String.join(" OR ", clauses)); 
     String query = String.format("SELECT DISTINCT %s FROM %s%s", values, tableName, where);
     Statement stmt = this.conn.createStatement();
     return stmt.executeQuery(query);
@@ -88,9 +88,9 @@ public final class CloudSQLManager {
   //Get all GN4P orgs similar to org
   public ResultSet getPossibleComparisons(String tableName, OrganizationInfo org) throws SQLException {
     List<String> attributes = Arrays.asList(
-        String.format("name LIKE %%s%", org.getName()),
-        String.format("link LIKE %%s%", org.getLink()),
-        String.format("about LIKE %%s%", org.getAbout()));
+        String.format("name LIKE %s", "%" + org.getName() + "%"),
+        String.format("link LIKE %s", "%" + org.getLink() + "%"),
+        String.format("about LIKE %s", "%" + org.getAbout() + "%"));
     return this.getDistinct(tableName, Arrays.asList("*"), attributes);
   } 
 
