@@ -60,15 +60,19 @@ public class RatingServlet extends HttpServlet {
         // create upvotes column in database (only needed once)
         // database.alterTable();
         // increment upvote count
-        if (ratingString.equals("good")) {
-          ResultSet upvotes = database.getUpvotes(id);
-          if (upvotes.next()) {
-            int upvoteCount = upvotes.getInt("upvotes");
+        
+        ResultSet upvotes = database.getUpvotes(id);
+        if (upvotes.next()) {
+          int upvoteCount = upvotes.getInt("upvotes");
+          if (ratingString.equals("good")) {
             database.setUpvotes(id, upvoteCount + 1);
           } else {
-            System.err.println("No upvote entry for id: " + id);
+            database.setUpvotes(id, upvoteCount - 1);
           }
+        } else {
+          System.err.println("No upvote entry for id: " + id);
         }
+        
         database.tearDown();
       } catch (SQLException ex) {
         System.err.println(ex);
