@@ -1,5 +1,7 @@
 import numpy as np
 import pandas as pd
+from scipy.sparse import csc_matrix
+from scipy.sparse.linalg import svds
 
 
 # Reads csv as input and returns a Pandas DataFrame
@@ -9,19 +11,14 @@ def read_data(filename):
   return data.fillna(0)
 
 def svd(df, k):
-  data = df.drop(columns=['Name'])
-  u, s, v = np.linalg.svd(data, full_matrices=False)
-  s_mat = np.diag(s)
-  # prediction = np.dot(u, np.dot(s_mat, v))
-  
+  data = df.drop(columns=['Name']).to_numpy()
+  sparse_matrix = csc_matrix(data, dtype=float)
   # take k most significant features
-  u = u[:, 0:k]
-  s_mat = s_mat[0:k, 0:k]
-  v = v[0:k, :]
-  s_root = np.sqrt(s_mat)
-  # u root_s * root_sv
-  prediction = (u.dot(s_root)).dot(s_root.dot(v))
-
+  u, s, v = svds(sparse_matrix, k)
+  s_mat = np.diag(s)
+  # reconstruct to make prediction
+  prediction = u.dot(s_mat).dot(v)
+  print('prediction:\n', prediction)
   return prediction
 
 def edit_data(input, prediction):
@@ -33,14 +30,28 @@ def edit_data(input, prediction):
         output.at[row_i, input.columns.values[col_i]] = prediction[row_i, col_i - 1]
   return output
 
+"""
+Rounds floats [-1.0f, 1.0f] to int {-1, 0, 1} away from 0
+takes one float as input
+returns one int as output
+"""
+def round_away_from_zero(input):
+  output = 0
+  if input < 0:
+    output = -1
+  elif input > 0:
+    output = 1
+  return output
+
 def main():
   df = read_data('theoretical_data.csv')
-  print(df)
+  print('input:\n', df)
   # matrix decomposition with SVD
   prediction = svd(df, 2)
-  int_result = np.rint(prediction)
+  rounding_func = np.frompyfunc(round_away_from_zero, 1, 1)
+  int_result = rounding_func(prediction).astype(np.int8)
   processed = edit_data(df, int_result)
-  print(processed)
+  print('processed:\n', processed)
 
 
 if __name__ == '__main__':
