@@ -25,7 +25,7 @@ public class RatingServlet extends HttpServlet {
       int id = Integer.parseInt(org);
       int rating = 1;
       if (ratingString.equals("good")) {
-        rating = 5;
+        rating = 2;
       }
       // get email from userservice
       String userEmail = userService.getCurrentUser().getEmail();
@@ -41,14 +41,38 @@ public class RatingServlet extends HttpServlet {
         // Create table for user ratings
         database.createTable("ratings", columns);
         
+        String query = "INSERT INTO ratings (email, id, rating) VALUES ('" + userEmail + "', " + id + ", " + rating + ");";
         // query user email
         ResultSet rs = database.getUserWithEmail(userEmail, id);
-        String query = "INSERT INTO ratings (email, id, rating) VALUES ('" + userEmail + "', " + id + ", " + rating + ");";
         if (rs.next()) { 
+          // the user has already rated before
+          int prevRating = rs.getInt("rating");
+          if (prevRating == rating) {
+            database.tearDown();
+            response.setContentType("text/html");
+            response.getWriter().println("Already given the same rating before.");
+            return;
+          }
           query = "UPDATE ratings SET rating = " + rating + " WHERE email = '" + userEmail + "' AND id = " + id;
         } 
         database.executeStatement(query);
 
+        // create upvotes column in database (only needed once)
+        // database.alterTable();
+        // increment upvote count
+        
+        ResultSet upvotes = database.getUpvotes(id);
+        if (upvotes.next()) {
+          int upvoteCount = upvotes.getInt("upvotes");
+          if (ratingString.equals("good")) {
+            database.setUpvotes(id, upvoteCount + 1);
+          } else {
+            database.setUpvotes(id, upvoteCount - 1);
+          }
+        } else {
+          System.err.println("No upvote entry for id: " + id);
+        }
+        
         database.tearDown();
       } catch (SQLException ex) {
         System.err.println(ex);

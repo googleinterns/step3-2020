@@ -15,6 +15,7 @@
 package com.google.step.servlets;
 
 import java.io.IOException;
+
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
@@ -24,6 +25,9 @@ import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
 import com.google.appengine.api.datastore.PreparedQuery;
 import com.google.appengine.api.datastore.Query;
+import com.google.cloud.language.v1.ClassifyTextRequest;
+import com.google.cloud.language.v1.ClassifyTextResponse;
+import com.google.cloud.language.v1.LanguageServiceClient;
 import com.google.step.data.OrganizationInfo;
 import com.google.gson.Gson;
 import com.google.step.data.*;
@@ -46,6 +50,7 @@ import org.apache.commons.fileupload.servlet.ServletFileUpload;
 @WebServlet("/data")
 public class DataServlet extends HttpServlet {
   private static String orgsWithClass = "classifiedOrgs";
+  private static String orgsToCheck = "submissionOrgs";
     
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
@@ -81,25 +86,27 @@ public class DataServlet extends HttpServlet {
     try {
       //Set up Proxy for handling SQL server
       CloudSQLManager database = CloudSQLManager.setUp();
-      //Create table for orgs with classification
-      database.createTable(orgsWithClass, columns);
       //Get file reader for orgs with no classifiation
       CSVReader orgsNoClassification = getCSVReaderFrom(request);
+      String targetTable = (orgsNoClassification != null) ? orgsWithClass : orgsToCheck;
+      //Create table for orgs with classification
+      database.createTable(targetTable, columns);
       //Classify each org from, file, and add to target table
-      PreparedStatement statement = database.buildInsertStatement(orgsWithClass, columns);
-      int startIndex = getLastEntryIndex(orgsWithClass, database) + 1;
-      passFileToStatement(orgsNoClassification, statement, startIndex);
-      int totalOrgs = getLastEntryIndex(orgsWithClass, database);
-      String re = "?orgsTotal=" + Integer.toString(totalOrgs);
+      PreparedStatement statement = database.buildInsertStatement(targetTable, columns);  
+      int startIndex = getLastEntryIndex(targetTable, database) + 1;
+      NLPService service = new NLPService();
+      if (orgsNoClassification != null) {
+        passFileToStatement(orgsNoClassification, statement, startIndex, service);
+      } else {
+        passSubmissionToStatement(request, statement, startIndex, service);
+      }
       //Wrap up
       database.tearDown();
-      response.sendRedirect("upload.html" + re);
     } catch (SQLException ex) {
       System.err.println(ex);
     } catch(Exception ex) {
       System.err.println(ex);
     }
-    response.sendRedirect("upload_sql.html");
   }
 
   //Helper functions for processing new CSV files
@@ -115,25 +122,44 @@ public class DataServlet extends HttpServlet {
     }
   }
 
-  private void passFileToStatement(CSVReader orgsFileReader, PreparedStatement statement, int index) throws IOException, Exception, SQLException {
+  //helper functions to process uploads
+  private class NLPService implements ClassHandler{
+    private LanguageServiceClient service;
+    NLPService() throws IOException {
+      this.service = LanguageServiceClient.create();
+    }
+
+    @Override
+    public ClassifyTextResponse classifyRequest(ClassifyTextRequest request) {
+      return this.service.classifyText(request);
+    }
+  }
+
+  private void passSubmissionToStatement(HttpServletRequest request, PreparedStatement statement, int index, ClassHandler classHandler) throws IOException, SQLException {
+    OrganizationInfo org = OrganizationInfo.getClassifiedOrgFrom(request, index, classHandler);
+    org.passInfoTo(statement);
+    statement.executeBatch();
+  }
+
+  private void passFileToStatement(CSVReader orgsFileReader, PreparedStatement statement, int index, ClassHandler classHandler) throws IOException, Exception, SQLException {
     String[] nextRecord = new String[2]; 
-    int batchAmount = 500;
     while ((nextRecord = orgsFileReader.readNext()) != null) {
-      OrganizationInfo org = OrganizationInfo.getClassifiedOrgFrom(nextRecord, index);
+      //Create a classified Org from record
+      OrganizationInfo org = OrganizationInfo.getClassifiedOrgFrom(nextRecord, index, classHandler);
+      //If valid pass to SQL statement
       if (org != null) {
         org.passInfoTo(statement);
-        statement.addBatch();
         index ++;
       }
-      if (index % batchAmount == 0){
-        statement.executeBatch();
-      } 
+      //Throttles calls to NLP API
       Thread.sleep(100);
     }
     orgsFileReader.close();
     statement.executeBatch();
   }
 
+
+  //TODO: re upload orgs with fixed classifications to delete this
   private static Set<String> hardCodedRoots = new TreeSet<>(Arrays.asList(
       "Adult",
       "Arts & Entertainment",
