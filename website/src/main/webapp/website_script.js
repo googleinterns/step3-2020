@@ -266,6 +266,11 @@ function setUpIndexpage() {
   getLoginStatus();
 }
 
+function setUpAboutPage(){
+  addIndexListener();
+  getLoginStatus();
+}
+
 /**
  * Fetches the login status of user
  * if logged in, display logout button
