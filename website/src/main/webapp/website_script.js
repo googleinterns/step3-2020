@@ -104,6 +104,7 @@ function getOrgAsHtmlDescription(org, results) {
   orgElement.appendChild(neighborElement);
 
   const ratingElement = document.createElement('div');
+  ratingElement.setAttribute('class', 'rating-element');
   ratingElement.innerText = "Do you like this organization? ";
   // const upvoteElement = document.createElement('button');
   // upvoteElement.innerText = 'Good';
