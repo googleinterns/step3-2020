@@ -78,9 +78,9 @@ def main():
     neighbor2.id = prediction[i][2]
     neighbor3 = org.neighbors.add()
     neighbor3.id = prediction[i][3]
-  with open('../neighbors.txt', 'wb') as out_file:
+  with open('../data/neighbors.txt', 'wb') as out_file:
     out_file.write(orgs.SerializeToString())
-  with open("../neighbors.json", 'w') as json_file:
+  with open("../data/neighbors.json", 'w') as json_file:
     json_file.write(MessageToJson(orgs))
   
 
