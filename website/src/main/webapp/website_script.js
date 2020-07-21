@@ -191,45 +191,118 @@ function addTitle(keyword) {
   element.innerText = 'Results for [' + keyword + ']: ';
 }
 
+/**
+ * Send request to server for classifications
+ */
 function getClassifications() {
   const qs = '/data';
-  const classDiv = document.getElementById('roots');
+  const rootNavMenu = createNewNavDrawer();
   fetch(qs).then(response => response.json()).then(tree => {
     tree.roots.forEach(root=> {
-      classDiv.appendChild(addToClassTree(tree, root, root));
+      rootNavMenu.firstChild.firstChild.appendChild(addToClassTree(tree, root, root));
     });
+    rootNavMenu.setAttribute('class', 'mdc-drawer');
+    rootNavMenu.firstChild.firstChild.firstChild.setAttribute('aria-current', 'page');
+    document.getElementById('roots').appendChild(rootNavMenu);
   }); 
 }
 
-function addToClassTree(tree, parent, classPath) {
-  const parentElem = document.createElement('li');
+/**
+ * Creater Container for new layer of nav tree
+ */
+function createNewNavDrawer() {
+  const asideElem = document.createElement('aside');
+  asideElem.setAttribute('class', 'mdc-drawer--dismissible');
+  const divElem = document.createElement('div');
+  divElem.setAttribute('class', 'mdc-drawer__content');
+  const navElem = document.createElement('nav');
+  navElem.setAttribute('class', 'mdc-list');
+  divElem.appendChild(navElem);
+  asideElem.appendChild(divElem);
+  return asideElem;
+}
+
+/**
+ * Create a single node for distinct category
+ */
+function createNavItem(parent, classPath) {
+  const parentElem = document.createElement('a');
   parentElem.setAttribute('value', classPath);
-  if (tree[parent].length !== 0) {
-    const icon = document.createElement('a');
-    icon.innerText = parent;
-    icon.href = '#';
-    parentElem.appendChild(icon);
-    parentElem.setAttribute('class', 'uk-parent');
-    const nested = document.createElement('ul');
-    nested.setAttribute('class', 'uk-nav-sub');
-    tree[parent].forEach(child => nested.appendChild(addToClassTree(tree, child, classPath + '/' + child)));
-    parentElem.appendChild(nested);
-  } else {
-    parentElem.innerText = parent;
-    parentElem.addEventListener('click', function() {
-      const pageElement = document.getElementById('current-page');
-      if (!pageElement) {
-        redirectKeyword(classPath);
-      } else {
-        const qs = '/sql?' + updateQueryString('keyword', classPath) + '&' + updateQueryString('page', pageElement.innerText);
-        removeOrgs();
-        addTitle(classPath);
-        addPagination();
-        addOrgs(qs, 1);
-      }
-    });
-  }
+  parentElem.href = '#';
+  parentElem.setAttribute('class', 'mdc-list-item mdc-list-item');
+  const span1 = document.createElement('span');
+  span1.setAttribute('class', 'mdc-list-item__ripple');
+  const span2 = document.createElement('span');
+  span2.setAttribute('class', 'mdc-list-item__text');
+  span2.innerText = parent;
+  const icon = document.createElement('i');
+  icon.setAttribute('class', 'material-icons mdc-list-item__graphic');
+  icon.innerText = 'chevron_right';
+  parentElem.appendChild(span1);
+  parentElem.appendChild(icon);
+  parentElem.appendChild(span2);
+  parentElem.style.position = 'relative';
   return parentElem;
+}
+
+/**
+ * Recursive creation of tree from single root category
+ */
+function addToClassTree(tree, parent, classPath) {
+  const pathElem = createNavItem(parent, classPath);  
+
+  if (tree[parent].length !== 0) {
+    const nested = createNewNavDrawer();
+    nested.firstChild.firstChild.style.marginLeft = pathElem.offsetLeft + 30 + 'px';
+    tree[parent].forEach(child => nested.firstChild.firstChild.appendChild(addToClassTree(tree, child, classPath + '/' + child)));
+    pathElem.appendChild(nested);
+  } 
+  //Event for opening accordion
+  pathElem.addEventListener('mouseover',navItemActivate);
+  //Event for making query
+  pathElem.addEventListener('click', function() {
+    const pageElement = document.getElementById('current-page');
+    if (!pageElement) {
+      redirectKeyword(classPath);
+    } else {
+      const qs = '/sql?' + updateQueryString('keyword', classPath) + '&' + updateQueryString('page', pageElement.innerText);
+      removeOrgs();
+      addTitle(classPath);
+      addPagination();
+      addOrgs(qs, 1);
+    }
+  });
+
+  return pathElem;
+}
+
+/**
+ * Open accordion, close any other paths on current level
+ */
+function navItemActivate() {
+  this.firstChild.nextSibling.innerText = 'expand_more';
+  const navMenu = this.parentNode;
+  navMenu.childNodes.forEach(child => child.dispatchEvent(new CustomEvent('close')));
+  this.addEventListener('click', navItemDeactivate);
+  this.addEventListener('close', navItemDeactivate);
+  this.removeEventListener('mouseover', navItemActivate);
+  const nextPath = this.nextSibling;
+  const targetLayer = this.lastChild.firstChild.firstChild;
+  navMenu.insertBefore(targetLayer, nextPath); 
+}
+
+/**
+ * Close accordion, close any paths in decending levels
+ */
+function navItemDeactivate() {
+  this.firstChild.nextSibling.innerText = 'chevron_right';
+  this.childNodes.forEach(child => child.dispatchEvent(new CustomEvent('close')));
+  const navMenu = this.parentNode;
+  const nextPath = this.nextSibling;
+  this.lastChild.firstChild.appendChild(nextPath);
+  this.addEventListener('mouseover', navItemActivate);
+  this.removeEventListener('click', navItemDeactivate);
+  this.removeEventListener('close', navItemDeactivate);
 }
 
 function setUpResults() {
