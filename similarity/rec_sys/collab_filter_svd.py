@@ -19,7 +19,6 @@ def svd(df, k):
   s_mat = np.diag(s)
   # reconstruct to make prediction
   prediction = u.dot(s_mat).dot(v)
-  print('prediction:\n', prediction)
   return prediction
 
 def edit_data(input, prediction):
@@ -49,7 +48,7 @@ def collaborative_filtering(df):
   rounding_func = np.frompyfunc(round_away_from_zero, 1, 1)
   int_result = rounding_func(prediction).astype(np.int8)
   processed = edit_data(df, int_result)
-  return processed
+  return prediction, processed
 
 def read_proto(filename):
   with open(filename, 'rb') as input:
@@ -61,11 +60,17 @@ def fill_with_neighbors(df, neighbors, user):
   filled = df.copy()
   for i, rated in enumerate(df[user]):
     if not rated:
-      # find the nearest neighbor
-      # TODO: find k-NN if user matrix is too sparse
+      # find k-NN when the user matrix is too sparse
       n1_index = neighbors[i].neighbors[0].id
+      n2_index = neighbors[i].neighbors[1].id
+      n3_index = neighbors[i].neighbors[2].id
       if df[user][n1_index]:
         filled.at[n1_index, user] = df[user][n1_index]
+      elif df[user][n1_index]:
+        filled.at[n2_index, user] = df[user][n2_index]
+      elif df[user][n1_index]:
+        filled.at[n3_index, user] = df[user][n3_index]
+      
   return filled
 
 def fill_sparsity(df, user):
@@ -76,9 +81,11 @@ def fill_sparsity(df, user):
 def make_recommendations(input, prediction, user):
   # print previous likes
   print('Because', user, 'liked:', end=' ')
+  count = 0
   for i, rated in enumerate(input[user]):
-    if rated:
+    if rated > 0:
       print(input['Name'][i], end=', ')
+      count += 1
   print('\n', user + ' will also like:', end=' ')
   for i, rated in enumerate(input[user]):
     if not rated:
@@ -96,11 +103,11 @@ def main(filename, user):
   print('filled:\n', data)
 
   # matrix decomposition with SVD
-  prediction = collaborative_filtering(data)
+  prediction, processed_prediction = collaborative_filtering(data)
   print('processed:\n', prediction)
 
   # make recommendation
-  make_recommendations(df, prediction, user)
+  make_recommendations(df, processed_prediction, user)
 
 
 if __name__ == '__main__':
