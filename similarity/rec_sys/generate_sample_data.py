@@ -29,16 +29,21 @@ def read_json(path):
     data = json.loads(input.read()) 
   return data
 
+def generate_dataframe(data, size):
+  df = pd.DataFrame(index=range(size))
+  for entry in data:
+    email = entry['email']
+    if email not in df:
+      df[email] = np.zeros(size)
+    df.at[int(entry['id']), email] = entry['rating']
+  return df
+
 def gen_from_sql(path):
   # TODO: get the actaul number of organizations
   size = 8000
   data = read_json(path)
-  df = pd.DataFrame(index=range(size))
-  print(df)
-  for entry in data:
-    email = entry.email
-    if email in df:
-      df.at[email]
+  df = generate_dataframe(data, size)
+  df.to_csv(path + 'user_ratings.csv')
 
 if __name__ == '__main__':
   path = '../data/'
