@@ -49,7 +49,7 @@ import org.apache.commons.fileupload.servlet.ServletFileUpload;
 /** Servlet that returns some example content. TODO: modify this file to handle comments data */
 @WebServlet("/data")
 public class DataServlet extends HttpServlet {
-  private static String orgsWithClass = "classifiedOrgs";
+  private static String orgsWithClass = "g4npOrgs";
   private static String orgsToCheck = "submissionOrgs";
     
   @Override
@@ -102,6 +102,7 @@ public class DataServlet extends HttpServlet {
       }
       //Wrap up
       database.tearDown();
+      response.sendRedirect("/index.html");
     } catch (SQLException ex) {
       System.err.println(ex);
     } catch(Exception ex) {
@@ -131,7 +132,12 @@ public class DataServlet extends HttpServlet {
 
     @Override
     public ClassifyTextResponse classifyRequest(ClassifyTextRequest request) {
-      return this.service.classifyText(request);
+      try {
+        return this.service.classifyText(request);
+      } catch (Exception ex) {
+        System.err.println(ex);
+      }
+      return null;
     }
   }
 
@@ -144,12 +150,16 @@ public class DataServlet extends HttpServlet {
   private void passFileToStatement(CSVReader orgsFileReader, PreparedStatement statement, int index, ClassHandler classHandler) throws IOException, Exception, SQLException {
     String[] nextRecord = new String[2]; 
     while ((nextRecord = orgsFileReader.readNext()) != null) {
-      //Create a classified Org from record
-      OrganizationInfo org = OrganizationInfo.getClassifiedOrgFrom(nextRecord, index, classHandler);
-      //If valid pass to SQL statement
-      if (org != null) {
-        org.passInfoTo(statement);
-        index ++;
+      try {
+        //Create a classified Org from record
+        OrganizationInfo org = OrganizationInfo.getClassifiedOrgFrom(nextRecord, index, classHandler);
+        //If valid pass to SQL statement
+        if (org != null) {
+          org.passInfoTo(statement);
+          index ++;
+        }
+      } catch(Exception ex) {
+        System.err.println(ex);
       }
       //Throttles calls to NLP API
       Thread.sleep(100);
