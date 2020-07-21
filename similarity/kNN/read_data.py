@@ -7,9 +7,9 @@ def read_proto(filename):
     orgs.ParseFromString(input.read())
 
   for org in orgs.orgs:
-    print(org.name, ': ')
+    print(org.id, ': ')
     for n in org.neighbors:
-      print(n.name)
+      print(n.id)
     print()
 
 
@@ -18,10 +18,10 @@ def read_json(filename):
     data = json.loads(input.read()) 
 
   for org in data['orgs']:
-    print(org['name'], ': ')
+    print(org['id'], ': ')
     for n in org['neighbors']:
-      print(n['name'])
+      print(n['id'])
     print()
 
-# read_proto('neighbors.txt')
-read_json('neighbors.json')
+# read_proto('../data/neighbors.txt')
+read_json('../data/neighbors.json')
