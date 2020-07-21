@@ -55,33 +55,53 @@ def read_proto(filename):
   with open(filename, 'rb') as input:
     orgs = knn_pb2.Organizations()
     orgs.ParseFromString(input.read())
-  return orgs
+  return orgs.orgs
 
-  for org in orgs.orgs:
-    print(org.id, ': ')
-    for n in org.neighbors:
-      print(n.id)
-    print()
+def fill_with_neighbors(df, neighbors, user):
+  filled = df.copy()
+  for i, rated in enumerate(df[user]):
+    if not rated:
+      # find the nearest neighbor
+      # TODO: find k-NN if user matrix is too sparse
+      n1_index = neighbors[i].neighbors[0].id
+      if df[user][n1_index]:
+        filled.at[n1_index, user] = df[user][n1_index]
+  return filled
 
-def fill_with_neighbors(df, neighbors, k=1):
-  # for row_i, row in df.iterrows():
-  #   for col_i, col in enumerate(row):
-  #     # row (feature), col (user), num == 0
-  #     if not col:
-  pass
+def fill_sparsity(df, user):
+  neighbors = read_proto('../data/neighbors.txt')
+  data = fill_with_neighbors(df, neighbors, user)
+  return data
 
-def main(filename):
+def make_recommendations(input, prediction, user):
+  # print previous likes
+  print('Because', user, 'liked:', end=' ')
+  for i, rated in enumerate(input[user]):
+    if rated:
+      print(input['Name'][i], end=', ')
+  print('\n', user + ' will also like:', end=' ')
+  for i, rated in enumerate(input[user]):
+    if not rated:
+      new_rating = prediction[user][i]
+      if new_rating > 0:
+        print(prediction['Name'][i], end=', ')
+  print()
+
+def main(filename, user):
   df = read_data(filename)
   print('input:\n', df)
 
-  # TODO: Fill sparse matrix with text similarity from kNN
-  # neighbors = read_proto('../data/neighbors.txt')
-  # fill_with_neighbors(df, neighbors)
+  # Fill sparse matrix with text similarity from kNN
+  data = fill_sparsity(df, user) 
+  print('filled:\n', data)
 
   # matrix decomposition with SVD
-  result = collaborative_filtering(df)
-  print('processed:\n', result)
+  prediction = collaborative_filtering(data)
+  print('processed:\n', prediction)
+
+  # make recommendation
+  make_recommendations(df, prediction, user)
 
 
 if __name__ == '__main__':
-  main('../data/random_ratings.csv')
+  main('../data/random_ratings.csv', 'Tony')
