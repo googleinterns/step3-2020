@@ -161,8 +161,13 @@ public class DataServlet extends HttpServlet {
       } catch(Exception ex) {
         System.err.println(ex);
       }
-      //Throttles calls to NLP API
-      Thread.sleep(100);
+      try {
+        //Throttles calls to NLP API
+        Thread.sleep(100);
+      } catch (InterruptedException e) { 
+        // Restore the interrupted status
+        Thread.currentThread().interrupt();
+      }
     }
     orgsFileReader.close();
     statement.executeBatch();
