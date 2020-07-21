@@ -1,3 +1,4 @@
+import knn_pb2
 import numpy as np
 import pandas as pd
 from scipy.sparse import csc_matrix
@@ -43,15 +44,39 @@ def round_away_from_zero(input):
     output = 1
   return output
 
-def main():
-  df = read_data('theoretical_data.csv')
-  print('input:\n', df)
-  # matrix decomposition with SVD
+def collaborative_filtering(df):
   prediction = svd(df, 2)
   rounding_func = np.frompyfunc(round_away_from_zero, 1, 1)
   int_result = rounding_func(prediction).astype(np.int8)
   processed = edit_data(df, int_result)
-  print('processed:\n', processed)
+  return processed
+
+def read_proto(filename):
+  with open(filename, 'rb') as input:
+    orgs = knn_pb2.Organizations()
+    orgs.ParseFromString(input.read())
+  return orgs
+
+  for org in orgs.orgs:
+    print(org.id, ': ')
+    for n in org.neighbors:
+      print(n.id)
+    print()
+
+def fill_with_neighbors(df, neighbors):
+  
+
+def main():
+  # df = read_data('theoretical_data.csv')
+  # print('input:\n', df)
+
+  # TODO: Fill sparse matrix with text similarity from kNN
+  neighbors = read_proto('../data/neighbors.txt')
+  fill_with_neighbors(df, neighbors)
+
+  # matrix decomposition with SVD
+  # result = collaborative_filtering(df)
+  # print('processed:\n', result)
 
 
 if __name__ == '__main__':
