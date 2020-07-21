@@ -16,15 +16,6 @@ package com.google.step.servlets;
 
 import java.io.IOException;
 
-import com.google.appengine.api.datastore.DatastoreService;
-import com.google.appengine.api.datastore.DatastoreServiceFactory;
-import com.google.appengine.api.datastore.Entity;
-import com.google.appengine.api.datastore.Query.SortDirection;
-import com.google.appengine.api.datastore.FetchOptions;
-import com.google.appengine.api.datastore.Key;
-import com.google.appengine.api.datastore.KeyFactory;
-import com.google.appengine.api.datastore.PreparedQuery;
-import com.google.appengine.api.datastore.Query;
 import com.google.cloud.language.v1.ClassifyTextRequest;
 import com.google.cloud.language.v1.ClassifyTextResponse;
 import com.google.cloud.language.v1.LanguageServiceClient;
@@ -67,6 +58,7 @@ public class DataServlet extends HttpServlet {
       response.setCharacterEncoding("UTF-8");
       Gson gson = new Gson();
       response.getWriter().println(gson.toJson(classTree));
+      database.tearDown();
     } catch (SQLException ex) {
       System.err.println(ex);
     }
