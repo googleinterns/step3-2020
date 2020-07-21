@@ -39,6 +39,13 @@
       </form>
       <br><br>
 
+      <h4>4. Add rating column</h4>
+      <form id="uploadProto" action="/rating" method="POST" enctype="multipart/form-data">
+        <input id="submit" type="submit"><br></br>
+      </form>
+      <br><br>
+
+
       <h3>Collaborative Filter Workflow: </h3>
       <p>Prerequisites: org id, knn neighbors, users and ratings</p>
       <p>returns: org id for users</p>
@@ -53,7 +60,7 @@
       <form id="uploadProto" action="/update-rec" method="POST" enctype="multipart/form-data">
         <label for="file">Recommendations:</label><br></br>
         <input type="file" id="rec-file" name="file" required><br></br>
-        <input id="submit-proto" type="submit"><br></br>
+        <input id="submit-rec" type="submit"><br></br>
       </form>
       <br><br>
 

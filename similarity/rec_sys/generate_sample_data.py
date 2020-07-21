@@ -43,7 +43,7 @@ def gen_from_sql(path):
   size = 8000
   data = read_json(path)
   df = generate_dataframe(data, size)
-  df.to_csv(path + 'user_ratings.csv')
+  df.to_csv(path + 'user_ratings.csv', index=False)
 
 if __name__ == '__main__':
   path = '../data/'
