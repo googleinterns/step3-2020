@@ -78,21 +78,34 @@ def fill_sparsity(df, user):
   data = fill_with_neighbors(df, neighbors, user)
   return data
 
-def make_recommendations(input, prediction, user):
+def print_prev_likes(input, user):
   # print previous likes
   print('Because', user, 'liked:', end=' ')
-  count = 0
+  ratings = []
   for i, rated in enumerate(input[user]):
     if rated > 0:
       print(input['Name'][i], end=', ')
-      count += 1
+      ratings.append(i)
   print('\n', user + ' will also like:', end=' ')
+  return ratings
+
+def make_recommendations(input, prediction, user):
+  print_prev_likes(input, user)
   for i, rated in enumerate(input[user]):
     if not rated:
       new_rating = prediction[user][i]
       if new_rating > 0:
         print(prediction['Name'][i], end=', ')
   print()
+
+def make_k_recommendations(input, prediction, user, k=3):
+  prev_rating = print_prev_likes(input, user)
+  user_index = input.columns.get_loc(user) - 1
+  sorted = np.argsort(prediction[:, user_index])
+  similar_indices = sorted[-1 - len(prev_rating) - k: -1]
+  for i in similar_indices:
+    if i not in prev_rating:
+      print(input['Name'][i], end=', ')
 
 def main(filename, user):
   df = read_data(filename)
@@ -107,7 +120,8 @@ def main(filename, user):
   print('processed:\n', prediction)
 
   # make recommendation
-  make_recommendations(df, processed_prediction, user)
+  # make_recommendations(df, processed_prediction, user)
+  make_k_recommendations(df, prediction, user)
 
 
 if __name__ == '__main__':
