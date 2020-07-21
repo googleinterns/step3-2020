@@ -1,4 +1,4 @@
-import numpy as np
+import random
 import pandas as pd
 
 
@@ -11,7 +11,8 @@ def read_name_data(filename):
 def random_gen(df):
   users = ['Tony', 'Elijah', 'Iris', 'Ali', 'Jess']
   for person in users:
-    ratings = np.random.randint(-1, 2, 50)
+    # ratings = np.random.randint(-1, 2, 50)
+    ratings = random.choices(population=[-1, 0, 1], weights=[0.1, 0.8, 0.1], k=50)
     df[person] = ratings
 
 def main(path):

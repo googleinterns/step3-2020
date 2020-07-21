@@ -1,51 +1,51 @@
 Name,Tony,Elijah,Iris,Ali,Jess
-0,TED,0,-1,0,-1,0
-1,The Humane Society,1,-1,-1,-1,0
-2,Smithsonian,1,-1,1,1,0
-3,Monterey Bay Aquarium,0,0,0,0,1
-4,Wounded Warrior Project,-1,-1,-1,-1,1
-5,Best Friends Animal Society,1,1,0,0,0
-6,Kiva,1,-1,0,1,-1
-7,Livestrong,1,0,-1,0,1
-8,Invisible Children,0,1,-1,-1,-1
-9,Public Broadcasting System (PBS),-1,1,1,1,0
-10,USO,0,-1,1,0,-1
-11,Human Rights Campaign,1,-1,0,-1,0
-12,National Wildlife Federation,-1,-1,1,-1,-1
-13,Oxfam,0,1,1,0,-1
-14,charity water,-1,0,0,0,1
-15,American Heart Association,-1,1,0,0,1
-16,Environmental Defense Fund,0,1,1,0,-1
-17,New York Public Library,-1,1,-1,-1,-1
-18,The Nature Conservancy,-1,1,1,0,0
-19,CARE,-1,0,-1,0,0
-20,National Parks Conservation Association,-1,-1,1,-1,0
-21,JDRF,1,1,0,-1,1
-22,Heifer International,-1,-1,0,-1,-1
-23,ASPCA,0,0,0,-1,-1
-24,Defenders of Wildlife,0,-1,1,-1,0
-25,Amnesty International,-1,1,-1,0,0
-26,Creative Commons,1,-1,1,0,-1
-27,March of Dimes,0,1,-1,1,0
-28,American Diabetes Association,1,0,0,0,0
-29,Habitat for Humanity International,-1,0,1,1,0
-30,In Touch Ministries,-1,1,1,0,0
-31,Cleveland Clinic,-1,0,0,1,-1
-32,The U.S. Fund for UNICEF,0,1,-1,-1,-1
-33,Leukemia & Lymphoma Society,0,0,1,-1,1
-34,Teach for America,0,-1,-1,0,1
-35,Save the Children,0,1,0,0,-1
-36,San Diego Zoo,0,-1,-1,-1,1
-37,Ducks Unlimited,1,-1,1,0,1
-38,Make-A-Wish,0,0,1,0,0
-39,American Red Cross,-1,0,-1,-1,0
-40,National Multiple Sclerosis Society,1,1,-1,-1,0
-41,Doctors without Borders (Médecins Sans Frontières),-1,1,0,1,0
-42,Feeding America,1,-1,0,-1,-1
-43,Susan G Komen for the Cure,1,-1,-1,0,0
-44,Audubon,0,1,1,-1,0
-45,Mayo Clinic,1,1,1,-1,0
-46,The Rotary Foundation,1,1,-1,0,0
-47,AARP,0,0,0,0,0
-48,Boy Scouts of America,-1,-1,0,1,-1
-49,NPR,-1,-1,0,1,-1
+0,TED,1,0,0,0,0
+1,The Humane Society,1,0,0,0,1
+2,Smithsonian,-1,0,0,0,0
+3,Monterey Bay Aquarium,0,1,0,0,0
+4,Wounded Warrior Project,-1,-1,1,0,0
+5,Best Friends Animal Society,0,0,0,0,1
+6,Kiva,1,1,0,0,0
+7,Livestrong,0,0,0,0,0
+8,Invisible Children,0,0,0,0,-1
+9,Public Broadcasting System (PBS),0,0,0,0,0
+10,USO,0,0,0,1,0
+11,Human Rights Campaign,0,-1,0,0,0
+12,National Wildlife Federation,0,0,0,0,0
+13,Oxfam,0,1,0,0,0
+14,charity water,0,0,0,0,0
+15,American Heart Association,0,0,0,0,0
+16,Environmental Defense Fund,0,0,0,0,1
+17,New York Public Library,0,0,0,1,0
+18,The Nature Conservancy,0,0,0,0,0
+19,CARE,0,0,0,0,0
+20,National Parks Conservation Association,0,0,0,0,-1
+21,JDRF,0,0,0,0,0
+22,Heifer International,0,0,0,-1,0
+23,ASPCA,0,0,0,0,1
+24,Defenders of Wildlife,0,0,0,0,0
+25,Amnesty International,0,0,0,0,0
+26,Creative Commons,1,1,1,0,0
+27,March of Dimes,0,0,0,0,0
+28,American Diabetes Association,0,0,0,0,0
+29,Habitat for Humanity International,0,-1,0,0,0
+30,In Touch Ministries,0,0,-1,-1,0
+31,Cleveland Clinic,0,0,0,1,0
+32,The U.S. Fund for UNICEF,0,0,0,0,0
+33,Leukemia & Lymphoma Society,0,0,1,0,0
+34,Teach for America,-1,0,0,0,1
+35,Save the Children,1,0,0,0,0
+36,San Diego Zoo,1,0,0,-1,0
+37,Ducks Unlimited,0,0,0,0,0
+38,Make-A-Wish,-1,0,0,0,0
+39,American Red Cross,0,0,-1,0,0
+40,National Multiple Sclerosis Society,0,0,0,0,0
+41,Doctors without Borders (Médecins Sans Frontières),0,0,0,1,-1
+42,Feeding America,0,-1,0,0,0
+43,Susan G Komen for the Cure,0,0,0,0,-1
+44,Audubon,0,-1,0,0,0
+45,Mayo Clinic,0,0,-1,0,0
+46,The Rotary Foundation,0,0,0,0,1
+47,AARP,0,1,0,0,0
+48,Boy Scouts of America,0,-1,0,0,1
+49,NPR,0,0,0,0,-1

@@ -63,21 +63,25 @@ def read_proto(filename):
       print(n.id)
     print()
 
-def fill_with_neighbors(df, neighbors):
-  
+def fill_with_neighbors(df, neighbors, k=1):
+  # for row_i, row in df.iterrows():
+  #   for col_i, col in enumerate(row):
+  #     # row (feature), col (user), num == 0
+  #     if not col:
+  pass
 
-def main():
-  # df = read_data('theoretical_data.csv')
-  # print('input:\n', df)
+def main(filename):
+  df = read_data(filename)
+  print('input:\n', df)
 
   # TODO: Fill sparse matrix with text similarity from kNN
-  neighbors = read_proto('../data/neighbors.txt')
-  fill_with_neighbors(df, neighbors)
+  # neighbors = read_proto('../data/neighbors.txt')
+  # fill_with_neighbors(df, neighbors)
 
   # matrix decomposition with SVD
-  # result = collaborative_filtering(df)
-  # print('processed:\n', result)
+  result = collaborative_filtering(df)
+  print('processed:\n', result)
 
 
 if __name__ == '__main__':
-  main()
+  main('../data/random_ratings.csv')
