@@ -37,7 +37,7 @@ public class DownloadRatingServlet extends HttpServlet {
       ResultSet result = database.get("ratings");
 
       response.setContentType("text/plain");
-      response.setHeader("Content-disposition", "attachment; filename=database.json");
+      response.setHeader("Content-disposition", "attachment; filename=ratings.json");
       OutputStream out = response.getOutputStream();
       Writer writer = new OutputStreamWriter(out, "UTF-8");
 

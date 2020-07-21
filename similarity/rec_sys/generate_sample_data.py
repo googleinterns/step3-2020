@@ -1,3 +1,4 @@
+import json
 import numpy as np
 import pandas as pd
 import random
@@ -21,8 +22,23 @@ def demo(path):
   random_gen(org_names)
   org_names.to_csv(path + 'random_ratings.csv')
 
+
+def read_json(path):
+  filename = path + 'ratings.json'
+  with open(filename, 'r') as input:
+    data = json.loads(input.read()) 
+  return data
+
 def gen_from_sql(path):
-  
+  # TODO: get the actaul number of organizations
+  size = 8000
+  data = read_json(path)
+  df = pd.DataFrame(index=range(size))
+  print(df)
+  for entry in data:
+    email = entry.email
+    if email in df:
+      df.at[email]
 
 if __name__ == '__main__':
   path = '../data/'
