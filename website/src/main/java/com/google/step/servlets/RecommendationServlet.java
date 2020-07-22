@@ -24,17 +24,7 @@ public class RecommendationServlet extends HttpServlet {
       CloudSQLManager database = CloudSQLManager.setUp();
       // read json with gson
       Map jsonData = readJson(request);
-      Map people = (Map) jsonData.get("previous");
-
-      for (Object obj : people.values()) {
-        for (Object id : (ArrayList) obj) {
-          System.out.println("id: " + id); 
-        }
-        
-      }
-        
-
-
+      
       String targetTable = "recommendations";
       // Column Information for database to be created
       List<String> columns = Arrays.asList(
@@ -44,8 +34,11 @@ public class RecommendationServlet extends HttpServlet {
           "rec3 INT NOT NULL");
       // Create table for recommendations
       database.createTable(targetTable, columns);
+
       PreparedStatement statement = database.buildInsertStatement(targetTable, columns);
-      
+      Map<String, List<Double>> people = (Map) jsonData.get("new");
+      passToStatement(people, statement);
+
       database.tearDown();
       response.sendRedirect("/upload_sql.html");
     } catch (SQLException ex) {
@@ -55,17 +48,17 @@ public class RecommendationServlet extends HttpServlet {
     }
   }
 
-  private void passFileToStatement(Map data, PreparedStatement statement) {
+  private void passToStatement(Map<String, List<Double>> people, PreparedStatement statement) {
     try {
-      // TODO: pass to SQL statement
-      // statement.setInt(1, this.id);
-      // statement.setString(2, this.name);
-      // statement.setString(3, this.link);
-      // statement.setString(4, this.about);
-      // String classPath = String.join("/", this.classification);
-      // statement.setString(5, classPath);
-      // statement.addBatch();
-
+      // pass to SQL statement
+      for (String key : people.keySet()) {
+        System.out.println(key);
+        statement.setString(1, key);
+        List<Double> ids = people.get(key);
+        statement.setInt(2, ids.get(0).intValue());
+        statement.setInt(3, ids.get(1).intValue());
+        statement.setInt(4, ids.get(2).intValue());
+      }
       statement.executeUpdate();
     } catch(Exception ex) {
       System.err.println(ex);
