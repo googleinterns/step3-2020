@@ -25,6 +25,8 @@ import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
 import com.google.appengine.api.datastore.PreparedQuery;
 import com.google.appengine.api.datastore.Query;
+import com.google.apphosting.api.DeadlineExceededException;
+import com.google.cloud.language.v1.ClassificationCategory;
 import com.google.cloud.language.v1.ClassifyTextRequest;
 import com.google.cloud.language.v1.ClassifyTextResponse;
 import com.google.cloud.language.v1.LanguageServiceClient;
@@ -75,39 +77,9 @@ public class DataServlet extends HttpServlet {
 
   @Override
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
-    //Column Information for database to be created
-    List<String> columns = Arrays.asList(
-        "id INTEGER PRIMARY KEY", 
-        "name TEXT NOT NULL", 
-        "link TEXT NOT NULL", 
-        "about TEXT NOT NULL",
-        "class VARCHAR(255) NOT NULL");
-
-    try {
-      //Set up Proxy for handling SQL server
-      CloudSQLManager database = CloudSQLManager.setUp();
-      //Get file reader for orgs with no classifiation
-      CSVReader orgsNoClassification = getCSVReaderFrom(request);
-      String targetTable = (orgsNoClassification != null) ? orgsWithClass : orgsToCheck;
-      //Create table for orgs with classification
-      database.createTable(targetTable, columns);
-      //Classify each org from, file, and add to target table
-      PreparedStatement statement = database.buildInsertStatement(targetTable, columns);  
-      int startIndex = getLastEntryIndex(targetTable, database) + 1;
-      NLPService service = new NLPService();
-      if (orgsNoClassification != null) {
-        passFileToStatement(orgsNoClassification, statement, startIndex, service);
-      } else {
-        passSubmissionToStatement(request, statement, startIndex, service);
-      }
-      //Wrap up
-      database.tearDown();
-      response.sendRedirect("/index.html");
-    } catch (SQLException ex) {
-      System.err.println(ex);
-    } catch(Exception ex) {
-      System.err.println(ex);
-    }
+    ProcessData dataProcessor = new ProcessData(request);
+    Thread processData = new Thread(dataProcessor);
+    response.sendRedirect("/upload.html");
   }
 
   //Helper functions for processing new CSV files
@@ -136,7 +108,7 @@ public class DataServlet extends HttpServlet {
         return this.service.classifyText(request);
       } catch (Exception ex) {
         System.err.println(ex);
-      }
+      } 
       return null;
     }
   }
@@ -164,9 +136,11 @@ public class DataServlet extends HttpServlet {
       try {
         //Throttles calls to NLP API
         Thread.sleep(100);
-      } catch (InterruptedException e) { 
+      } catch (InterruptedException ex) { 
         // Restore the interrupted status
-        Thread.currentThread().interrupt();
+        System.err.println(ex);
+      } catch (DeadlineExceededException ex) {
+        System.err.println(ex);
       }
     }
     orgsFileReader.close();
