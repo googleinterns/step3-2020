@@ -47,7 +47,11 @@ public class DownloadServlet extends HttpServlet {
       String sql = "SELECT * FROM g4npOrgs";
       Statement statement = conn.createStatement();
       ResultSet result = statement.executeQuery(sql);
-
+      String countQuery = "SELECT COUNT(*) as total FROM g4npOrgs;";
+      ResultSet totalOrgs = statement.executeQuery(countQuery);
+      totalOrgs.next();
+      int total = totalOrgs.getInt("total");
+      System.out.println(Integer.toString(total));
       response.setContentType("text/plain");
       response.setHeader("Content-disposition", "attachment; filename=database.json");
       OutputStream out = response.getOutputStream();

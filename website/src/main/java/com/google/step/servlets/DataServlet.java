@@ -77,10 +77,15 @@ public class DataServlet extends HttpServlet {
 
   @Override
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
-    ProcessData dataProcessor = new ProcessData(request);
-    Thread processData = new Thread(dataProcessor);
-    processData.start();
-    response.sendRedirect("/upload.html");
+    try {
+      CSVReader file = getCSVReaderFrom(request);
+      ProcessData dataProcessor = new ProcessData(file);
+      Thread processData = new Thread(dataProcessor);
+      processData.start();
+      response.sendRedirect("/upload.html");
+    } catch (FileUploadException ex) {
+      System.out.println("Please dont");
+    }
   }
 
   //Helper functions for processing new CSV files

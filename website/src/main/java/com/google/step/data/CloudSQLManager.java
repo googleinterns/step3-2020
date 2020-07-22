@@ -18,7 +18,7 @@ public final class CloudSQLManager {
       "mit-step-2020:us-west2:organizations";
   private static final String DB_USER = "root";
   // TODO: Fix this soon, this is pushed to a public repo
-  private static final String DB_PASS = "";
+  private static final String DB_PASS = "jMMAak8xh7a7bCnq";
   private static final String DB_NAME = "orgs";
   private Connection conn;
 

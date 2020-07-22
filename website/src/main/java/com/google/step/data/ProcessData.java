@@ -22,12 +22,12 @@ import org.apache.commons.fileupload.servlet.ServletFileUpload;
 
 
 public class ProcessData implements Runnable {
-  private final HttpServletRequest request;
+  private final CSVReader orgsNoClassification;
   private static String orgsWithClass = "g4npOrgs";
   private static String orgsToCheck = "submissionOrgs";
 
-  public ProcessData(HttpServletRequest postRequest) {
-    this.request = postRequest;
+  public ProcessData(CSVReader file) {
+    this.orgsNoClassification = file;
   }
 
   @Override
@@ -43,7 +43,6 @@ public class ProcessData implements Runnable {
       //Set up Proxy for handling SQL server
       CloudSQLManager database = CloudSQLManager.setUp();
       //Get file reader for orgs with no classifiation
-      CSVReader orgsNoClassification = getCSVReaderFrom(request);
       String targetTable = (orgsNoClassification != null) ? orgsWithClass : orgsToCheck;
       //Create table for orgs with classification
       database.createTable(targetTable, columns);
@@ -54,7 +53,7 @@ public class ProcessData implements Runnable {
       if (orgsNoClassification != null) {
         passFileToStatement(orgsNoClassification, statement, startIndex, service);
       } else {
-        passSubmissionToStatement(request, statement, startIndex, service);
+        //passSubmissionToStatement(request, statement, startIndex, service);
       }
       //Wrap up
       database.tearDown();
