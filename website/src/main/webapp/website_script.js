@@ -277,18 +277,9 @@ function addToClassTree(tree, parent, classPath) {
   } 
   //Event for opening accordion
   pathElem.addEventListener('mouseover',navItemActivate);
-  //Event for making query
+  // Event for making query
   pathElem.addEventListener('click', function() {
-    const pageElement = document.getElementById('current-page');
-    if (!pageElement) {
-      redirectKeyword(classPath);
-    } else {
-      const qs = '/sql?' + updateQueryString('keyword', classPath) + '&' + updateQueryString('page', pageElement.innerText);
-      removeChildren('existing-organizations');
-      addTitle(classPath);
-      addPagination();
-      addOrgs(qs, 1);
-    }
+    redirectKeyword(classPath);
   });
 
   return pathElem;
