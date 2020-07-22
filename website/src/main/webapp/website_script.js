@@ -27,7 +27,7 @@ function searchOrgs(page, key) {
   addOrgs(qs, 1);
 }
 
-function indexPageSearch() {
+function search() {
   const keyword = document.getElementById('keyword').value;
   redirectKeyword(keyword);
 }
@@ -50,13 +50,19 @@ function addPagination(count) {
 
 function addOrgs(qs, results) {
   fetch(qs).then(response => response.json()).then(text => {
-    const count = text[0];
-    addPagination(count);
-    const data = text[1];
     const orgsContainer = document.getElementById('existing-organizations');
-    data.forEach(entry => {
-      orgsContainer.appendChild(getOrgAsHtmlDescription(entry, results));
-    });
+    if (results) {
+      const count = text[0];
+      addPagination(count);
+      const data = text[1];
+      data.forEach(entry => {
+        orgsContainer.appendChild(getOrgAsHtmlDescription(entry, results));
+      });
+    } else {
+      text.forEach(entry => {
+        orgsContainer.appendChild(getOrgAsHtmlDescription(entry, results));
+      });
+    }
   });
 }
  
@@ -83,24 +89,25 @@ function updateQueryString(key, value) {
 function getOrgAsHtmlDescription(org, results) {
   const orgElement = document.createElement('div');
   orgElement.setAttribute("class", "mdc-card");
-//org name
+  // org name
+  // TODO: stop event propagation after user clicks on the href link on the tag
   const nameElement = document.createElement('a');
   nameElement.setAttribute("id", "org-name");
   nameElement.setAttribute('href', 'https://' + org.link);
   nameElement.setAttribute('target', '_blank');
   nameElement.innerText = org.name;
   orgElement.appendChild(nameElement);
-//about
+  
+  // about
   const aboutElement = document.createElement('p');
   aboutElement.setAttribute("id", "about");
   aboutElement.innerText = org.about;
   orgElement.appendChild(aboutElement);
+
   // like this in chip format
   const neighborElement = document.createElement('p');
   neighborElement.setAttribute('id', 'like-this');
   neighborElement.innerText = 'Like this: ';
-  const chipElement = document.createElement("div");
-  chipElement.setAttribute("class", "mdc-chip-set");
   const org1 = document.createElement("span");
   org1.setAttribute("class", "mdc-chip");
   neighborElement.appendChild(org1);
@@ -114,7 +121,7 @@ function getOrgAsHtmlDescription(org, results) {
   org4.setAttribute("class", "mdc-chip");
   neighborElement.appendChild(org4);
 
-  // TODO: get actual neighboring org id number from CloudSQLManager.java
+  // get neighboring org id number from CloudSQLManager.java
   org1.appendChild(getNeighborElement(org.neighbor1_id, org.neighbor1));
   org2.appendChild(getNeighborElement(org.neighbor2_id, org.neighbor2));
   org3.appendChild(getNeighborElement(org.neighbor3_id, org.neighbor3));
@@ -124,16 +131,12 @@ function getOrgAsHtmlDescription(org, results) {
   const ratingElement = document.createElement('div');
   ratingElement.setAttribute('class', 'rating-element');
   ratingElement.innerText = "Do you like this organization? ";
-  // const upvoteElement = document.createElement('button');
-  // upvoteElement.innerText = 'Good';
   const upvoteElement = document.createElement('span');
   upvoteElement.setAttribute('class', 'material-icons rating')
   upvoteElement.innerText = 'thumb_up';
 
   upvoteElement.onclick = function() { redirectRating(1, org.id); }
   ratingElement.appendChild(upvoteElement);
-  // const downvoteElement = document.createElement('button');
-  // downvoteElement.innerText = 'Bad';
   const downvoteElement = document.createElement('span');
   downvoteElement.setAttribute('class', 'material-icons rating')
   downvoteElement.innerText = 'thumb_down';
@@ -187,11 +190,10 @@ function redirectKeyword(keyword) {
 function addListener() {
   const inputBox = document.getElementById('keyword');
   inputBox.addEventListener('keyup', function(event) {
-      if (event.key === 'Enter') {
-        const keyword = document.getElementById('keyword').value;
-        searchOrgs(0, keyword);
-        closeSearch();
-      }
+    if (event.key === 'Enter') {
+      search();
+      closeSearch();
+    }
   });
 }
 
@@ -199,7 +201,7 @@ function addIndexListener() {
   const inputBox = document.getElementById('keyword');
   inputBox.addEventListener('keyup', function(event) {
       if (event.key === 'Enter') {
-        indexPageSearch();
+        search();
       }
   });
 }
