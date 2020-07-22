@@ -1,5 +1,7 @@
 package com.google.step.servlets;
 
+import com.google.appengine.api.users.UserService;
+import com.google.appengine.api.users.UserServiceFactory;
 import com.google.gson.Gson;
 import com.google.step.data.*;
 import java.io.*;
@@ -17,6 +19,41 @@ import org.apache.commons.fileupload.servlet.ServletFileUpload;
 @WebServlet("/recommend")
 public class RecommendationServlet extends HttpServlet {
 
+  private static final String targetTable = "recommendations";
+
+  @Override
+  public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    UserService userService = UserServiceFactory.getUserService();
+    if (userService.isUserLoggedIn()) {
+      // get email from userservice
+      String userEmail = userService.getCurrentUser().getEmail();
+
+      try {
+        // Set up Proxy for handling SQL server
+        CloudSQLManager database = CloudSQLManager.setUp();
+        ResultSet rs = database.getRecommendationForUser(userEmail);
+        int[] recs = new int[3];
+        if (rs.next()) { 
+          recs[0] = rs.getInt("rec1");
+          recs[1] = rs.getInt("rec2");
+          recs[2] = rs.getInt("rec3");
+        }
+
+        database.tearDown();
+        // Send the JSON as the response
+        response.setContentType("application/json; charset=UTF-8");
+        response.setCharacterEncoding("UTF-8");
+        Gson gson = new Gson();
+        response.getWriter().println(gson.toJson(recs));
+      } catch (SQLException ex) {
+        System.err.println(ex);
+      }
+    } else {
+      response.setContentType("text/html");
+      response.getWriter().println("Please login first.");
+    }
+  }
+
   @Override
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
     try {
@@ -25,7 +62,6 @@ public class RecommendationServlet extends HttpServlet {
       // read json with gson
       Map jsonData = readJson(request);
       
-      String targetTable = "recommendations";
       // Column Information for database to be created
       List<String> columns = Arrays.asList(
           "email TEXT NOT NULL", 

@@ -185,4 +185,10 @@ public final class CloudSQLManager {
     executeStatement(query);
   }
 
+  public ResultSet getRecommendationForUser(String email) throws SQLException {
+    String query = "SELECT * FROM recommendations WHERE email = '" + email;
+    Statement stmt = this.conn.createStatement();
+    return stmt.executeQuery(query);
+  }
+
 }
