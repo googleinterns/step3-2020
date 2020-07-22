@@ -38,7 +38,7 @@ public class SimilarityServlet extends HttpServlet {
       Connection conn = pool.getConnection();
       // TODO: only need to alter the table once
       alterTable(conn);
-      String query = "UPDATE g4npOrgs SET neighbor1 = ?, neighbor2 = ?, neighbor3 = ?, neighbor4 = ? where id = ?;";
+      String query = "UPDATE orgTable SET neighbor1 = ?, neighbor2 = ?, neighbor3 = ?, neighbor4 = ? where id = ?;";
       // create the java mysql update preparedstatement
       PreparedStatement preparedStmt = conn.prepareStatement(query);
       List<Organizations.Organization> orgs = readProtobuf(request);
@@ -61,7 +61,7 @@ public class SimilarityServlet extends HttpServlet {
   }
 
   private void alterTable(Connection conn) throws SQLException {
-    String sql = "ALTER TABLE g4npOrgs ADD (neighbor1 INTEGER, neighbor2 INTEGER, neighbor3 INTEGER, neighbor4 INTEGER);";
+    String sql = "ALTER TABLE orgTable ADD (neighbor1 INTEGER, neighbor2 INTEGER, neighbor3 INTEGER, neighbor4 INTEGER);";
     PreparedStatement stmt = conn.prepareStatement(sql);
     stmt.execute();
   }
