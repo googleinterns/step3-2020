@@ -22,7 +22,6 @@ function searchOrgs(page, key) {
     const url = new URL(window.location.href);
     keyword = url.searchParams.get('keyword');
   }
-  console.log(page, keyword)
   const qs = '/sql?' + updateQueryString('keyword', keyword) + '&' + updateQueryString('page', pageElement.innerText);
   addTitle(keyword);
   addOrgs(qs, 1);
@@ -39,9 +38,10 @@ function addPagination(count) {
     removeChildren('pagination-list');
     const paginationElement = document.getElementById('pagination-list');
     const pages = count / 10 + 1;
-    for (var i = 1; i <= pages; i++) {
+    for (var i = 1; i < pages; i++) {
       var pageElement = document.createElement('li');
-      pageElement.onclick = function() { searchOrgs(i - 1); };
+      const index = i - 1;
+      pageElement.onclick = function() { searchOrgs(index); };
       pageElement.innerText = i;
       paginationElement.appendChild(pageElement);
     }
