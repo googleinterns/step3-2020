@@ -13,14 +13,18 @@ function searchOrgs(page, key) {
   } else {
     pageElement.innerText = page;
   }
-  removeOrgs();
-  const keyword = key;
-  if (key=='') {
-    const keyword = document.getElementById('keyword').value;
+  removeChildren('existing-organizations');
+  var keyword = key;
+  if (key === undefined) {
+    keyword = document.getElementById('keyword').value;
   }
+  if (keyword === '') {
+    const url = new URL(window.location.href);
+    keyword = url.searchParams.get('keyword');
+  }
+  console.log(page, keyword)
   const qs = '/sql?' + updateQueryString('keyword', keyword) + '&' + updateQueryString('page', pageElement.innerText);
   addTitle(keyword);
-  addPagination();
   addOrgs(qs, 1);
 }
 
@@ -29,13 +33,25 @@ function indexPageSearch() {
   redirectKeyword(keyword);
 }
 
-function addPagination() {
+function addPagination(count) {
   document.getElementById('pagination').style.display = 'inline-block';
+  if (count) {
+    removeChildren('pagination-list');
+    const paginationElement = document.getElementById('pagination-list');
+    const pages = count / 10 + 1;
+    for (var i = 1; i <= pages; i++) {
+      var pageElement = document.createElement('li');
+      pageElement.onclick = function() { searchOrgs(i - 1); };
+      pageElement.innerText = i;
+      paginationElement.appendChild(pageElement);
+    }
+  }
 }
 
 function addOrgs(qs, results) {
   fetch(qs).then(response => response.json()).then(text => {
     const count = text[0];
+    addPagination(count);
     const data = text[1];
     const orgsContainer = document.getElementById('existing-organizations');
     data.forEach(entry => {
@@ -44,11 +60,11 @@ function addOrgs(qs, results) {
   });
 }
  
-function removeOrgs() {
+function removeChildren(id) {
   // remove previously displayed similar organizations
-  var existingOrgs = document.getElementById('existing-organizations');
-  while (existingOrgs.firstChild) {
-    existingOrgs.removeChild(existingOrgs.firstChild);
+  var existingChildren = document.getElementById(id);
+  while (existingChildren.firstChild) {
+    existingChildren.removeChild(existingChildren.firstChild);
   }
 }
  
@@ -268,7 +284,7 @@ function addToClassTree(tree, parent, classPath) {
       redirectKeyword(classPath);
     } else {
       const qs = '/sql?' + updateQueryString('keyword', classPath) + '&' + updateQueryString('page', pageElement.innerText);
-      removeOrgs();
+      removeChildren('existing-organizations');
       addTitle(classPath);
       addPagination();
       addOrgs(qs, 1);

@@ -37,10 +37,10 @@
     </dependency>
     <!-- LocalService for Testing Datastore -->
     <dependency>
-        <groupId>com.google.appengine</groupId>
-        <artifactId>appengine-testing</artifactId>
-        <version>1.4.0</version>
-        <scope>test</scope>
+      <groupId>com.google.appengine</groupId>
+      <artifactId>appengine-testing</artifactId>
+      <version>1.4.0</version>
+      <scope>test</scope>
     </dependency>
     <!-- Google NLP -->
     <dependency>
