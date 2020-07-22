@@ -35,8 +35,10 @@ function addPagination() {
 
 function addOrgs(qs, results) {
   fetch(qs).then(response => response.json()).then(text => {
+    const count = text[0];
+    const data = text[1];
     const orgsContainer = document.getElementById('existing-organizations');
-    text.forEach(entry => {
+    data.forEach(entry => {
       orgsContainer.appendChild(getOrgAsHtmlDescription(entry, results));
     });
   });
