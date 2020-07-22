@@ -15,7 +15,7 @@ public class DeleteDataServlet extends HttpServlet {
     try {
       CloudSQLManager database = CloudSQLManager.setUp();
       //Create table for orgs with classification
-      database.drop("orgTable");
+      database.drop("g4npOrgs");
       database.tearDown();
     } catch (SQLException ex) {
       System.err.println(ex);
