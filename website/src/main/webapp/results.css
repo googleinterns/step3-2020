@@ -12,6 +12,10 @@
   top: 0%;
 }
 
+#side-nav{
+  top: 8%;
+}
+
 /* cards for individual orgs */
 .mdc-card{
   width: 500px;
