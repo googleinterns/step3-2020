@@ -44,7 +44,7 @@ public class DownloadServlet extends HttpServlet {
     DataSource pool = createConnectionPool();
     try {
       Connection conn = pool.getConnection();
-      String sql = "SELECT * FROM orgTable";
+      String sql = "SELECT * FROM g4npOrgs";
       Statement statement = conn.createStatement();
       ResultSet result = statement.executeQuery(sql);
 
