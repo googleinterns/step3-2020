@@ -79,6 +79,7 @@ public class DataServlet extends HttpServlet {
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
     ProcessData dataProcessor = new ProcessData(request);
     Thread processData = new Thread(dataProcessor);
+    processData.start();
     response.sendRedirect("/upload.html");
   }
 
