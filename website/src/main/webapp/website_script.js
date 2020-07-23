@@ -33,18 +33,41 @@ function search() {
 }
 
 function addPagination(count) {
+  const activePage = document.getElementById('current-page').innerText;
+  // TODO: highlight the current active page
   document.getElementById('pagination').style.display = 'inline-block';
   if (count) {
     removeChildren('pagination-list');
     const paginationElement = document.getElementById('pagination-list');
+    
+    const prevPage = document.createElement('li');
+    prevPage.className = 'page_num';
+    prevPage.onclick = function() { searchOrgs(-1); };
+    prevPage.innerText = 'prev';
+    // TODO: make the prev and next spans show up
+    // const prevPageSpan = document.createElement('span');
+    // prevPageSpan.className = 'uk-pagination-previous';
+    // prevPage.appendChild(prevPageSpan);
+    paginationElement.appendChild(prevPage);
+
     const pages = count / 10 + 1;
     for (var i = 1; i < pages; i++) {
       var pageElement = document.createElement('li');
       const index = i - 1;
+      pageElement.className = 'page_num';
       pageElement.onclick = function() { searchOrgs(index); };
       pageElement.innerText = i;
       paginationElement.appendChild(pageElement);
     }
+
+    const nextPage = document.createElement('li');
+    nextPage.className = 'page_num';
+    nextPage.onclick = function() { searchOrgs(-2); };
+    nextPage.innerText = 'next';
+    // const nextPageSpan = document.createElement('span');
+    // nextPageSpan.className = 'uk-pagination-next';
+    // nextPage.appendChild(nextPageSpan);
+    paginationElement.appendChild(nextPage);
   }
 }
 
@@ -156,7 +179,7 @@ function getNeighborElement(neighborId, neighborName) {
   const qs = updateQueryString('id', neighborId);
   const redirect = '/organization.html?' + qs;
   element.setAttribute('href', redirect);
-  element.innerText = neighborName + ', ';
+  element.innerText = neighborName;
   return element;
 }
 
