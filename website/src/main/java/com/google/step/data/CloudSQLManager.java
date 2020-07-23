@@ -14,15 +14,13 @@ import java.util.stream.Collectors;
 public final class CloudSQLManager {
   // Saving credentials in environment variables is convenient, but not secure - consider a more
   // secure solution such as https://cloud.google.com/kms/ to help keep secrets safe.
-  private static final String CLOUD_SQL_CONNECTION_NAME =
-      "mit-step-2020:us-west2:organizations";
-  private static final String DB_USER = "root";
-  // TODO: Fix this soon, this is pushed to a public repo
-  private static final String DB_PASS = "";
-  private static final String DB_NAME = "orgs";
   private Connection conn;
 
-  private static DataSource createConnectionPool() {
+  private static DataSource createConnectionPool(SecretsManager secrets) {
+    String CLOUD_SQL_CONNECTION_NAME = secrets.getConnection();
+    String DB_NAME  = secrets.getEnvironment();
+    String DB_USER  = secrets.getUserName();
+    String DB_PASS  = secrets.getPasscode();
     // The configuration object specifies behaviors for the connection pool.
     HikariConfig config = new HikariConfig();
 
@@ -49,7 +47,8 @@ public final class CloudSQLManager {
   }
 
   public static CloudSQLManager setUp() throws SQLException {
-    DataSource pool = createConnectionPool();
+    SecretsManager secrets = SecretsManager.getSecrets();
+    DataSource pool = createConnectionPool(secrets);
     Connection conn = pool.getConnection();
     return new CloudSQLManager(conn);
   }
