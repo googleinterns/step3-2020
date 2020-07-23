@@ -1,3 +1,4 @@
+import json
 import knn_pb2
 import numpy as np
 import pandas as pd
@@ -57,7 +58,6 @@ def read_proto(filename):
   return orgs.orgs
 
 def fill_with_neighbors(df, neighbors, user):
-  filled = df.copy()
   for i, rated in enumerate(df[user]):
     if not rated:
       # find k-NN when the user matrix is too sparse
@@ -65,18 +65,20 @@ def fill_with_neighbors(df, neighbors, user):
       n2_index = neighbors[i].neighbors[1].id
       n3_index = neighbors[i].neighbors[2].id
       if df[user][n1_index]:
-        filled.at[n1_index, user] = df[user][n1_index]
+        df.at[n1_index, user] = df[user][n1_index]
       elif df[user][n1_index]:
-        filled.at[n2_index, user] = df[user][n2_index]
+        df.at[n2_index, user] = df[user][n2_index]
       elif df[user][n1_index]:
-        filled.at[n3_index, user] = df[user][n3_index]
+        df.at[n3_index, user] = df[user][n3_index]
       
-  return filled
-
 def fill_sparsity(df, user):
   neighbors = read_proto('../data/neighbors.txt')
   data = fill_with_neighbors(df, neighbors, user)
   return data
+
+def fill_sparsity_all(df):
+  for user in df.columns:
+    fill_sparsity(df, user)
 
 def print_prev_likes(input, user):
   # print previous likes
@@ -88,6 +90,14 @@ def print_prev_likes(input, user):
       ratings.append(i)
   print('\n', user + ' will also like:', end=' ')
   return ratings
+
+def get_prev_likes(input, user, recommendations):
+  liked_orgs = []
+  for i, rated in enumerate(input[user]):
+    if rated > 0:
+      liked_orgs.append(int(i))
+  recommendations['previous'][user] = liked_orgs
+  return liked_orgs
 
 def make_recommendations(input, prediction, user):
   print_prev_likes(input, user)
@@ -107,7 +117,31 @@ def make_k_recommendations(input, prediction, user, k=3):
     if i not in prev_rating:
       print(input['Name'][i], end=', ')
 
-def main(filename, user):
+def get_recomendations(input, prediction, user, recommendations, liked_orgs, k=3):
+  new_recommendations = []
+  # TODO: do not need -1 for real data
+  user_index = input.columns.get_loc(user) - 1
+
+  sorted = np.argsort(prediction[:, user_index])
+  similar_indices = sorted[-1 - len(liked_orgs) - k: -1]
+  for i in similar_indices:
+    if i not in liked_orgs:
+      new_recommendations.append(int(i))
+  recommendations['new'][user] = new_recommendations
+
+def make_k_recommendations_for_all(input, prediction, recommendations):
+  recommendations['previous'] = {}
+  recommendations['new'] = {}
+  # for user in input.columns:
+  # TODO: temporary fix
+  for i, user in enumerate(input.columns):
+    if not i:
+      continue
+
+    liked_orgs = get_prev_likes(input, user, recommendations)
+    get_recomendations(input, prediction, user, recommendations, liked_orgs)
+
+def recommend_for_one_user(filename, user):
   df = read_data(filename)
   print('input:\n', df)
 
@@ -123,6 +157,23 @@ def main(filename, user):
   # make_recommendations(df, processed_prediction, user)
   make_k_recommendations(df, prediction, user)
 
+def save_json(recommendations):
+  with open('../data/recommendations.json', 'w') as json_file:
+    json_str = json.dumps(recommendations)
+    json_file.write(json_str)
+
+def recommend_to_all(filename):
+  df = read_data(filename)
+  # Fill sparse matrix with text similarity from kNN
+  fill_sparsity_all(df)
+  # matrix decomposition with SVD
+  prediction, processed_prediction = collaborative_filtering(df)
+  recommendations = {}
+  # make recommendation
+  make_k_recommendations_for_all(df, prediction, recommendations)
+  print(recommendations)
+  save_json(recommendations)
 
 if __name__ == '__main__':
-  main('../data/random_ratings.csv', 'Tony')
+  # recommend_for_one_user('../data/random_ratings.csv', 'Tony')
+  recommend_to_all('../data/random_ratings.csv')

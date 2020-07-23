@@ -58,7 +58,7 @@ public final class CloudSQLManager {
     this.conn.close();
   }
 
-  //Get contents of an entire table
+  // Get contents of an entire table
   public ResultSet get(String tableName) throws SQLException{
     String query = String.format("SELECT * FROM %s;", tableName);
     Statement stmt = this.conn.createStatement();
@@ -183,6 +183,12 @@ public final class CloudSQLManager {
   public void setUpvotes(int id, int votes) throws SQLException {
     String query = "UPDATE orgTable SET upvotes = " + votes + " WHERE id = " + id;
     executeStatement(query);
+  }
+
+  public ResultSet getRecommendationForUser(String email) throws SQLException {
+    String query = "SELECT * FROM recommendations WHERE email = '" + email;
+    Statement stmt = this.conn.createStatement();
+    return stmt.executeQuery(query);
   }
 
 }
