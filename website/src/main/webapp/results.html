@@ -17,26 +17,26 @@
 
   <body id="body" onload="setUpResults();">
 
-  <!-- top navigation bar -->
-  <div id="top-nav">
-    <header class="mdc-top-app-bar">
-      <div class="mdc-top-app-bar__row">
-        <section class="mdc-top-app-bar__section mdc-top-app-bar__section--align-start">
-          <button class="material-icons mdc-top-app-bar__navigation-icon mdc-icon-button" aria-label="Open navigation menu">menu</button>
-          <a href="/index.html"><button class="material-icons mdc-top-app-bar__action-item mdc-icon-button" aria-label="Home">home</button></a>
-          <a href="/about.html"><span title='about'>About</span></a>
-          <span class="mdc-top-app-bar__title">Nonprofit Finder</span>
-        </section>
-        <section class="mdc-top-app-bar__section mdc-top-app-bar__section--align-end" role="toolbar">
-          <button class="material-icons mdc-top-app-bar__action-item mdc-icon-button" aria-label="Favorite">favorite</button>
-          <button class="material-icons mdc-top-app-bar__action-item mdc-icon-button" aria-label="Search" onclick="openSearch()">search</button>
-          <p id="login-status"></p>
-          <a id="login-link"></a>
-          <a id="loginIcon"><button class="material-icons mdc-top-app-bar__action-item mdc-icon-button" aria-label="Options">account_circle</button></a>
-        </section>
-      </div>
-    </header>
-  </div>
+    <!-- top navigation bar -->
+    <div id="top-nav">
+      <header class="mdc-top-app-bar">
+        <div class="mdc-top-app-bar__row">
+          <section class="mdc-top-app-bar__section mdc-top-app-bar__section--align-start">
+            <button class="material-icons mdc-top-app-bar__navigation-icon mdc-icon-button" aria-label="Open navigation menu">menu</button>
+            <a href="/index.html"><button class="material-icons mdc-top-app-bar__action-item mdc-icon-button" aria-label="Home">home</button></a>
+            <a href="/about.html"><span title='about'>About</span></a>
+            <span class="mdc-top-app-bar__title">Nonprofit Finder</span>
+          </section>
+          <section class="mdc-top-app-bar__section mdc-top-app-bar__section--align-end" role="toolbar">
+            <button class="material-icons mdc-top-app-bar__action-item mdc-icon-button" aria-label="Favorite">favorite</button>
+            <button class="material-icons mdc-top-app-bar__action-item mdc-icon-button" aria-label="Search" onclick="openSearch()">search</button>
+            <p id="login-status"></p>
+            <a id="login-link"></a>
+            <a id="loginIcon"><button class="material-icons mdc-top-app-bar__action-item mdc-icon-button" aria-label="Options">account_circle</button></a>
+          </section>
+        </div>
+      </header>
+    </div>
 
     <center>
       <!-- search by keyword -->
@@ -57,14 +57,8 @@
 
       <!-- pagination -->
       <div id="pagination">
-        <ul class="uk-pagination uk-flex-center" uk-margin>
-          <li onclick="searchOrgs(-1);"><span uk-pagination-previous></span></li>
-          <li onclick="searchOrgs(0);">1</li>
-          <li onclick="searchOrgs(1);">2</li>
-          <li onclick="searchOrgs(2);">3</li>
-          <li onclick="searchOrgs(3);">4</li>
-          <li onclick="searchOrgs(4);">5</li>
-          <li onclick="searchOrgs(-2);"><span uk-pagination-next></span></li>
+        <ul id="pagination-list" class="uk-pagination uk-flex-center" uk-margin>
+          <!-- TODO: prev and next buttons exist but don't show up-->
         </ul>
         <p id="current-page" class="hidden">0</p>
       </div>

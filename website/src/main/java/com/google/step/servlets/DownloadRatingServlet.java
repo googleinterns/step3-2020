@@ -14,18 +14,18 @@ import javax.servlet.ServletContext;
 import javax.sql.DataSource;
 
 /** Servelt that searches for a category and returns results */
-@WebServlet("/download")
-public class DownloadServlet extends HttpServlet {
+@WebServlet("/download-ratings")
+public class DownloadRatingServlet extends HttpServlet {
 
-  private static class Organization {
+  private static class Rating {
     String id;
-    String name;
-    String about;
+    String email;
+    String rating;
 
-    private Organization(String id, String name, String about) {
+    private Rating(String id, String email, String rating) {
       this.id = id;
-      this.name = name;
-      this.about = about;
+      this.email = email;
+      this.rating = rating;
     }
   }
 
@@ -34,23 +34,23 @@ public class DownloadServlet extends HttpServlet {
     try {
       // Set up Proxy for handling SQL server
       CloudSQLManager database = CloudSQLManager.setUp();
-      ResultSet result = database.get("orgTable");
+      ResultSet result = database.get("ratings");
 
       response.setContentType("text/plain");
-      response.setHeader("Content-disposition", "attachment; filename=database.json");
+      response.setHeader("Content-disposition", "attachment; filename=ratings.json");
       OutputStream out = response.getOutputStream();
       Writer writer = new OutputStreamWriter(out, "UTF-8");
 
-      List<Organization> orgs = new ArrayList<>();
+      List<Rating> ratings = new ArrayList<>();
       while (result.next()) {
         String id = result.getString("id");
-        String name = result.getString("name");
-        String about = result.getString("about");
-        Organization org = new Organization(id, name, about);
-        orgs.add(org);   
+        String email = result.getString("email");
+        String rating = result.getString("rating");
+        Rating entry = new Rating(id, email, rating);
+        ratings.add(entry);   
       }
       Gson gson = new Gson();
-      writer.write(gson.toJson(orgs));
+      writer.write(gson.toJson(ratings));
       writer.close();
       database.tearDown();
     } catch (SQLException ex) {

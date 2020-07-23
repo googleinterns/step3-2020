@@ -57,7 +57,7 @@ public final class CloudSQLManager {
     this.conn.close();
   }
 
-  //Get contents of an entire table
+  // Get contents of an entire table
   public ResultSet get(String tableName) throws SQLException{
     String query = String.format("SELECT * FROM %s;", tableName);
     Statement stmt = this.conn.createStatement();
@@ -108,6 +108,15 @@ public final class CloudSQLManager {
     }
   }
 
+  public ResultSet countOrgsWithNeighbors(String keyword) throws SQLException {
+    String similarTo = (!keyword.isEmpty()) ? 
+        "WHERE (name LIKE '%" + keyword + "%' OR about LIKE '% " + keyword + "%' OR class LIKE '%" + keyword + "%')" 
+        : "";
+    String query = "SELECT COUNT(*) AS total FROM orgTable " + similarTo + ";";
+    Statement stmt = this.conn.createStatement();
+    return stmt.executeQuery(query);
+  }
+
   public ResultSet getOrgsWithNeighbors(String keyword, int offset) throws SQLException { 
     String similarTo = (!keyword.isEmpty()) ? 
         "WHERE (name LIKE '%" + keyword + "%' OR about LIKE '% " + keyword + "%' OR class LIKE '%" + keyword + "%')" 
@@ -129,7 +138,6 @@ public final class CloudSQLManager {
         "INNER JOIN orgTable AS n4 ",
             "ON preliminary.neighbor4 = n4.id",
         "ORDER BY upvotes DESC;");
-    System.out.println(query);
     Statement stmt = this.conn.createStatement();
     return stmt.executeQuery(query);
   }
@@ -182,6 +190,12 @@ public final class CloudSQLManager {
   public void setUpvotes(int id, int votes) throws SQLException {
     String query = "UPDATE orgTable SET upvotes = " + votes + " WHERE id = " + id;
     executeStatement(query);
+  }
+
+  public ResultSet getRecommendationForUser(String email) throws SQLException {
+    String query = "SELECT * FROM recommendations WHERE email = '" + email;
+    Statement stmt = this.conn.createStatement();
+    return stmt.executeQuery(query);
   }
 
 }

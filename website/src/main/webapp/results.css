@@ -12,6 +12,10 @@
   top: 0%;
 }
 
+#side-nav{
+  top: 8%;
+}
+
 /* cards for individual orgs */
 .mdc-card{
   width: 500px;
@@ -111,6 +115,11 @@ color: rgba(0, 0, 0, 0.54)
 
 .overlay input[type=text]:hover {
   background: #f1f1f1;
+}
+
+/* when mouse hovers over pagination, it turns into a hand */
+.page_num:hover{
+  cursor:pointer;
 }
 
 
