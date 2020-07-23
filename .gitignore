@@ -10,3 +10,4 @@ node_modules/
 uikit-3.5.4.zip
 uikit/
 *.pyc
+runLocalProject.sh
