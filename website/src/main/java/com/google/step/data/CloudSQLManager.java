@@ -185,7 +185,7 @@ public final class CloudSQLManager {
   }
 
   public ResultSet getFirstUploadOrg(String tableName) throws SQLException {
-    String query = String.format("SELECT * FROM %s ORDER BY id LIMIT 0, 1", tableName);
+    String query = String.format("SELECT * FROM %s ORDER BY id LIMIT 1", tableName);
     Statement stmt = this.conn.createStatement();
     return stmt.executeQuery(query);
   } 
