@@ -18,7 +18,7 @@ public final class CloudSQLManager {
       "mit-step-2020:us-west2:organizations";
   private static final String DB_USER = "root";
   // TODO: Fix this soon, this is pushed to a public repo
-  private static final String DB_PASS = "jMMAak8xh7a7bCnq";
+  private static final String DB_PASS = "";
   private static final String DB_NAME = "orgs";
   private Connection conn;
 
@@ -58,7 +58,7 @@ public final class CloudSQLManager {
     this.conn.close();
   }
 
-  //Get contents of an entire table
+  // Get contents of an entire table
   public ResultSet get(String tableName) throws SQLException{
     String query = String.format("SELECT * FROM %s;", tableName);
     Statement stmt = this.conn.createStatement();
@@ -218,4 +218,11 @@ public final class CloudSQLManager {
     String query = "UPDATE orgTable SET upvotes = " + votes + " WHERE id = " + id;
     executeStatement(query);
   }
+
+  public ResultSet getRecommendationForUser(String email) throws SQLException {
+    String query = "SELECT * FROM recommendations WHERE email = '" + email;
+    Statement stmt = this.conn.createStatement();
+    return stmt.executeQuery(query);
+  }
+
 }

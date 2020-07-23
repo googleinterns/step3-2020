@@ -58,6 +58,15 @@ mix-blend-mode: normal;
   mix-blend-mode: normal;
 }
 
+.rating{
+  color: rgba(0, 0, 0, 0.26); 
+}
+
+.rating:hover { 
+color: rgba(0, 0, 0, 0.54)
+}
+
+
 /* search overlay effect */
 .overlay {
   height: 100%;
@@ -66,22 +75,21 @@ mix-blend-mode: normal;
   position: fixed;
   z-index: 8;
   top: 0;
-  left: 0;
+  right: 0;
 }
 
 #results-search {
   position: relative;
-  top: 0%;
-  left: 15%;
+  top: 1%;
+  left: 6%;
   width: 70%;
-  text-align: center;
   margin-top: 30px;
   margin: auto;
 }
 
 .overlay .closebtn {
   position: absolute;
-  top: 0%;
+  top: 10%;
   right: 45px;
   font-size: 60px;
   cursor: pointer;
@@ -105,9 +113,6 @@ mix-blend-mode: normal;
   background: #f1f1f1;
 }
 
-.overlay button {
-  display: none;
-}
 
 #submission {
   float: left;

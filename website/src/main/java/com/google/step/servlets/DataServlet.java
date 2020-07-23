@@ -16,15 +16,6 @@ package com.google.step.servlets;
 
 import java.io.IOException;
 
-import com.google.appengine.api.datastore.DatastoreService;
-import com.google.appengine.api.datastore.DatastoreServiceFactory;
-import com.google.appengine.api.datastore.Entity;
-import com.google.appengine.api.datastore.Query.SortDirection;
-import com.google.appengine.api.datastore.FetchOptions;
-import com.google.appengine.api.datastore.Key;
-import com.google.appengine.api.datastore.KeyFactory;
-import com.google.appengine.api.datastore.PreparedQuery;
-import com.google.appengine.api.datastore.Query;
 import com.google.cloud.language.v1.ClassifyTextRequest;
 import com.google.cloud.language.v1.ClassifyTextResponse;
 import com.google.cloud.language.v1.LanguageServiceClient;
@@ -50,7 +41,7 @@ import org.apache.commons.fileupload.servlet.ServletFileUpload;
 /** Servlet that returns some example content. TODO: modify this file to handle comments data */
 @WebServlet("/data")
 public class DataServlet extends HttpServlet {
-  private static String orgsWithClass = "classifiedOrgs";
+  private static String orgsWithClass = "orgTable";
   private static String orgsToCheck = "submissionOrgs";
     
   @Override
@@ -68,6 +59,7 @@ public class DataServlet extends HttpServlet {
       response.setCharacterEncoding("UTF-8");
       Gson gson = new Gson();
       response.getWriter().println(gson.toJson(classTree));
+      database.tearDown();
     } catch (SQLException ex) {
       System.err.println(ex);
     }
@@ -82,7 +74,12 @@ public class DataServlet extends HttpServlet {
         "name TEXT NOT NULL", 
         "link TEXT NOT NULL", 
         "about TEXT NOT NULL",
-        "class VARCHAR(255) NOT NULL");
+        "class VARCHAR(255) NOT NULL",
+        "neighbor1 INTEGER",
+        "neighbor2 INTEGER", 
+        "neighbor3 INTEGER", 
+        "neighbor4 INTEGER",
+        "upvotes INTEGER,");
 
     try {
       //Set up Proxy for handling SQL server
@@ -103,6 +100,7 @@ public class DataServlet extends HttpServlet {
       }
       //Wrap up
       database.tearDown();
+      response.sendRedirect("/index.html");
     } catch (SQLException ex) {
       System.err.println(ex);
     } catch(Exception ex) {
@@ -122,8 +120,12 @@ public class DataServlet extends HttpServlet {
 
     @Override
     public ClassifyTextResponse classifyRequest(ClassifyTextRequest request) {
-      return (!localTesting) ? this.service.classifyText(request)
-          : ClassHandler.getTestCategory();
+      try {
+        return this.service.classifyText(request);
+      } catch (Exception ex) {
+        System.err.println(ex);
+      }
+      return null;
     }
   }
 
@@ -136,15 +138,24 @@ public class DataServlet extends HttpServlet {
   private void passFileToStatement(CSVReader orgsFileReader, PreparedStatement statement, int index, ClassHandler classHandler) throws IOException, Exception, SQLException {
     String[] nextRecord = new String[2]; 
     while ((nextRecord = orgsFileReader.readNext()) != null) {
-      //Create a classified Org from record
-      OrganizationInfo org = OrganizationInfo.getClassifiedOrgFrom(nextRecord, index, classHandler);
-      //If valid pass to SQL statement
-      if (org != null) {
-        org.passInfoTo(statement);
-        index ++;
+      try {
+        //Create a classified Org from record
+        OrganizationInfo org = OrganizationInfo.getClassifiedOrgFrom(nextRecord, index, classHandler);
+        //If valid pass to SQL statement
+        if (org != null) {
+          org.passInfoTo(statement);
+          index ++;
+        }
+      } catch(Exception ex) {
+        System.err.println(ex);
       }
-      //Throttles calls to NLP API
-      Thread.sleep(100);
+      try {
+        //Throttles calls to NLP API
+        Thread.sleep(100);
+      } catch (InterruptedException e) { 
+        // Restore the interrupted status
+        Thread.currentThread().interrupt();
+      }
     }
     orgsFileReader.close();
     statement.executeBatch();

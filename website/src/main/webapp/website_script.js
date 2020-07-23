@@ -15,7 +15,7 @@ function searchOrgs(page, key) {
   }
   removeOrgs();
   const keyword = key;
-  if (!key) {
+  if (key=='') {
     const keyword = document.getElementById('keyword').value;
   }
   const qs = '/sql?' + updateQueryString('keyword', keyword) + '&' + updateQueryString('page', pageElement.innerText);
@@ -103,15 +103,25 @@ function getOrgAsHtmlDescription(org, results) {
   org4.appendChild(getNeighborElement(org.neighbor4_id, org.neighbor4));
   orgElement.appendChild(neighborElement);
 
-  const upvoteElement = document.createElement('button');
-  upvoteElement.innerText = 'Good';
+  const ratingElement = document.createElement('div');
+  ratingElement.setAttribute('class', 'rating-element');
+  ratingElement.innerText = "Do you like this organization? ";
+  // const upvoteElement = document.createElement('button');
+  // upvoteElement.innerText = 'Good';
+  const upvoteElement = document.createElement('span');
+  upvoteElement.setAttribute('class', 'material-icons rating')
+  upvoteElement.innerText = 'thumb_up';
+
   upvoteElement.onclick = function() { redirectRating(1, org.id); }
-  orgElement.appendChild(upvoteElement);
-  const downvoteElement = document.createElement('button');
-  downvoteElement.innerText = 'Bad';
+  ratingElement.appendChild(upvoteElement);
+  // const downvoteElement = document.createElement('button');
+  // downvoteElement.innerText = 'Bad';
+  const downvoteElement = document.createElement('span');
+  downvoteElement.setAttribute('class', 'material-icons rating')
+  downvoteElement.innerText = 'thumb_down';
   downvoteElement.onclick = function() { redirectRating(0, org.id); }
-  orgElement.appendChild(downvoteElement);
-  orgElement.appendChild(document.createElement('p'));
+  ratingElement.appendChild(downvoteElement);
+  orgElement.appendChild(ratingElement);
 
   // make the whole list element clickable and take user to organization.html pasing id as parameter
   if (results) {
@@ -160,7 +170,9 @@ function addListener() {
   const inputBox = document.getElementById('keyword');
   inputBox.addEventListener('keyup', function(event) {
       if (event.key === 'Enter') {
-        searchOrgs(0, '');
+        const keyword = document.getElementById('keyword').value;
+        searchOrgs(0, keyword);
+        closeSearch();
       }
   });
 }
@@ -179,45 +191,118 @@ function addTitle(keyword) {
   element.innerText = 'Results for [' + keyword + ']: ';
 }
 
+/**
+ * Send request to server for classifications
+ */
 function getClassifications() {
   const qs = '/data';
-  const classDiv = document.getElementById('roots');
+  const rootNavMenu = createNewNavDrawer();
   fetch(qs).then(response => response.json()).then(tree => {
     tree.roots.forEach(root=> {
-      classDiv.appendChild(addToClassTree(tree, root, root));
+      rootNavMenu.firstChild.firstChild.appendChild(addToClassTree(tree, root, root));
     });
+    rootNavMenu.setAttribute('class', 'mdc-drawer');
+    rootNavMenu.firstChild.firstChild.firstChild.setAttribute('aria-current', 'page');
+    document.getElementById('roots').appendChild(rootNavMenu);
   }); 
 }
 
-function addToClassTree(tree, parent, classPath) {
-  const parentElem = document.createElement('li');
+/**
+ * Creater Container for new layer of nav tree
+ */
+function createNewNavDrawer() {
+  const asideElem = document.createElement('aside');
+  asideElem.setAttribute('class', 'mdc-drawer--dismissible');
+  const divElem = document.createElement('div');
+  divElem.setAttribute('class', 'mdc-drawer__content');
+  const navElem = document.createElement('nav');
+  navElem.setAttribute('class', 'mdc-list');
+  divElem.appendChild(navElem);
+  asideElem.appendChild(divElem);
+  return asideElem;
+}
+
+/**
+ * Create a single node for distinct category
+ */
+function createNavItem(parent, classPath) {
+  const parentElem = document.createElement('a');
   parentElem.setAttribute('value', classPath);
-  if (tree[parent].length !== 0) {
-    const icon = document.createElement('a');
-    icon.innerText = parent;
-    icon.href = '#';
-    parentElem.appendChild(icon);
-    parentElem.setAttribute('class', 'uk-parent');
-    const nested = document.createElement('ul');
-    nested.setAttribute('class', 'uk-nav-sub');
-    tree[parent].forEach(child => nested.appendChild(addToClassTree(tree, child, classPath + '/' + child)));
-    parentElem.appendChild(nested);
-  } else {
-    parentElem.innerText = parent;
-    parentElem.addEventListener('click', function() {
-      const pageElement = document.getElementById('current-page');
-      if (!pageElement) {
-        redirectKeyword(classPath);
-      } else {
-        const qs = '/sql?' + updateQueryString('keyword', classPath) + '&' + updateQueryString('page', pageElement.innerText);
-        removeOrgs();
-        addTitle(classPath);
-        addPagination();
-        addOrgs(qs, 1);
-      }
-    });
-  }
+  parentElem.href = '#';
+  parentElem.setAttribute('class', 'mdc-list-item mdc-list-item');
+  const span1 = document.createElement('span');
+  span1.setAttribute('class', 'mdc-list-item__ripple');
+  const span2 = document.createElement('span');
+  span2.setAttribute('class', 'mdc-list-item__text');
+  span2.innerText = parent;
+  const icon = document.createElement('i');
+  icon.setAttribute('class', 'material-icons mdc-list-item__graphic');
+  icon.innerText = 'chevron_right';
+  parentElem.appendChild(span1);
+  parentElem.appendChild(icon);
+  parentElem.appendChild(span2);
+  parentElem.style.position = 'relative';
   return parentElem;
+}
+
+/**
+ * Recursive creation of tree from single root category
+ */
+function addToClassTree(tree, parent, classPath) {
+  const pathElem = createNavItem(parent, classPath);  
+
+  if (tree[parent].length !== 0) {
+    const nested = createNewNavDrawer();
+    nested.firstChild.firstChild.style.marginLeft = pathElem.offsetLeft + 30 + 'px';
+    tree[parent].forEach(child => nested.firstChild.firstChild.appendChild(addToClassTree(tree, child, classPath + '/' + child)));
+    pathElem.appendChild(nested);
+  } 
+  //Event for opening accordion
+  pathElem.addEventListener('mouseover',navItemActivate);
+  //Event for making query
+  pathElem.addEventListener('click', function() {
+    const pageElement = document.getElementById('current-page');
+    if (!pageElement) {
+      redirectKeyword(classPath);
+    } else {
+      const qs = '/sql?' + updateQueryString('keyword', classPath) + '&' + updateQueryString('page', pageElement.innerText);
+      removeOrgs();
+      addTitle(classPath);
+      addPagination();
+      addOrgs(qs, 1);
+    }
+  });
+
+  return pathElem;
+}
+
+/**
+ * Open accordion, close any other paths on current level
+ */
+function navItemActivate() {
+  this.firstChild.nextSibling.innerText = 'expand_more';
+  const navMenu = this.parentNode;
+  navMenu.childNodes.forEach(child => child.dispatchEvent(new CustomEvent('close')));
+  this.addEventListener('click', navItemDeactivate);
+  this.addEventListener('close', navItemDeactivate);
+  this.removeEventListener('mouseover', navItemActivate);
+  const nextPath = this.nextSibling;
+  const targetLayer = this.lastChild.firstChild.firstChild;
+  navMenu.insertBefore(targetLayer, nextPath); 
+}
+
+/**
+ * Close accordion, close any paths in decending levels
+ */
+function navItemDeactivate() {
+  this.firstChild.nextSibling.innerText = 'chevron_right';
+  this.childNodes.forEach(child => child.dispatchEvent(new CustomEvent('close')));
+  const navMenu = this.parentNode;
+  const nextPath = this.nextSibling;
+  this.lastChild.firstChild.appendChild(nextPath);
+  this.addEventListener('mouseover', navItemActivate);
+  this.removeEventListener('click', navItemDeactivate);
+  this.removeEventListener('close', navItemDeactivate);
 }
 
 function setUpResults() {
@@ -255,6 +340,11 @@ function setUpIndexpage() {
   getLoginStatus();
 }
 
+function setUpAboutPage(){
+  addIndexListener();
+  getLoginStatus();
+}
+
 /**
  * Fetches the login status of user
  * if logged in, display logout button
@@ -266,17 +356,21 @@ function getLoginStatus() {
     if (link.includes('logout')) {
       // is logged in 
       const statusElement = document.getElementById('login-status');
-      statusElement.innerText = 'You are logged in';
+      statusElement.innerText = 'Hello!  ';
       const logoutElement = document.getElementById('login-link');
       logoutElement.href = link;
       logoutElement.innerText = 'Logout';
+      const loginIcon = document.getElementById('loginIcon')
+      loginIcon.href = link;
+
     } else {
       // is logged out
       const statusElement = document.getElementById('login-status');
-      statusElement.innerText = 'You are logged out';
       const loginElement = document.getElementById('login-link');
       loginElement.href = link;
       loginElement.innerText = 'Login';
+      const loginIcon = document.getElementById('loginIcon')
+      loginIcon.href = link;
     }
   });
 }

@@ -28,7 +28,7 @@ public class SimilarityServlet extends HttpServlet {
       "mit-step-2020:us-west2:organizations";
   private static final String DB_USER = "root";
   // TODO: Fix this soon, this is pushed to a public repo
-  private static final String DB_PASS = "jMMAak8xh7a7bCnq";
+  private static final String DB_PASS = "";
   private static final String DB_NAME = "orgs";
 
   @Override
@@ -37,12 +37,11 @@ public class SimilarityServlet extends HttpServlet {
     try {
       Connection conn = pool.getConnection();
       // TODO: only need to alter the table once
-      // alterTable(conn);
+      alterTable(conn);
       String query = "UPDATE orgTable SET neighbor1 = ?, neighbor2 = ?, neighbor3 = ?, neighbor4 = ? where id = ?;";
       // create the java mysql update preparedstatement
       PreparedStatement preparedStmt = conn.prepareStatement(query);
       List<Organizations.Organization> orgs = readProtobuf(request);
-      int count = 0;
       for (Organizations.Organization org : orgs) {
         List<Organizations.Organization.Neighbor> neighbors = org.getNeighborsList();
         preparedStmt.setInt(1, neighbors.get(0).getId());
@@ -52,7 +51,6 @@ public class SimilarityServlet extends HttpServlet {
         preparedStmt.setInt(5, org.getId());
         // execute the java preparedstatement
         preparedStmt.executeUpdate();
-        count++;
       }
       
       conn.close();

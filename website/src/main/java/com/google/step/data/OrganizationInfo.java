@@ -154,9 +154,9 @@ public final class OrganizationInfo {
     statement.setString(5, classPath);
     statement.addBatch();
 
-    if (this.id % 500 == 0){
-        statement.executeBatch();
-      } 
+    if (this.id % 500 == 0) {
+      statement.executeBatch();
+    } 
   }
 
   //Getters for testing
