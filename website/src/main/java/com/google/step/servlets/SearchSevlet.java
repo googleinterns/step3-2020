@@ -41,13 +41,21 @@ public class SearchSevlet extends HttpServlet {
       }
       rs.close();
       
+      ResultSet countResults = database.countOrgsWithNeighbors(keyword);
+      int count = 0;
+      if (countResults.next()) {
+        count = countResults.getInt("total");
+      }
+      countResults.close();
       database.tearDown();
 
       // Send the JSON as the response
       response.setContentType("application/json; charset=UTF-8");
       response.setCharacterEncoding("UTF-8");
       Gson gson = new Gson();
-      response.getWriter().println(gson.toJson(orgs));
+      String json = gson.toJson(orgs);
+      String combined = "[" + count + "," + json + "]";
+      response.getWriter().println(combined);
     } catch (SQLException ex) {
       System.err.println(ex);
     }

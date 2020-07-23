@@ -109,6 +109,15 @@ public final class CloudSQLManager {
     }
   }
 
+  public ResultSet countOrgsWithNeighbors(String keyword) throws SQLException {
+    String similarTo = (!keyword.isEmpty()) ? 
+        "WHERE (name LIKE '%" + keyword + "%' OR about LIKE '% " + keyword + "%' OR class LIKE '%" + keyword + "%')" 
+        : "";
+    String query = "SELECT COUNT(*) AS total FROM orgTable " + similarTo + ";";
+    Statement stmt = this.conn.createStatement();
+    return stmt.executeQuery(query);
+  }
+
   public ResultSet getOrgsWithNeighbors(String keyword, int offset) throws SQLException { 
     String similarTo = (!keyword.isEmpty()) ? 
         "WHERE (name LIKE '%" + keyword + "%' OR about LIKE '% " + keyword + "%' OR class LIKE '%" + keyword + "%')" 
@@ -130,7 +139,6 @@ public final class CloudSQLManager {
         "INNER JOIN orgTable AS n4 ",
             "ON preliminary.neighbor4 = n4.id",
         "ORDER BY upvotes DESC;");
-    System.out.println(query);
     Statement stmt = this.conn.createStatement();
     return stmt.executeQuery(query);
   }

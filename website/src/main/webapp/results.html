@@ -57,14 +57,8 @@
 
       <!-- pagination -->
       <div id="pagination">
-        <ul class="uk-pagination uk-flex-center" uk-margin>
-          <li onclick="searchOrgs(-1);"><span uk-pagination-previous></span></li>
-          <li onclick="searchOrgs(0);">1</li>
-          <li onclick="searchOrgs(1);">2</li>
-          <li onclick="searchOrgs(2);">3</li>
-          <li onclick="searchOrgs(3);">4</li>
-          <li onclick="searchOrgs(4);">5</li>
-          <li onclick="searchOrgs(-2);"><span uk-pagination-next></span></li>
+        <ul id="pagination-list" class="uk-pagination uk-flex-center" uk-margin>
+          <!-- TODO: prev and next buttons exist but don't show up-->
         </ul>
         <p id="current-page" class="hidden">0</p>
       </div>
