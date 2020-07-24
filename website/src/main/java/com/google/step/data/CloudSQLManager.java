@@ -192,6 +192,8 @@ public final class CloudSQLManager {
     String sql = "ALTER TABLE g4npOrgs ADD (neighbor1 INTEGER, neighbor2 INTEGER, neighbor3 INTEGER, neighbor4 INTEGER);";
     PreparedStatement stmt = conn.prepareStatement(sql);
     stmt.execute();
+  }
+  
   public ResultSet getFirstUploadOrg(String tableName) throws SQLException {
     String query = String.format("SELECT * FROM %s ORDER BY id LIMIT 1", tableName);
     Statement stmt = this.conn.createStatement();
