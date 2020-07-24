@@ -1,6 +1,7 @@
 package com.google.step.data;
 
 import com.google.step.similarity.OrganizationsProtos.Organizations;
+import com.google.step.data.*;
 import com.opencsv.*;
 import com.opencsv.exceptions.CsvValidationException;
 import com.zaxxer.hikari.HikariConfig;
@@ -79,11 +80,20 @@ public final class CloudSQLManager {
   //Get distinct specifcied columns from table matching given clauses if any
   public ResultSet getDistinct(String tableName, List<String> columns, List<String> clauses) throws SQLException {
     String values = String.join(", ", columns);
-    String where = (clauses == null) ? ";" : String.format(" WHERE %s;", String.join("AND", clauses)); 
+    String where = (clauses == null) ? ";" : String.format(" WHERE %s;", String.join(" OR ", clauses)); 
     String query = String.format("SELECT DISTINCT %s FROM %s%s", values, tableName, where);
     Statement stmt = this.conn.createStatement();
     return stmt.executeQuery(query);
   }
+
+  //Get all GN4P orgs similar to org
+  public ResultSet getPossibleComparisons(String tableName, OrganizationInfo org) throws SQLException {
+    List<String> attributes = Arrays.asList(
+        String.format("name LIKE %s", "'%" + org.getName() + "%'"),
+        String.format("link LIKE %s", "'%" + org.getLink() + "%'"),
+        String.format("about LIKE %s", "'%" + org.getAbout() + "%'"));
+    return this.getDistinct(tableName, Arrays.asList("*"), attributes);
+  } 
 
   //create a prepared statement for insertion into a preexisting table
   public PreparedStatement buildInsertStatement(String tableName, List<String> columns) throws SQLException {
@@ -182,6 +192,29 @@ public final class CloudSQLManager {
     String sql = "ALTER TABLE g4npOrgs ADD (neighbor1 INTEGER, neighbor2 INTEGER, neighbor3 INTEGER, neighbor4 INTEGER);";
     PreparedStatement stmt = conn.prepareStatement(sql);
     stmt.execute();
+  public ResultSet getFirstUploadOrg(String tableName) throws SQLException {
+    String query = String.format("SELECT * FROM %s ORDER BY id LIMIT 1", tableName);
+    Statement stmt = this.conn.createStatement();
+    return stmt.executeQuery(query);
+  } 
+
+  public void deleteOrg(String tableName, int id) throws SQLException {
+    String updateQuery = String.format("DELETE FROM %s WHERE id=%d;", tableName, id);
+    Statement stmt = this.conn.createStatement();
+    stmt.executeUpdate(updateQuery);
+  }
+
+  //Helper functions for processing new CSV files
+  public int getLastEntryIndex(String tableName) {
+    try {
+      ResultSet maxIndexSet = this.getDistinct(tableName, Arrays.asList("MAX(id) AS id"), null); 
+      maxIndexSet.next();
+      int lastEntryIndex = maxIndexSet.getInt("id");
+    return lastEntryIndex;
+    } catch (SQLException ex) {
+      System.err.println(ex);
+      return 0;
+    }
   }
 
   public void alterTable() throws SQLException {

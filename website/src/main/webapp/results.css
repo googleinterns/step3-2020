@@ -123,3 +123,10 @@ color: rgba(0, 0, 0, 0.54)
 }
 
 
+#submission {
+  float: left;
+}
+
+#comparisons {
+  float:  right;
+}
