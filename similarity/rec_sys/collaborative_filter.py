@@ -34,7 +34,7 @@ def fill_knn(df, sorted):
   return result
 
 def main():
-  df = read_data('theoretical_data.csv')
+  df = read_data('../data/theoretical_data.csv')
   print(df)
   # calculate pearson coefficient
   corr = calc_pearson(df)
