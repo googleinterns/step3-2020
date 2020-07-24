@@ -97,7 +97,6 @@ public final class CloudSQLManager {
     String stmtText = String.format("INSERT INTO %s (%s) VALUES (%s);", 
         tableName, columnNames, String.join(",", placeHolders));
 
-    System.out.println(stmtText);
     return conn.prepareStatement(stmtText);
   }
 
@@ -256,7 +255,6 @@ public final class CloudSQLManager {
         statement.setInt(4, ids.get(2).intValue());
       }
       
-      System.out.println(statement);
       statement.execute();
     }
   }

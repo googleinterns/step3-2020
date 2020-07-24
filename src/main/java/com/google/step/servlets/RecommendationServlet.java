@@ -34,11 +34,9 @@ public class RecommendationServlet extends HttpServlet {
         ResultSet rs = database.getRecommendationForUser(userEmail);
         int[] recs = new int[3];
         if (rs.next()) { 
-          System.out.println("got here!!!" + rs.getInt("rec1"));
           recs[0] = rs.getInt("rec1");
           recs[1] = rs.getInt("rec2");
           recs[2] = rs.getInt("rec3");
-          System.out.println(recs[0]);
         }
 
         database.tearDown();
@@ -46,7 +44,6 @@ public class RecommendationServlet extends HttpServlet {
         response.setContentType("application/json; charset=UTF-8");
         response.setCharacterEncoding("UTF-8");
         Gson gson = new Gson();
-        System.out.println(gson.toJson(recs));
         response.getWriter().println(gson.toJson(recs));
       } catch (SQLException ex) {
         System.err.println(ex);
