@@ -50,7 +50,7 @@ public class DataServlet extends HttpServlet {
       //Set up Proxy for handling SQL server
       CloudSQLManager database = CloudSQLManager.setUp();
       //Get all distinct classifications to develop tree
-      ResultSet classes = database.getDistinct("orgTable", Arrays.asList("class"), Arrays.asList("class IS NOT NULL ORDER BY class DESC"));
+      ResultSet classes = database.getDistinct("g4npOrgs", Arrays.asList("class"), Arrays.asList("class IS NOT NULL ORDER BY class DESC"));
       Map<String, Set<String>> classTree = createClassificationTree(classes);
       // TreeSet<String> roots = new TreeSet(classTree.get("roots"));
       // printClassTree(classTree, roots, roots.first(), "" );
