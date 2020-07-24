@@ -34,9 +34,11 @@ public class RecommendationServlet extends HttpServlet {
         ResultSet rs = database.getRecommendationForUser(userEmail);
         int[] recs = new int[3];
         if (rs.next()) { 
+          System.out.println("got here!!!" + rs.getInt("rec1"));
           recs[0] = rs.getInt("rec1");
           recs[1] = rs.getInt("rec2");
           recs[2] = rs.getInt("rec3");
+          System.out.println(recs[0]);
         }
 
         database.tearDown();
@@ -44,6 +46,7 @@ public class RecommendationServlet extends HttpServlet {
         response.setContentType("application/json; charset=UTF-8");
         response.setCharacterEncoding("UTF-8");
         Gson gson = new Gson();
+        System.out.println(gson.toJson(recs));
         response.getWriter().println(gson.toJson(recs));
       } catch (SQLException ex) {
         System.err.println(ex);
@@ -64,38 +67,20 @@ public class RecommendationServlet extends HttpServlet {
       
       // Column Information for database to be created
       List<String> columns = Arrays.asList(
-          "email TEXT NOT NULL", 
+          "email VARCHAR(255) NOT NULL PRIMARY KEY", 
           "rec1 INT NOT NULL", 
           "rec2 INT NOT NULL", 
           "rec3 INT NOT NULL");
       // Create table for recommendations
       database.createTable(targetTable, columns);
 
-      PreparedStatement statement = database.buildInsertStatement(targetTable, columns);
       Map<String, List<Double>> people = (Map) jsonData.get("new");
-      passToStatement(people, statement);
+      database.uploadRecommendations(people);
 
       database.tearDown();
       response.sendRedirect("/upload_sql.html");
     } catch (SQLException ex) {
       System.err.println(ex);
-    } catch(Exception ex) {
-      System.err.println(ex);
-    }
-  }
-
-  private void passToStatement(Map<String, List<Double>> people, PreparedStatement statement) {
-    try {
-      // pass to SQL statement
-      for (String key : people.keySet()) {
-        System.out.println(key);
-        statement.setString(1, key);
-        List<Double> ids = people.get(key);
-        statement.setInt(2, ids.get(0).intValue());
-        statement.setInt(3, ids.get(1).intValue());
-        statement.setInt(4, ids.get(2).intValue());
-      }
-      statement.executeUpdate();
     } catch(Exception ex) {
       System.err.println(ex);
     }

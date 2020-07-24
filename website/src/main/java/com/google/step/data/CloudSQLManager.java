@@ -8,9 +8,9 @@ import com.zaxxer.hikari.HikariDataSource;
 import java.io.*;
 import java.sql.*;
 import javax.sql.DataSource;
-import java.util.List;
-import java.util.ArrayList;
+import java.util.*;
 import java.util.stream.Collectors;
+
 
 public final class CloudSQLManager {
   // Saving credentials in environment variables is convenient, but not secure - consider a more
@@ -96,6 +96,8 @@ public final class CloudSQLManager {
         .collect(Collectors.joining(","));
     String stmtText = String.format("INSERT INTO %s (%s) VALUES (%s);", 
         tableName, columnNames, String.join(",", placeHolders));
+
+    System.out.println(stmtText);
     return conn.prepareStatement(stmtText);
   }
 
@@ -200,8 +202,9 @@ public final class CloudSQLManager {
   }
 
   public ResultSet getRecommendationForUser(String email) throws SQLException {
-    String query = "SELECT * FROM recommendations WHERE email = '" + email;
+    String query = "SELECT * FROM recommendations WHERE email = '" + email + "';";
     Statement stmt = this.conn.createStatement();
+    System.out.println(stmt + "\n\n\n");
     return stmt.executeQuery(query);
   }
 
@@ -221,6 +224,21 @@ public final class CloudSQLManager {
       // execute the java preparedstatement
       preparedStmt.executeUpdate();
     }
+  }
+
+  public void uploadRecommendations(Map<String, List<Double>> people) throws SQLException {
+    String query = "INSERT INTO recommendations (email, rec1, rec2, rec3) VALUES (?, ?, ?, ?);";
+    PreparedStatement statement = this.conn.prepareStatement(query);
+    for (String key : people.keySet()) {
+        System.out.println(key);
+        statement.setString(1, key);
+        List<Double> ids = people.get(key);
+        statement.setInt(2, ids.get(0).intValue());
+        statement.setInt(3, ids.get(1).intValue());
+        statement.setInt(4, ids.get(2).intValue());
+        System.out.println(statement);
+      }
+      statement.execute();
   }
 
 }
