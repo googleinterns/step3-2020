@@ -18,6 +18,15 @@ public class RatingServlet extends HttpServlet {
 
   @Override
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    // TODO: run this once 
+    // try {
+    //   CloudSQLManager database = CloudSQLManager.setUp();
+    //   database.alterTable();
+    //   database.tearDown();
+    // } catch (SQLException ex) {
+    //   System.err.println(ex);
+    // }
+
     UserService userService = UserServiceFactory.getUserService();
     if (userService.isUserLoggedIn()) {
       String ratingString = request.getParameter("rating");

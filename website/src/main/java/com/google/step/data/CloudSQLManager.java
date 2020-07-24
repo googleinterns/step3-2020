@@ -1,5 +1,6 @@
 package com.google.step.data;
 
+import com.google.step.similarity.OrganizationsProtos.Organizations;
 import com.opencsv.*;
 import com.opencsv.exceptions.CsvValidationException;
 import com.zaxxer.hikari.HikariConfig;
@@ -112,7 +113,7 @@ public final class CloudSQLManager {
     String similarTo = (!keyword.isEmpty()) ? 
         "WHERE (name LIKE '%" + keyword + "%' OR about LIKE '% " + keyword + "%' OR class LIKE '%" + keyword + "%')" 
         : "";
-    String query = "SELECT COUNT(*) AS total FROM orgTable " + similarTo + ";";
+    String query = "SELECT COUNT(*) AS total FROM g4npOrgs " + similarTo + ";";
     Statement stmt = this.conn.createStatement();
     return stmt.executeQuery(query);
   }
@@ -121,7 +122,7 @@ public final class CloudSQLManager {
     String similarTo = (!keyword.isEmpty()) ? 
         "WHERE (name LIKE '%" + keyword + "%' OR about LIKE '% " + keyword + "%' OR class LIKE '%" + keyword + "%')" 
         : "";
-    String preliminaryQuery = String.format("(SELECT * FROM orgTable %s LIMIT " + offset + ", 10)", similarTo);    
+    String preliminaryQuery = String.format("(SELECT * FROM g4npOrgs %s LIMIT " + offset + ", 10)", similarTo);    
     String query = String.join("\n","SELECT",
             "preliminary.*, "  ,
             "n1.name AS neighbor1_name, ",
@@ -129,13 +130,13 @@ public final class CloudSQLManager {
             "n3.name AS neighbor3_name, ",
             "n4.name AS neighbor4_name ",
         String.format("FROM (%s) AS preliminary", preliminaryQuery),
-        "INNER JOIN orgTable AS n1 ",
+        "INNER JOIN g4npOrgs AS n1 ",
             "ON preliminary.neighbor1 = n1.id",
-        "INNER JOIN orgTable AS n2 ",
+        "INNER JOIN g4npOrgs AS n2 ",
             "ON preliminary.neighbor2 = n2.id",
-        "INNER JOIN orgTable AS n3 ",
+        "INNER JOIN g4npOrgs AS n3 ",
             "ON preliminary.neighbor3 = n3.id",
-        "INNER JOIN orgTable AS n4 ",
+        "INNER JOIN g4npOrgs AS n4 ",
             "ON preliminary.neighbor4 = n4.id",
         "ORDER BY upvotes DESC;");
     Statement stmt = this.conn.createStatement();
@@ -143,7 +144,7 @@ public final class CloudSQLManager {
   }
 
   public ResultSet getOrgDetails(int id) throws SQLException {
-    String preliminaryQuery = "SELECT * FROM orgTable WHERE id = " + id;
+    String preliminaryQuery = "SELECT * FROM g4npOrgs WHERE id = " + id;
     String query = String.join("\n","SELECT",
             "preliminary.*, "  ,
             "n1.name AS neighbor1_name, ",
@@ -151,13 +152,13 @@ public final class CloudSQLManager {
             "n3.name AS neighbor3_name, ",
             "n4.name AS neighbor4_name ",
         String.format("FROM (%s) AS preliminary", preliminaryQuery),
-        "INNER JOIN orgTable AS n1 ",
+        "INNER JOIN g4npOrgs AS n1 ",
             "ON preliminary.neighbor1 = n1.id",
-        "INNER JOIN orgTable AS n2 ",
+        "INNER JOIN g4npOrgs AS n2 ",
             "ON preliminary.neighbor2 = n2.id",
-        "INNER JOIN orgTable AS n3 ",
+        "INNER JOIN g4npOrgs AS n3 ",
             "ON preliminary.neighbor3 = n3.id",
-        "INNER JOIN orgTable AS n4 ",
+        "INNER JOIN g4npOrgs AS n4 ",
             "ON preliminary.neighbor4 = n4.id;");
     Statement stmt = this.conn.createStatement();
     return stmt.executeQuery(query);
@@ -175,20 +176,26 @@ public final class CloudSQLManager {
     stmt.executeUpdate(query);
   }
 
+  public void alterTableNeighbor() throws SQLException {
+    String sql = "ALTER TABLE g4npOrgs ADD (neighbor1 INTEGER, neighbor2 INTEGER, neighbor3 INTEGER, neighbor4 INTEGER);";
+    PreparedStatement stmt = conn.prepareStatement(sql);
+    stmt.execute();
+  }
+
   public void alterTable() throws SQLException {
-    String sql = "ALTER TABLE orgTable ADD (upvotes INTEGER);";
+    String sql = "ALTER TABLE g4npOrgs ADD (upvotes INTEGER);";
     PreparedStatement stmt = conn.prepareStatement(sql);
     stmt.execute();
   }
 
   public ResultSet getUpvotes(int id) throws SQLException {
-    String query = "SELECT upvotes FROM orgTable WHERE id = " + id;
+    String query = "SELECT upvotes FROM g4npOrgs WHERE id = " + id;
     Statement stmt = this.conn.createStatement();
     return stmt.executeQuery(query);
   }
 
   public void setUpvotes(int id, int votes) throws SQLException {
-    String query = "UPDATE orgTable SET upvotes = " + votes + " WHERE id = " + id;
+    String query = "UPDATE g4npOrgs SET upvotes = " + votes + " WHERE id = " + id;
     executeStatement(query);
   }
 
@@ -196,6 +203,24 @@ public final class CloudSQLManager {
     String query = "SELECT * FROM recommendations WHERE email = '" + email;
     Statement stmt = this.conn.createStatement();
     return stmt.executeQuery(query);
+  }
+
+  public void uploadKnn(List<Organizations.Organization> orgs) throws SQLException {
+    String query = "UPDATE g4npOrgs SET neighbor1 = ?, neighbor2 = ?, neighbor3 = ?, neighbor4 = ? where id = ?;";
+    // create the java mysql update preparedstatement
+    PreparedStatement preparedStmt = this.conn.prepareStatement(query);
+    int count = 0;
+    for (Organizations.Organization org : orgs) {
+      System.out.println(count++);
+      List<Organizations.Organization.Neighbor> neighbors = org.getNeighborsList();
+      preparedStmt.setInt(1, neighbors.get(0).getId());
+      preparedStmt.setInt(2, neighbors.get(1).getId());
+      preparedStmt.setInt(3, neighbors.get(2).getId());
+      preparedStmt.setInt(4, neighbors.get(3).getId());
+      preparedStmt.setInt(5, org.getId());
+      // execute the java preparedstatement
+      preparedStmt.executeUpdate();
+    }
   }
 
 }

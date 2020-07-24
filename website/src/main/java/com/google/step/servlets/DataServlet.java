@@ -40,7 +40,7 @@ import org.apache.commons.fileupload.servlet.ServletFileUpload;
 /** Servlet that returns some example content. TODO: modify this file to handle comments data */
 @WebServlet("/data")
 public class DataServlet extends HttpServlet {
-  private static String orgsWithClass = "orgTable";
+  private static String orgsWithClass = "g4npOrgs";
   private static String orgsToCheck = "submissionOrgs";
     
   @Override
