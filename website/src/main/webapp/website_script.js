@@ -373,8 +373,13 @@ function setUpDetailsPage() {
 function setUpRecommendations() {
   addListener();
   getClassifications();
-  getLoginStatus();
-  getRecommendations();
+  getLoginStatus().then(loggedIn => {
+    if (loggedIn) {
+      getRecommendations();
+    } else {
+      alert('Log in to get personalized recommendations');
+    }
+  });
 }
 
 function loadOrg() {
@@ -420,15 +425,17 @@ function getLoginStatus() {
       logoutElement.innerText = 'Logout';
       const loginIcon = document.getElementById('loginIcon')
       loginIcon.href = link;
-
+      return 1;
     } else {
       // is logged out
       const statusElement = document.getElementById('login-status');
+      statusElement.innerText = 'Please login  ';
       const loginElement = document.getElementById('login-link');
       loginElement.href = link;
       loginElement.innerText = 'Login';
       const loginIcon = document.getElementById('loginIcon')
       loginIcon.href = link;
+      return 0;
     }
   });
 }
@@ -444,13 +451,21 @@ function closeSearch() {
 }
 
 function getRecommendations() {
+  const statusElement = document.getElementById('login-status');
   const contentElement = document.getElementById('recommended-orgs');
-  const aboutElement = document.createElement('p');
-  aboutElement.innerText = 'Because you liked: ';
-  contentElement.appendChild(aboutElement);
+  
   fetch('/recommend').then(response => response.json()).then(text => {
     const rated = text[0];
     const recommended = text[1];
+
+    if (rated.length == 0) {
+      alert("Please rate some organizations first");
+      return;
+    }
+    const aboutElement = document.createElement('p');
+    aboutElement.innerText = 'Because you liked: ';
+    contentElement.appendChild(aboutElement);
+    
     const listElement = document.createElement('ul');
     rated.forEach(org => {
       listElement.appendChild(getOrgNameAndId(org));
