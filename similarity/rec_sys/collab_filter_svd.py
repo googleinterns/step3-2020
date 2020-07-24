@@ -13,7 +13,9 @@ def read_data(filename):
   return data.fillna(0)
 
 def svd(df, k):
-  data = df.drop(columns=['Name']).to_numpy()
+  # For demo random data
+  # data = df.drop(columns=['Name']).to_numpy()
+  data = df.to_numpy()
   sparse_matrix = csc_matrix(data, dtype=float)
   # take k most significant features
   u, s, v = svds(sparse_matrix, k)
@@ -61,9 +63,9 @@ def fill_with_neighbors(df, neighbors, user):
   for i, rated in enumerate(df[user]):
     if not rated:
       # find k-NN when the user matrix is too sparse
-      n1_index = neighbors[i].neighbors[0].id
-      n2_index = neighbors[i].neighbors[1].id
-      n3_index = neighbors[i].neighbors[2].id
+      n1_index = neighbors[i].neighbors[0].id - 1
+      n2_index = neighbors[i].neighbors[1].id - 1
+      n3_index = neighbors[i].neighbors[2].id - 1
       if df[user][n1_index]:
         df.at[n1_index, user] = df[user][n1_index]
       elif df[user][n1_index]:
@@ -72,7 +74,7 @@ def fill_with_neighbors(df, neighbors, user):
         df.at[n3_index, user] = df[user][n3_index]
       
 def fill_sparsity(df, user):
-  neighbors = read_proto('../data/neighbors.txt')
+  neighbors = read_proto('../data/0_10000_neighbors.txt')
   data = fill_with_neighbors(df, neighbors, user)
   return data
 
@@ -119,8 +121,8 @@ def make_k_recommendations(input, prediction, user, k=3):
 
 def get_recomendations(input, prediction, user, recommendations, liked_orgs, k=3):
   new_recommendations = []
-  # TODO: do not need -1 for real data
-  user_index = input.columns.get_loc(user) - 1
+  # -1 for demo random data
+  user_index = input.columns.get_loc(user)
 
   sorted = np.argsort(prediction[:, user_index])
   similar_indices = sorted[-1 - len(liked_orgs) - k: -1]
@@ -132,11 +134,11 @@ def get_recomendations(input, prediction, user, recommendations, liked_orgs, k=3
 def make_k_recommendations_for_all(input, prediction, recommendations):
   recommendations['previous'] = {}
   recommendations['new'] = {}
-  # for user in input.columns:
-  # TODO: temporary fix
-  for i, user in enumerate(input.columns):
-    if not i:
-      continue
+  for user in input.columns:
+  # temporary fix for demo random data
+  # for i, user in enumerate(input.columns):
+  #   if not i:
+  #     continue
 
     liked_orgs = get_prev_likes(input, user, recommendations)
     get_recomendations(input, prediction, user, recommendations, liked_orgs)
@@ -176,4 +178,4 @@ def recommend_to_all(filename):
 
 if __name__ == '__main__':
   # recommend_for_one_user('../data/random_ratings.csv', 'Tony')
-  recommend_to_all('../data/random_ratings.csv')
+  recommend_to_all('../data/user_ratings.csv')

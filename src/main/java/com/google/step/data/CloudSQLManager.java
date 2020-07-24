@@ -1,7 +1,6 @@
 package com.google.step.data;
 
 import com.google.step.similarity.OrganizationsProtos.Organizations;
-import com.google.step.data.*;
 import com.opencsv.*;
 import com.opencsv.exceptions.CsvValidationException;
 import com.zaxxer.hikari.HikariConfig;
@@ -80,20 +79,11 @@ public final class CloudSQLManager {
   //Get distinct specifcied columns from table matching given clauses if any
   public ResultSet getDistinct(String tableName, List<String> columns, List<String> clauses) throws SQLException {
     String values = String.join(", ", columns);
-    String where = (clauses == null) ? ";" : String.format(" WHERE %s;", String.join(" OR ", clauses)); 
+    String where = (clauses == null) ? ";" : String.format(" WHERE %s;", String.join("AND", clauses)); 
     String query = String.format("SELECT DISTINCT %s FROM %s%s", values, tableName, where);
     Statement stmt = this.conn.createStatement();
     return stmt.executeQuery(query);
   }
-
-  //Get all GN4P orgs similar to org
-  public ResultSet getPossibleComparisons(String tableName, OrganizationInfo org) throws SQLException {
-    List<String> attributes = Arrays.asList(
-        String.format("name LIKE %s", "'%" + org.getName() + "%'"),
-        String.format("link LIKE %s", "'%" + org.getLink() + "%'"),
-        String.format("about LIKE %s", "'%" + org.getAbout() + "%'"));
-    return this.getDistinct(tableName, Arrays.asList("*"), attributes);
-  } 
 
   //create a prepared statement for insertion into a preexisting table
   public PreparedStatement buildInsertStatement(String tableName, List<String> columns) throws SQLException {
@@ -107,7 +97,6 @@ public final class CloudSQLManager {
     String stmtText = String.format("INSERT INTO %s (%s) VALUES (%s);", 
         tableName, columnNames, String.join(",", placeHolders));
 
-    System.out.println(stmtText);
     return conn.prepareStatement(stmtText);
   }
 
@@ -126,6 +115,12 @@ public final class CloudSQLManager {
         "WHERE (name LIKE '%" + keyword + "%' OR about LIKE '% " + keyword + "%' OR class LIKE '%" + keyword + "%')" 
         : "";
     String query = "SELECT COUNT(*) AS total FROM g4npOrgs " + similarTo + ";";
+    Statement stmt = this.conn.createStatement();
+    return stmt.executeQuery(query);
+  }
+
+  public ResultSet checkIfExist(String email) throws SQLException {
+    String query = "SELECT COUNT(*) as rowExists from recommendations where email = '" + email + "';";
     Statement stmt = this.conn.createStatement();
     return stmt.executeQuery(query);
   }
@@ -193,31 +188,6 @@ public final class CloudSQLManager {
     PreparedStatement stmt = conn.prepareStatement(sql);
     stmt.execute();
   }
-  
-  public ResultSet getFirstUploadOrg(String tableName) throws SQLException {
-    String query = String.format("SELECT * FROM %s ORDER BY id LIMIT 1", tableName);
-    Statement stmt = this.conn.createStatement();
-    return stmt.executeQuery(query);
-  } 
-
-  public void deleteOrg(String tableName, int id) throws SQLException {
-    String updateQuery = String.format("DELETE FROM %s WHERE id=%d;", tableName, id);
-    Statement stmt = this.conn.createStatement();
-    stmt.executeUpdate(updateQuery);
-  }
-
-  //Helper functions for processing new CSV files
-  public int getLastEntryIndex(String tableName) {
-    try {
-      ResultSet maxIndexSet = this.getDistinct(tableName, Arrays.asList("MAX(id) AS id"), null); 
-      maxIndexSet.next();
-      int lastEntryIndex = maxIndexSet.getInt("id");
-    return lastEntryIndex;
-    } catch (SQLException ex) {
-      System.err.println(ex);
-      return 0;
-    }
-  }
 
   public void alterTable() throws SQLException {
     String sql = "ALTER TABLE g4npOrgs ADD (upvotes INTEGER);";
@@ -239,7 +209,6 @@ public final class CloudSQLManager {
   public ResultSet getRecommendationForUser(String email) throws SQLException {
     String query = "SELECT * FROM recommendations WHERE email = '" + email + "';";
     Statement stmt = this.conn.createStatement();
-    System.out.println(stmt + "\n\n\n");
     return stmt.executeQuery(query);
   }
 
@@ -262,18 +231,32 @@ public final class CloudSQLManager {
   }
 
   public void uploadRecommendations(Map<String, List<Double>> people) throws SQLException {
-    String query = "INSERT INTO recommendations (email, rec1, rec2, rec3) VALUES (?, ?, ?, ?);";
-    PreparedStatement statement = this.conn.prepareStatement(query);
-    for (String key : people.keySet()) {
-        System.out.println(key);
-        statement.setString(1, key);
-        List<Double> ids = people.get(key);
+    for (String email : people.keySet()) {
+      int rowExists = 0;
+      ResultSet rs = checkIfExist(email);
+      if (rs.next()) {
+        rowExists = rs.getInt("rowExists");
+      }
+      String query = "INSERT INTO recommendations (email, rec1, rec2, rec3) VALUES (?, ?, ?, ?);";
+      if (rowExists != 0) {
+        query = "UPDATE recommendations SET rec1 = ?, rec2 = ?, rec3 = ? where email = ?;";
+      }
+      PreparedStatement statement = this.conn.prepareStatement(query);
+      List<Double> ids = people.get(email);
+      if (rowExists != 0) {
+        statement.setInt(1, ids.get(0).intValue());
+        statement.setInt(2, ids.get(1).intValue());
+        statement.setInt(3, ids.get(2).intValue());
+        statement.setString(4, email);
+      } else {
+        statement.setString(1, email);
         statement.setInt(2, ids.get(0).intValue());
         statement.setInt(3, ids.get(1).intValue());
         statement.setInt(4, ids.get(2).intValue());
-        System.out.println(statement);
       }
+      
       statement.execute();
+    }
   }
 
 }

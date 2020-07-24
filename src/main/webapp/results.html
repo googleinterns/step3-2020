@@ -3,9 +3,10 @@
   <head>
     <meta charset="UTF-8">
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="results.css">
     <script src="website_script.js"></script>
-      
-    <!-- uikit framework   -->
+
+    <!-- uikit framework -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/uikit/3.5.4/css/uikit.min.css" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/uikit/3.5.4/js/uikit.min.js"></script>
     <!-- material design -->
@@ -14,7 +15,8 @@
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
   </head>
 
-  <body id="body" onload="setUpIndexpage();">
+  <body id="body" onload="setUpResults();">
+
     <!-- top navigation bar -->
     <div id="top-nav">
       <header class="mdc-top-app-bar">
@@ -26,6 +28,8 @@
             <span class="mdc-top-app-bar__title">Nonprofit Finder</span>
           </section>
           <section class="mdc-top-app-bar__section mdc-top-app-bar__section--align-end" role="toolbar">
+            <button class="material-icons mdc-top-app-bar__action-item mdc-icon-button" aria-label="Favorite">favorite</button>
+            <button class="material-icons mdc-top-app-bar__action-item mdc-icon-button" aria-label="Search" onclick="openSearch()">search</button>
             <p id="login-status"></p>
             <a id="login-link"></a>
             <a id="loginIcon"><button class="material-icons mdc-top-app-bar__action-item mdc-icon-button" aria-label="Options">account_circle</button></a>
@@ -35,18 +39,35 @@
     </div>
 
     <center>
-      <h1>Nonprofit Finder</h2>
-
-      <div id="search">
-        <input type="text" id="keyword" placeholder="Search by keyword">
-        <span class="material-icons" onclick="indexPageSearch();">search</span>
+      <!-- search by keyword -->
+      <div id="myOverlay" class="overlay">
+        <span class="closebtn material-icons" onclick="closeSearch()" title="Close Overlay">
+          <span class="material-icons">clear</span>
+        </span>
+        <div id="results-search">
+          <input type="text" id="keyword" placeholder="Search by keyword">
+          <!-- <span class="material-icons" onclick="searchOrgs(0);">search</span> -->
+        </div>      
       </div>
 
-      <div id= "side-nav">
-        <ul id="roots" class="uk-nav-default uk-nav-parent-icon" uk-nav>
+      <!-- display results -->
+      <br><br><br>
+      <h3 id="results-title"></h3>
+      <ul id="existing-organizations"></ul>
+
+      <!-- pagination -->
+      <div id="pagination">
+        <ul id="pagination-list" class="uk-pagination uk-flex-center" uk-margin>
+          <!-- TODO: prev and next buttons exist but don't show up-->
         </ul>
+        <p id="current-page" class="hidden">0</p>
       </div>
-
     </center>
+      
+    <!-- side navigation bar -->
+    <div id= "side-nav">
+      <div id="roots"></div>
+    </div>
+
   </body>
 </html>
