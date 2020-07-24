@@ -446,6 +446,8 @@ function closeSearch() {
 function getRecommendations() {
   const recommendElement = document.getElementById('recommended-orgs');
   fetch('/recommend').then(response => response.json()).then(text => {
+    const rated = text[0];
+    const recommended = text[1];
     
   });
 }

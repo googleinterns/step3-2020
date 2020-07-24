@@ -20,6 +20,15 @@ import org.apache.commons.fileupload.servlet.ServletFileUpload;
 public class RecommendationServlet extends HttpServlet {
 
   private static final String targetTable = "recommendations";
+  private static class Organization {
+    int index;
+    String name;
+
+    private Organization(int index, String name) {
+      this.index = index;
+      this.name = name;
+    }
+  }
 
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
@@ -31,20 +40,51 @@ public class RecommendationServlet extends HttpServlet {
       try {
         // Set up Proxy for handling SQL server
         CloudSQLManager database = CloudSQLManager.setUp();
+
+        ResultSet prev = database.getPreviousRatings(userEmail);
+        List<Organization> ratedOrgs = new ArrayList<>();
+        while (prev.next()) {
+          int id = prev.getInt("id");
+          String name = "";
+          ResultSet nameOfOrg = database.getOrgNameFromId(id);
+          if (nameOfOrg.next()) {
+            name = nameOfOrg.getString("name");
+            nameOfOrg.close();
+            ratedOrgs.add(new Organization(id, name));
+          }
+        }
+        prev.close();
+
         ResultSet rs = database.getRecommendationForUser(userEmail);
         int[] recs = new int[3];
         if (rs.next()) { 
           recs[0] = rs.getInt("rec1");
           recs[1] = rs.getInt("rec2");
           recs[2] = rs.getInt("rec3");
+          rs.close();
         }
-
+        List<Organization> recommendedOrgs = new ArrayList<>();
+        for (int id : recs) {
+          String name = "";
+          ResultSet nameOfOrg = database.getOrgNameFromId(id);
+          if (nameOfOrg.next()) {
+            name = nameOfOrg.getString("name");
+            nameOfOrg.close();
+            recommendedOrgs.add(new Organization(id, name));
+          }
+        }
         database.tearDown();
+
         // Send the JSON as the response
         response.setContentType("application/json; charset=UTF-8");
         response.setCharacterEncoding("UTF-8");
         Gson gson = new Gson();
-        response.getWriter().println(gson.toJson(recs));
+        String ratedJson = gson.toJson(ratedOrgs);
+        String recommendedJson = gson.toJson(recommendedOrgs);
+        String combined = "[" + ratedJson + "," + recommendedJson + "]";
+
+        System.out.println(combined);
+        response.getWriter().println(combined);
       } catch (SQLException ex) {
         System.err.println(ex);
       }

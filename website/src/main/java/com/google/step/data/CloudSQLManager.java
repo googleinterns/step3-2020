@@ -121,6 +121,12 @@ public final class CloudSQLManager {
     }
   }
 
+  public ResultSet checkIfExist(String email) throws SQLException {
+    String query = "SELECT COUNT(*) as rowExists from recommendations where email = '" + email + "';";
+    Statement stmt = this.conn.createStatement();
+    return stmt.executeQuery(query);
+  }
+
   public ResultSet countOrgsWithNeighbors(String keyword) throws SQLException {
     String similarTo = (!keyword.isEmpty()) ? 
         "WHERE (name LIKE '%" + keyword + "%' OR about LIKE '% " + keyword + "%' OR class LIKE '%" + keyword + "%')" 
@@ -178,6 +184,18 @@ public final class CloudSQLManager {
 
   public ResultSet getUserWithEmail(String email, int id) throws SQLException {
     String query = "SELECT rating FROM ratings WHERE email = '" + email + "' AND id = " + id;
+    Statement stmt = this.conn.createStatement();
+    return stmt.executeQuery(query);
+  }
+
+  public ResultSet getPreviousRatings(String email) throws SQLException {
+    String query = "SELECT id FROM ratings WHERE email = '" + email + "' AND rating > 0;";
+    Statement stmt = this.conn.createStatement();
+    return stmt.executeQuery(query);
+  }
+
+  public ResultSet getOrgNameFromId(int id) throws SQLException {
+    String query = "SELECT name FROM g4npOrgs WHERE id = " + id + ";";
     Statement stmt = this.conn.createStatement();
     return stmt.executeQuery(query);
   }
