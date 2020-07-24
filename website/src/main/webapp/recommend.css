@@ -41,3 +41,18 @@
 .overlay input[type=text]:hover {
   background: #f1f1f1;
 }
+
+h2 {
+  position: absolute;
+  text-align: center;
+  top: 40%;
+  left: 20%;
+}
+
+#recommended-orgs {
+  position: absolute;
+  text-align: center;
+  top: 50%;
+  left: 20%;
+}
+

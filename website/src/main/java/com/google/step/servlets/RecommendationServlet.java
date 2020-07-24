@@ -82,8 +82,6 @@ public class RecommendationServlet extends HttpServlet {
         String ratedJson = gson.toJson(ratedOrgs);
         String recommendedJson = gson.toJson(recommendedOrgs);
         String combined = "[" + ratedJson + "," + recommendedJson + "]";
-
-        System.out.println(combined);
         response.getWriter().println(combined);
       } catch (SQLException ex) {
         System.err.println(ex);

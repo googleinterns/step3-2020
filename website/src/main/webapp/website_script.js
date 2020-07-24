@@ -444,10 +444,37 @@ function closeSearch() {
 }
 
 function getRecommendations() {
-  const recommendElement = document.getElementById('recommended-orgs');
+  const contentElement = document.getElementById('recommended-orgs');
+  const aboutElement = document.createElement('p');
+  aboutElement.innerText = 'Because you liked: ';
+  contentElement.appendChild(aboutElement);
   fetch('/recommend').then(response => response.json()).then(text => {
     const rated = text[0];
     const recommended = text[1];
-    
+    const listElement = document.createElement('ul');
+    rated.forEach(org => {
+      listElement.appendChild(getOrgNameAndId(org));
+    });
+    contentElement.appendChild(listElement)
+
+    const textElement = document.createElement('p');
+    textElement.innerText = 'You might also be interested in: ';
+    contentElement.appendChild(textElement);
+
+    const liElement = document.createElement('ul');
+    recommended.forEach(org => {
+      liElement.appendChild(getOrgNameAndId(org));
+    });
+    contentElement.appendChild(liElement);
   });
+}
+
+function getOrgNameAndId(org) {
+  const listElement = document.createElement('li');
+  const nameElement = document.createElement('a');
+  const redirect = '/organization.html?' + updateQueryString('id', org.index);
+  nameElement.setAttribute('href', redirect);
+  nameElement.innerText = org.name;
+  listElement.appendChild(nameElement);
+  return listElement;
 }
