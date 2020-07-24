@@ -18,10 +18,6 @@ function searchOrgs(page, key) {
   if (key === undefined) {
     keyword = document.getElementById('keyword').value;
   }
-  if (keyword === '') {
-    const url = new URL(window.location.href);
-    keyword = url.searchParams.get('keyword');
-  }
   const qs = '/sql?' + updateQueryString('keyword', keyword) + '&' + updateQueryString('page', pageElement.innerText);
   addTitle(keyword);
   addOrgs(qs, 1);
@@ -32,7 +28,7 @@ function search() {
   redirectKeyword(keyword);
 }
 
-function addPagination(count) {
+function addPagination(count, keyword) {
   const activePage = document.getElementById('current-page').innerText;
   // TODO: highlight the current active page
   document.getElementById('pagination').style.display = 'inline-block';
@@ -42,7 +38,7 @@ function addPagination(count) {
     
     const prevPage = document.createElement('li');
     prevPage.className = 'page_num';
-    prevPage.onclick = function() { searchOrgs(-1); };
+    prevPage.onclick = function() { searchOrgs(-1, keyword); };
     prevPage.innerText = 'prev';
     // TODO: make the prev and next spans show up
     // const prevPageSpan = document.createElement('span');
@@ -55,14 +51,14 @@ function addPagination(count) {
       var pageElement = document.createElement('li');
       const index = i - 1;
       pageElement.className = 'page_num';
-      pageElement.onclick = function() { searchOrgs(index); };
+      pageElement.onclick = function() { searchOrgs(index, keyword); };
       pageElement.innerText = i;
       paginationElement.appendChild(pageElement);
     }
 
     const nextPage = document.createElement('li');
     nextPage.className = 'page_num';
-    nextPage.onclick = function() { searchOrgs(-2); };
+    nextPage.onclick = function() { searchOrgs(-2, keyword); };
     nextPage.innerText = 'next';
     // const nextPageSpan = document.createElement('span');
     // nextPageSpan.className = 'uk-pagination-next';
@@ -220,6 +216,18 @@ function addListener() {
   });
 }
 
+function addListenerResults() {
+  const inputBox = document.getElementById('keyword');
+  inputBox.addEventListener('keyup', function(event) {
+    if (event.key === 'Enter') {
+      var keyword = document.getElementById('keyword').value;
+      addTitle(keyword);
+      searchOrgs(0, keyword);
+      closeSearch();
+    }
+  });
+}
+
 function addIndexListener() {
   const inputBox = document.getElementById('keyword');
   inputBox.addEventListener('keyup', function(event) {
@@ -300,12 +308,21 @@ function addToClassTree(tree, parent, classPath) {
     tree[parent].forEach(child => nested.firstChild.firstChild.appendChild(addToClassTree(tree, child, classPath + '/' + child)));
     pathElem.appendChild(nested);
   } 
-  //Event for opening accordion
-  pathElem.addEventListener('mouseover',navItemActivate);
+  // Event for opening accordion
+  pathElem.addEventListener('mouseover', navItemActivate);
   // Event for making query
-  pathElem.addEventListener('click', function() {
-    redirectKeyword(classPath);
-  });
+  const pageElement = document.getElementById('current-page');
+  pathElem.onclick = function() {
+    if (!pageElement) {	
+      redirectKeyword(classPath);	
+    } else {	
+      const qs = '/sql?' + updateQueryString('keyword', classPath) + '&' + updateQueryString('page', pageElement.innerText);	
+      removeChildren('existing-organizations');	
+      addTitle(classPath);	
+      addPagination();	
+      addOrgs(qs, 1);	
+    }	
+  };
 
   return pathElem;
 }
@@ -340,7 +357,7 @@ function navItemDeactivate() {
 }
 
 function setUpResults() {
-  addListener();
+  addListenerResults();
   getClassifications();
   getResults();
   getLoginStatus();

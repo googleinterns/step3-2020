@@ -15,38 +15,37 @@
   </head>
 
   <body id="body" onload="setUpIndexpage();">
-  <!-- top navigation bar -->
-  <div id="top-nav">
-    <header class="mdc-top-app-bar">
-      <div class="mdc-top-app-bar__row">
-        <section class="mdc-top-app-bar__section mdc-top-app-bar__section--align-start">
-          <button class="material-icons mdc-top-app-bar__navigation-icon mdc-icon-button" aria-label="Open navigation menu">menu</button>
-          <a href="/index.html"><button class="material-icons mdc-top-app-bar__action-item mdc-icon-button" aria-label="Home">home</button></a>
-          <a href="/about.html"><span title='about'>About</span></a>
-          <span class="mdc-top-app-bar__title">Nonprofit Finder</span>
-        </section>
-        <section class="mdc-top-app-bar__section mdc-top-app-bar__section--align-end" role="toolbar">
-          <p id="login-status"></p>
-          <a id="login-link"></a>
-          <a id="loginIcon"><button class="material-icons mdc-top-app-bar__action-item mdc-icon-button" aria-label="Options">account_circle</button></a>
-        </section>
-      </div>
-    </header>
-  </div>
+    <!-- top navigation bar -->
+    <div id="top-nav">
+      <header class="mdc-top-app-bar">
+        <div class="mdc-top-app-bar__row">
+          <section class="mdc-top-app-bar__section mdc-top-app-bar__section--align-start">
+            <button class="material-icons mdc-top-app-bar__navigation-icon mdc-icon-button" aria-label="Open navigation menu">menu</button>
+            <a href="/index.html"><button class="material-icons mdc-top-app-bar__action-item mdc-icon-button" aria-label="Home">home</button></a>
+            <a href="/about.html"><span title='about'>About</span></a>
+            <span class="mdc-top-app-bar__title">Nonprofit Finder</span>
+          </section>
+          <section class="mdc-top-app-bar__section mdc-top-app-bar__section--align-end" role="toolbar">
+            <p id="login-status"></p>
+            <a id="login-link"></a>
+            <a id="loginIcon"><button class="material-icons mdc-top-app-bar__action-item mdc-icon-button" aria-label="Options">account_circle</button></a>
+          </section>
+        </div>
+      </header>
     </div>
 
     <center>
-    <h1>Nonprofit Finder</h2>
+      <h1>Nonprofit Finder</h2>
 
-    <div id="search">
-      <input type="text" id="keyword" placeholder="Search by keyword">
-      <span class="material-icons" onclick="indexPageSearch();">search</span>
-    </div>
+      <div id="search">
+        <input type="text" id="keyword" placeholder="Search by keyword">
+        <span class="material-icons" onclick="indexPageSearch();">search</span>
+      </div>
 
-    <div id= "side-nav">
-      <ul id="roots" class="uk-nav-default uk-nav-parent-icon" uk-nav>
-      </ul>
-    </div>
+      <div id= "side-nav">
+        <ul id="roots" class="uk-nav-default uk-nav-parent-icon" uk-nav>
+        </ul>
+      </div>
 
     </center>
   </body>
