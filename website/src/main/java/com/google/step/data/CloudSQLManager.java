@@ -121,6 +121,12 @@ public final class CloudSQLManager {
     }
   }
 
+  public ResultSet checkIfExist(String email) throws SQLException {
+    String query = "SELECT COUNT(*) as rowExists from recommendations where email = '" + email + "';";
+    Statement stmt = this.conn.createStatement();
+    return stmt.executeQuery(query);
+  }
+
   public ResultSet countOrgsWithNeighbors(String keyword) throws SQLException {
     String similarTo = (!keyword.isEmpty()) ? 
         "WHERE (name LIKE '%" + keyword + "%' OR about LIKE '% " + keyword + "%' OR class LIKE '%" + keyword + "%')" 
@@ -182,6 +188,18 @@ public final class CloudSQLManager {
     return stmt.executeQuery(query);
   }
 
+  public ResultSet getPreviousRatings(String email) throws SQLException {
+    String query = "SELECT id FROM ratings WHERE email = '" + email + "' AND rating > 0;";
+    Statement stmt = this.conn.createStatement();
+    return stmt.executeQuery(query);
+  }
+
+  public ResultSet getOrgNameFromId(int id) throws SQLException {
+    String query = "SELECT name FROM g4npOrgs WHERE id = " + id + ";";
+    Statement stmt = this.conn.createStatement();
+    return stmt.executeQuery(query);
+  }
+
   public void executeStatement(String query) throws SQLException {
     // create the java mysql update preparedstatement
     Statement stmt = this.conn.createStatement();
@@ -239,7 +257,6 @@ public final class CloudSQLManager {
   public ResultSet getRecommendationForUser(String email) throws SQLException {
     String query = "SELECT * FROM recommendations WHERE email = '" + email + "';";
     Statement stmt = this.conn.createStatement();
-    System.out.println(stmt + "\n\n\n");
     return stmt.executeQuery(query);
   }
 
@@ -262,18 +279,32 @@ public final class CloudSQLManager {
   }
 
   public void uploadRecommendations(Map<String, List<Double>> people) throws SQLException {
-    String query = "INSERT INTO recommendations (email, rec1, rec2, rec3) VALUES (?, ?, ?, ?);";
-    PreparedStatement statement = this.conn.prepareStatement(query);
-    for (String key : people.keySet()) {
-        System.out.println(key);
-        statement.setString(1, key);
-        List<Double> ids = people.get(key);
+    for (String email : people.keySet()) {
+      int rowExists = 0;
+      ResultSet rs = checkIfExist(email);
+      if (rs.next()) {
+        rowExists = rs.getInt("rowExists");
+      }
+      String query = "INSERT INTO recommendations (email, rec1, rec2, rec3) VALUES (?, ?, ?, ?);";
+      if (rowExists != 0) {
+        query = "UPDATE recommendations SET rec1 = ?, rec2 = ?, rec3 = ? where email = ?;";
+      }
+      PreparedStatement statement = this.conn.prepareStatement(query);
+      List<Double> ids = people.get(email);
+      if (rowExists != 0) {
+        statement.setInt(1, ids.get(0).intValue());
+        statement.setInt(2, ids.get(1).intValue());
+        statement.setInt(3, ids.get(2).intValue());
+        statement.setString(4, email);
+      } else {
+        statement.setString(1, email);
         statement.setInt(2, ids.get(0).intValue());
         statement.setInt(3, ids.get(1).intValue());
         statement.setInt(4, ids.get(2).intValue());
-        System.out.println(statement);
       }
+      
       statement.execute();
+    }
   }
 
 }

@@ -370,6 +370,18 @@ function setUpDetailsPage() {
   getLoginStatus();
 }
 
+function setUpRecommendations() {
+  addListener();
+  getClassifications();
+  getLoginStatus().then(loggedIn => {
+    if (loggedIn) {
+      getRecommendations();
+    } else {
+      alert('Log in to get personalized recommendations');
+    }
+  });
+}
+
 function loadOrg() {
   const url = new URL(window.location.href);
   const id = url.searchParams.get('id');
@@ -413,15 +425,17 @@ function getLoginStatus() {
       logoutElement.innerText = 'Logout';
       const loginIcon = document.getElementById('loginIcon')
       loginIcon.href = link;
-
+      return 1;
     } else {
       // is logged out
       const statusElement = document.getElementById('login-status');
+      statusElement.innerText = 'Please login  ';
       const loginElement = document.getElementById('login-link');
       loginElement.href = link;
       loginElement.innerText = 'Login';
       const loginIcon = document.getElementById('loginIcon')
       loginIcon.href = link;
+      return 0;
     }
   });
 }
@@ -434,4 +448,48 @@ function openSearch() {
 /** Close the search box */
 function closeSearch() {
   document.getElementById("myOverlay").style.display = "none";
+}
+
+function getRecommendations() {
+  const statusElement = document.getElementById('login-status');
+  const contentElement = document.getElementById('recommended-orgs');
+  
+  fetch('/recommend').then(response => response.json()).then(text => {
+    const rated = text[0];
+    const recommended = text[1];
+
+    if (rated.length == 0) {
+      alert("Please rate some organizations first");
+      return;
+    }
+    const aboutElement = document.createElement('p');
+    aboutElement.innerText = 'Because you liked: ';
+    contentElement.appendChild(aboutElement);
+    
+    const listElement = document.createElement('ul');
+    rated.forEach(org => {
+      listElement.appendChild(getOrgNameAndId(org));
+    });
+    contentElement.appendChild(listElement)
+
+    const textElement = document.createElement('p');
+    textElement.innerText = 'You might also be interested in: ';
+    contentElement.appendChild(textElement);
+
+    const liElement = document.createElement('ul');
+    recommended.forEach(org => {
+      liElement.appendChild(getOrgNameAndId(org));
+    });
+    contentElement.appendChild(liElement);
+  });
+}
+
+function getOrgNameAndId(org) {
+  const listElement = document.createElement('li');
+  const nameElement = document.createElement('a');
+  const redirect = '/organization.html?' + updateQueryString('id', org.index);
+  nameElement.setAttribute('href', redirect);
+  nameElement.innerText = org.name;
+  listElement.appendChild(nameElement);
+  return listElement;
 }
