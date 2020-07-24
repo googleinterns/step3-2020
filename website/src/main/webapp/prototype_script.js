@@ -171,3 +171,63 @@ function openSearch() {
 function closeSearch() {
   document.getElementById("myOverlay").style.display = "none";
 }
+
+function getUploads() {
+  const qs = "/verify";
+  fetch(qs).then(response => response.json()).then(comparisonMap => {
+    console.log(comparisonMap);
+    const submission = document.getElementById('submission');
+    const comparisons = document.getElementById('comparisons');
+    submission.appendChild(getOrgUploadHtmlDescription(comparisonMap["submission"][0], true));
+    comparisonMap["similar"].forEach( org => comparisons.appendChild(getOrgUploadHtmlDescription(org, false)));
+  });
+}
+
+
+
+/**
+ * Creates list element from org
+ */
+function getOrgUploadHtmlDescription(org, submission) {
+  const orgElement = document.createElement('div');
+  orgElement.setAttribute("class", "mdc-card");
+  //org name
+  const nameElement = document.createElement('h3');
+  nameElement.setAttribute("id", "org-name");
+  nameElement.innerText = org.name;
+  orgElement.appendChild(nameElement);
+  //org link
+  const linkElement = document.createElement('a');
+  linkElement.setAttribute("id", "org-link");
+  linkElement.setAttribute('href', 'https://' + org.link);
+  linkElement.setAttribute('target', '_blank');
+  linkElement.innerText = 'https://' + org.link;
+  orgElement.appendChild(linkElement);
+  //about
+  const aboutElement = document.createElement('p');
+  aboutElement.setAttribute("id", "about");
+  aboutElement.innerText = org.about;
+  orgElement.appendChild(aboutElement);
+  
+  if (submission) {
+    const approve = document.createElement('button');
+    approve.onclick = function() { sendUploadDecision("approve", org.id); }
+    approve.innerText = 'Approve';
+    const discard = document.createElement('button');
+    discard.onclick = function() { sendUploadDecision("discard", org.id); }
+    discard.innerText = 'Discard';
+
+    orgElement.appendChild(approve);
+    orgElement.appendChild(discard);
+  }
+
+  return orgElement;
+}
+
+function sendUploadDecision(decision, id) { 
+  const params = "do=" + decision + '&id=' + id;
+  fetch('/verify?' + params, {method: 'POST'}).then(response => {
+    console.log("Request complete! response:", response);
+    location.reload();
+  });
+}

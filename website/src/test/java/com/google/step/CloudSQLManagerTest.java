@@ -1,5 +1,8 @@
 package com.google.step;
 
+import com.google.cloud.language.v1.ClassifyTextRequest;
+import com.google.cloud.language.v1.ClassifyTextResponse;
+import com.google.cloud.language.v1.ClassificationCategory;
 import com.google.step.data.*;
 import com.opencsv.*;
 import java.util.*;
@@ -56,5 +59,38 @@ public final class CloudSQLManagerTest {
       String actual = result.getString(testColumns.get(i));
       Assert.assertEquals(expected, actual);
     }  
+  }
+
+  private final class MockClassHandler implements ClassHandler {
+    @Override
+    public ClassifyTextResponse classifyRequest(ClassifyTextRequest request) {
+      ClassificationCategory c = ClassificationCategory.newBuilder().build()
+          .toBuilder().setName("/Coding/Java/Testing/Unit").build();
+      ClassifyTextResponse mockClassifyResponse = ClassifyTextResponse.newBuilder()
+          .addCategories(c).build();
+      return mockClassifyResponse;
+    }
+  }
+
+  private static String orgName = "Test For Humanity";
+  private static String orgMission = "Here at test for humanity we hope to provide great testing for all of our code bases. And with that enough said.";
+  private static String orgLink = "www.testing.org";
+
+  @Test
+  public void querySimilarOrgsTest() throws SQLException {
+    Mockito.when(mockConnection.createStatement()).thenReturn(mockStatement);
+    Mockito.when(mockStatement.executeQuery(Mockito.anyString())).thenReturn(mockResultSet);
+    String[] record = {orgName, orgLink, orgMission};
+    OrganizationInfo fakeOrg = 
+        OrganizationInfo.getClassifiedOrgFrom(record, 0, new MockClassHandler());
+    mockSQLManager.getPossibleComparisons("fakeTable", fakeOrg);
+    String nme = "'%" + orgName + "%'";
+    String abt = "'%" + orgMission + "%'";
+    String lnk = "'%" + orgLink + "%'";
+    String expected = String.format("SELECT DISTINCT * FROM fakeTable WHERE name LIKE %s OR link LIKE %s OR about LIKE %s;",
+        nme, lnk, abt);
+
+    Mockito.verify(mockStatement).executeQuery(expected);
+    
   }
 }
