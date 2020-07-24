@@ -370,6 +370,13 @@ function setUpDetailsPage() {
   getLoginStatus();
 }
 
+function setUpRecommendations() {
+  addListener();
+  getClassifications();
+  getLoginStatus();
+  getRecommendations();
+}
+
 function loadOrg() {
   const url = new URL(window.location.href);
   const id = url.searchParams.get('id');
@@ -434,4 +441,11 @@ function openSearch() {
 /** Close the search box */
 function closeSearch() {
   document.getElementById("myOverlay").style.display = "none";
+}
+
+function getRecommendations() {
+  const recommendElement = document.getElementById('recommended-orgs');
+  fetch('/recommend').then(response => response.json()).then(text => {
+    
+  });
 }
