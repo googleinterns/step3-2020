@@ -97,7 +97,6 @@ public final class CloudSQLManager {
     String stmtText = String.format("INSERT INTO %s (%s) VALUES (%s);", 
         tableName, columnNames, String.join(",", placeHolders));
 
-    System.out.println(stmtText);
     return conn.prepareStatement(stmtText);
   }
 
@@ -116,6 +115,12 @@ public final class CloudSQLManager {
         "WHERE (name LIKE '%" + keyword + "%' OR about LIKE '% " + keyword + "%' OR class LIKE '%" + keyword + "%')" 
         : "";
     String query = "SELECT COUNT(*) AS total FROM g4npOrgs " + similarTo + ";";
+    Statement stmt = this.conn.createStatement();
+    return stmt.executeQuery(query);
+  }
+
+  public ResultSet checkIfExist(String email) throws SQLException {
+    String query = "SELECT COUNT(*) as rowExists from recommendations where email = '" + email + "';";
     Statement stmt = this.conn.createStatement();
     return stmt.executeQuery(query);
   }
@@ -204,7 +209,6 @@ public final class CloudSQLManager {
   public ResultSet getRecommendationForUser(String email) throws SQLException {
     String query = "SELECT * FROM recommendations WHERE email = '" + email + "';";
     Statement stmt = this.conn.createStatement();
-    System.out.println(stmt + "\n\n\n");
     return stmt.executeQuery(query);
   }
 
@@ -227,18 +231,32 @@ public final class CloudSQLManager {
   }
 
   public void uploadRecommendations(Map<String, List<Double>> people) throws SQLException {
-    String query = "INSERT INTO recommendations (email, rec1, rec2, rec3) VALUES (?, ?, ?, ?);";
-    PreparedStatement statement = this.conn.prepareStatement(query);
-    for (String key : people.keySet()) {
-        System.out.println(key);
-        statement.setString(1, key);
-        List<Double> ids = people.get(key);
+    for (String email : people.keySet()) {
+      int rowExists = 0;
+      ResultSet rs = checkIfExist(email);
+      if (rs.next()) {
+        rowExists = rs.getInt("rowExists");
+      }
+      String query = "INSERT INTO recommendations (email, rec1, rec2, rec3) VALUES (?, ?, ?, ?);";
+      if (rowExists != 0) {
+        query = "UPDATE recommendations SET rec1 = ?, rec2 = ?, rec3 = ? where email = ?;";
+      }
+      PreparedStatement statement = this.conn.prepareStatement(query);
+      List<Double> ids = people.get(email);
+      if (rowExists != 0) {
+        statement.setInt(1, ids.get(0).intValue());
+        statement.setInt(2, ids.get(1).intValue());
+        statement.setInt(3, ids.get(2).intValue());
+        statement.setString(4, email);
+      } else {
+        statement.setString(1, email);
         statement.setInt(2, ids.get(0).intValue());
         statement.setInt(3, ids.get(1).intValue());
         statement.setInt(4, ids.get(2).intValue());
-        System.out.println(statement);
       }
+      
       statement.execute();
+    }
   }
 
 }
