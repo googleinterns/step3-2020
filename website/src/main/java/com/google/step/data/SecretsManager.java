@@ -30,9 +30,9 @@ public class SecretsManager {
 
   public static List<String> accessSecretVersion() {
     // TODO(developer): Replace these variables before running the sample.
-    String projectId = "mit-step-2020";
+    String projectId = "228403351598";
     String secretId = "sqlTestEnvironment";
-    String versionId = "projects/228403351598/secrets/sqlTestEnvironment/versions/1";
+    String versionId = "1";
     String secrets = accessSecretVersion(projectId, secretId, versionId);
     return Arrays.asList(secrets.split("/", 0));
   }
