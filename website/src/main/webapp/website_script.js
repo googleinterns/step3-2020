@@ -32,7 +32,7 @@ function addPagination(count, keyword) {
   const activePage = document.getElementById('current-page').innerText;
   // TODO: highlight the current active page
   document.getElementById('pagination').style.display = 'inline-block';
-  if (count) {
+  if (count !== undefined) {
     removeChildren('pagination-list');
     const paginationElement = document.getElementById('pagination-list');
     
