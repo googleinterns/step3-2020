@@ -13,7 +13,9 @@ def read_data(filename):
   return data.fillna(0)
 
 def svd(df, k):
-  data = df.drop(columns=['Name']).to_numpy()
+  # For demo random data
+  # data = df.drop(columns=['Name']).to_numpy()
+  data = df.to_numpy()
   sparse_matrix = csc_matrix(data, dtype=float)
   # take k most significant features
   u, s, v = svds(sparse_matrix, k)
@@ -61,9 +63,9 @@ def fill_with_neighbors(df, neighbors, user):
   for i, rated in enumerate(df[user]):
     if not rated:
       # find k-NN when the user matrix is too sparse
-      n1_index = neighbors[i].neighbors[0].id
-      n2_index = neighbors[i].neighbors[1].id
-      n3_index = neighbors[i].neighbors[2].id
+      n1_index = neighbors[i].neighbors[0].id - 1
+      n2_index = neighbors[i].neighbors[1].id - 1
+      n3_index = neighbors[i].neighbors[2].id - 1
       if df[user][n1_index]:
         df.at[n1_index, user] = df[user][n1_index]
       elif df[user][n1_index]:
