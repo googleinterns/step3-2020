@@ -39,8 +39,8 @@ def generate_dataframe(data, size):
   return df
 
 def gen_from_sql(path):
-  # TODO: get the actaul number of organizations
-  size = 8000
+  # number of organizations in the database
+  size = 6295
   data = read_json(path)
   df = generate_dataframe(data, size)
   df.to_csv(path + 'user_ratings.csv', index=False)
