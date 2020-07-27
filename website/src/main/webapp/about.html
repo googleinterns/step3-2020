@@ -12,10 +12,10 @@
     <script src="https://unpkg.com/material-components-web@latest/dist/material-components-web.min.js"></script>
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
   </head>
-  <body id="body" onload="setUpAboutPage();">
+  <body id="body" onload="navbar();setUpAboutPage(); ">
   <!-- top navigation bar -->
   <div id="top-nav">
-    <header class="mdc-top-app-bar" id="app-bar">
+    <!-- <header class="mdc-top-app-bar" id="app-bar">
       <div class="mdc-top-app-bar__row">
         <section class="mdc-top-app-bar__section mdc-top-app-bar__section--align-start">
           <button onclick="openHamburger();" class="material-icons mdc-top-app-bar__navigation-icon mdc-icon-button" aria-label="Open navigation menu">menu</button>
@@ -31,8 +31,15 @@
           <a id="loginIcon"><button class="material-icons mdc-top-app-bar__action-item mdc-icon-button" aria-label="Options">account_circle</button></a>
         </section>
       </div>
-    </header>
+    </header> -->
   </div>
+
+        <div id= "side-nav">
+        <ul id="roots" class="uk-nav-default uk-nav-parent-icon" uk-nav>
+        </ul>
+        </div>
+
+  
   <!-- search by keyword -->
       <div id="myOverlay" class="overlay">
         <span class="closebtn material-icons" onclick="closeSearch()" title="Close Overlay">
@@ -255,7 +262,6 @@
       </div>
       </div>
     </div>
-  </div>
   <br>
   <div id="data-aquisition">
     <h3>Disclaimers on Data Aquisition</h3>
@@ -272,7 +278,8 @@
     </div>
 
   </div>
-    
+      </div>
+
 
 
 
