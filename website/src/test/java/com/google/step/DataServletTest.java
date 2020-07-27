@@ -38,6 +38,7 @@ public final class DataServletTest {
       Arrays.asList("Coding3","3Testing3","3Test"),
       Arrays.asList("Coding3","3Testing3","3Test"),
       Arrays.asList("Coding3","3Testing4","3Test4"),
+      Arrays.asList("Coding7"),
       Arrays.asList("Coding3","3Testing4","3Test5"));
 
   @Mock
@@ -59,6 +60,7 @@ public final class DataServletTest {
         true, 
         true, 
         true, 
+        true,
         false
     );
     Mockito.when(classes.getString("class")).thenReturn(
@@ -74,21 +76,23 @@ public final class DataServletTest {
         String.join("/", testClasses.get(9)),
         String.join("/", testClasses.get(10)),
         String.join("/", testClasses.get(11)),
-        String.join("/", testClasses.get(12)) 
-    );
+        String.join("/", testClasses.get(12)),
+        String.join("/", testClasses.get(13)));
         
     testTree = DataServlet.createClassificationTree(classes);
   }
 
   @Test
   public void rootsListTest() {
-    int expectedSize = 4;
-    int actualSize = testTree.get("roots").size();
-    Assert.assertEquals(expectedSize, actualSize);
     Assert.assertTrue(testTree.get("roots").contains("Coding"));
     Assert.assertTrue(testTree.get("roots").contains("Coding1"));
     Assert.assertTrue(testTree.get("roots").contains("Coding2"));
     Assert.assertTrue(testTree.get("roots").contains("Coding3"));
+    Assert.assertTrue(testTree.get("roots").contains("Miscellaneous"));
+    Assert.assertFalse(testTree.get("roots").contains("Coding7"));
+    int expectedSize = 5;
+    int actualSize = testTree.get("roots").size();
+    Assert.assertEquals(expectedSize, actualSize);
   }
 
   @Test
@@ -106,6 +110,9 @@ public final class DataServletTest {
     Assert.assertEquals(2, testTree.get("Coding3").size());
     Assert.assertTrue(testTree.get("Coding3").contains("3Testing3"));
     Assert.assertTrue(testTree.get("Coding3").contains("3Testing4"));
+
+    Assert.assertEquals(1, testTree.get("Miscellaneous").size());
+    Assert.assertTrue(testTree.get("Miscellaneous").contains("Coding7"));
   }
 
   @Test
@@ -120,6 +127,7 @@ public final class DataServletTest {
     Assert.assertTrue(testTree.get("3Test").isEmpty());
     Assert.assertTrue(testTree.get("3Test4").isEmpty());
     Assert.assertTrue(testTree.get("3Test5").isEmpty());
+    Assert.assertTrue(testTree.get("Coding7").isEmpty());
   }
 
   
