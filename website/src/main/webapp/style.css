@@ -79,3 +79,7 @@ h1 {
 .hidden {
   display: none;
 }
+
+#search-icon {
+  cursor:pointer;
+}

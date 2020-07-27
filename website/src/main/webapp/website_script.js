@@ -206,6 +206,12 @@ function redirectRating(up, id) {
   event.stopPropagation();
 }
 
+function indexPageSearch() {
+  const keywordInput = document.getElementById('keyword');
+  const keyword = keywordInput.value;
+  redirectKeyword(keyword);
+}
+
 function redirectKeyword(keyword) {
   const qs = updateQueryString('keyword', keyword);
   const redirect = '/results.html?' + qs;
