@@ -424,7 +424,7 @@ function getLoginStatus() {
       if (!link.includes('http')) {
         logoutElement.href = link;
       } else {
-        logoutElement.href = 'https://mit-step-2020.wl.r.appspot.com/_ah/logout?continue=mit-step-2020.wl.r.appspot.com/';
+        logoutElement.href = 'https://mit-step-2020.wl.r.appspot.com/_ah/logout?continue=https://mit-step-2020.wl.r.appspot.com/';
       }
       logoutElement.innerText = 'Logout';
       const loginIcon = document.getElementById('loginIcon')
