@@ -161,38 +161,6 @@ public class DataServlet extends HttpServlet {
     statement.executeBatch();
   }
 
-
-  //TODO: re upload orgs with fixed classifications to delete this
-  private static Set<String> hardCodedRoots = new TreeSet<>(Arrays.asList(
-      "Adult",
-      "Arts & Entertainment",
-      "Autos & Vehicles",
-      "Beauty & Fitness",
-      "Books & Literature",
-      "Business & Industrial",
-      "Computers & Electronics",
-      "Finance",
-      "Food & Drink",
-      "Health",
-      "Hobbies & Leisure",
-      "Home & Garden",
-      "Internet & Telecom",
-      "Jobs & Education",
-      "Law & Government",
-      "News",
-      "Online Communities",
-      "People & Society",
-      "Pets & Animals",
-      "Real Estate",
-      "Reference",
-      "Science",
-      "Sensitive Subjects",
-      "Shopping",
-      "Sports",
-      "Travel"
-    )
-  );
-
   //Developing classification tree from already processed org info
   public static Map<String, Set<String>> createClassificationTree(ResultSet classes) throws SQLException {
     Map<String, Set<String>> classTree = new HashMap<>();
@@ -203,16 +171,6 @@ public class DataServlet extends HttpServlet {
         classTree.get("roots").add(parsed.peek());
         while (!parsed.isEmpty()) {
           String parent = parsed.remove();
-          try {
-            if (hardCodedRoots.contains(parsed.peek())) {
-              if (!classTree.containsKey(parent)) {
-                classTree.put(parent, new TreeSet<>());
-              }
-              break;
-            } 
-          } catch(NullPointerException ex){
-            System.err.println();
-          }
           List<String> child = (parsed.peek() != null) ? Arrays.asList(parsed.peek()) : new ArrayList<String>();
           if (classTree.containsKey(parent)) {
             classTree.get(parent).addAll(child);
