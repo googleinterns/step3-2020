@@ -19,8 +19,7 @@ function searchOrgs(page, key) {
     keyword = document.getElementById('keyword').value;
   }
   const qs = '/sql?' + updateQueryString('keyword', keyword) + '&' + updateQueryString('page', pageElement.innerText);
-  addTitle(keyword);
-  addOrgs(qs, 1);
+  addOrgs(qs, 1, keyword);
 }
 
 function search() {
@@ -34,8 +33,12 @@ function addPagination(count, keyword) {
   document.getElementById('pagination').style.display = 'inline-block';
   if (count !== undefined) {
     removeChildren('pagination-list');
+
+    if (count === 0) {
+      return;
+    }
+
     const paginationElement = document.getElementById('pagination-list');
-    
     const prevPage = document.createElement('li');
     prevPage.className = 'page_num';
     prevPage.onclick = function() { searchOrgs(-1, keyword); };
@@ -67,12 +70,15 @@ function addPagination(count, keyword) {
   }
 }
 
-function addOrgs(qs, results) {
+function addOrgs(qs, results, keyword) {
   fetch(qs).then(response => response.json()).then(text => {
     const orgsContainer = document.getElementById('existing-organizations');
     if (results) {
       const count = text[0];
-      addPagination(count);
+      addPagination(count, keyword);
+      if (keyword !== undefined) {
+        addTitle(keyword, count);
+      }
       const data = text[1];
       data.forEach(entry => {
         orgsContainer.appendChild(getOrgAsHtmlDescription(entry, results));
@@ -221,7 +227,6 @@ function addListenerResults() {
   inputBox.addEventListener('keyup', function(event) {
     if (event.key === 'Enter') {
       var keyword = document.getElementById('keyword').value;
-      addTitle(keyword);
       searchOrgs(0, keyword);
       closeSearch();
     }
@@ -237,9 +242,13 @@ function addIndexListener() {
   });
 }
  
-function addTitle(keyword) {
+function addTitle(keyword, count) {
   const element = document.getElementById('results-title');
-  element.innerText = 'Results for [' + keyword + ']: ';
+  if (count > 0) {
+    element.innerText = 'Results for [' + keyword + ']: ';
+  } else {
+    element.innerText = 'No results found for [' + keyword + ']';
+  }
 }
 
 /**
@@ -316,11 +325,7 @@ function addToClassTree(tree, parent, classPath) {
     if (!pageElement) {	
       redirectKeyword(classPath);	
     } else {	
-      const qs = '/sql?' + updateQueryString('keyword', classPath) + '&' + updateQueryString('page', pageElement.innerText);	
-      removeChildren('existing-organizations');	
-      addTitle(classPath);	
-      addPagination();	
-      addOrgs(qs, 1);	
+      searchOrgs(0, classPath);
     }	
   };
 
@@ -370,6 +375,18 @@ function setUpDetailsPage() {
   getLoginStatus();
 }
 
+function setUpRecommendations() {
+  addListener();
+  getClassifications();
+  getLoginStatus().then(loggedIn => {
+    if (loggedIn) {
+      getRecommendations();
+    } else {
+      alert('Log in to get personalized recommendations');
+    }
+  });
+}
+
 function loadOrg() {
   const url = new URL(window.location.href);
   const id = url.searchParams.get('id');
@@ -409,19 +426,25 @@ function getLoginStatus() {
       const statusElement = document.getElementById('login-status');
       statusElement.innerText = 'Hello!  ';
       const logoutElement = document.getElementById('login-link');
-      logoutElement.href = link;
+      if (!link.includes('http')) {
+        logoutElement.href = link;
+      } else {
+        logoutElement.href = 'https://mit-step-2020.wl.r.appspot.com/_ah/logout?continue=https://mit-step-2020.wl.r.appspot.com/';
+      }
       logoutElement.innerText = 'Logout';
       const loginIcon = document.getElementById('loginIcon')
       loginIcon.href = link;
-
+      return 1;
     } else {
       // is logged out
       const statusElement = document.getElementById('login-status');
+      statusElement.innerText = 'Please login  ';
       const loginElement = document.getElementById('login-link');
       loginElement.href = link;
       loginElement.innerText = 'Login';
       const loginIcon = document.getElementById('loginIcon')
       loginIcon.href = link;
+      return 0;
     }
   });
 }
@@ -434,4 +457,48 @@ function openSearch() {
 /** Close the search box */
 function closeSearch() {
   document.getElementById("myOverlay").style.display = "none";
+}
+
+function getRecommendations() {
+  const statusElement = document.getElementById('login-status');
+  const contentElement = document.getElementById('recommended-orgs');
+  
+  fetch('/recommend').then(response => response.json()).then(text => {
+    const rated = text[0];
+    const recommended = text[1];
+
+    if (rated.length == 0) {
+      alert("Please rate some organizations first");
+      return;
+    }
+    const aboutElement = document.createElement('p');
+    aboutElement.innerText = 'Because you liked: ';
+    contentElement.appendChild(aboutElement);
+    
+    const listElement = document.createElement('ul');
+    rated.forEach(org => {
+      listElement.appendChild(getOrgNameAndId(org));
+    });
+    contentElement.appendChild(listElement)
+
+    const textElement = document.createElement('p');
+    textElement.innerText = 'You might also be interested in: ';
+    contentElement.appendChild(textElement);
+
+    const liElement = document.createElement('ul');
+    recommended.forEach(org => {
+      liElement.appendChild(getOrgNameAndId(org));
+    });
+    contentElement.appendChild(liElement);
+  });
+}
+
+function getOrgNameAndId(org) {
+  const listElement = document.createElement('li');
+  const nameElement = document.createElement('a');
+  const redirect = '/organization.html?' + updateQueryString('id', org.index);
+  nameElement.setAttribute('href', redirect);
+  nameElement.innerText = org.name;
+  listElement.appendChild(nameElement);
+  return listElement;
 }
