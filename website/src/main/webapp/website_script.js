@@ -2,6 +2,7 @@
  * Add the searched organizations by keyword
  */
 function searchOrgs(page, key) {
+  closeSearch();
   const pageElement = document.getElementById('current-page');
   // -1 for prev page and -2 for next page
   if (page === -1) {
