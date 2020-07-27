@@ -15,7 +15,7 @@
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
   </head>
 
-  <body id="body" onload="getUploads();">
+  <body id="body" onload="loadAdminPage();">
     <!-- top navigation bar -->
     <div id="top-nav">
       <header class="mdc-top-app-bar">
@@ -35,9 +35,40 @@
         </div>
       </header>
     </div>
-
-    <h3 id="results-title">Submission</h3>
-    <div id="submission"></div>
-    <div id="comparisons"></div>
+    <aside id="navActionItems" class="mdc-drawer" style="top:10%; left:1%; position:absolute; display:none;">
+      <div class="mdc-drawer__header" style="text-align: center;">
+        <h2 class="mdc-drawer__title">Workflows</h2>
+      </div>
+      <div class="mdc-drawer__content" style="text-align: center;">
+        <nav class="mdc-list" id="actionItems">
+          <a class="mdc-list-item mdc-list-item--activated" href="#" aria-current="page" id="qualityItem" value="quality">
+            <span class="mdc-list-item__ripple"></span>
+            <i class="material-icons mdc-list-item__graphic" aria-hidden="true">thumbs_up_down</i>
+            <span class="mdc-list-item__text">Verify Submissions</span>
+          </a>
+          <a class="mdc-list-item mdc-list-item" href="#" aria-hidden="true" id="uploadOrgsItem" value="uploadOrgs">
+            <span class="mdc-list-item__ripple"></span>
+            <i class="material-icons mdc-list-item__graphic" aria-hidden="true">backup</i>
+            <span class="mdc-list-item__text">Upload Workflow</span>
+          </a>
+          <a class="mdc-list-item mdc-list-item" href="#" aria-hidden="true" id="similarityItem" value="similarity">
+            <span class="mdc-list-item__ripple"></span>
+            <i class="material-icons mdc-list-item__graphic" aria-hidden="true">mediation</i>
+            <span class="mdc-list-item__text">Similarity Workflow</span>
+          </a>
+          <a class="mdc-list-item mdc-list-item" href="#" aria-hidden="true" id="filterItem" value="filter">
+            <span class="mdc-list-item__ripple"></span>
+            <i class="material-icons mdc-list-item__graphic" aria-hidden="true">filter_list</i>
+            <span class="mdc-list-item__text">Filter Workflow</span>
+          </a>
+        </nav>
+      </div>
+    </aside>
+    <div class="adminAction" id="workflows">
+      <div id="quality"></div>
+      <div id="uploadOrgs"></div>
+      <div id="similarity"></div>
+      <div id="filter"></div>
+    </div>
   </body>
 </html>
