@@ -79,3 +79,12 @@ h1 {
 .hidden {
   display: none;
 }
+
+.adminAction {
+  position: absolute;
+  height: 80%;
+  width: 70%;
+  float: right;
+  top: 10%;
+  left:30%;
+}
