@@ -1,0 +1,41 @@
+#search {
+  position: absolute;
+  top: 40%;
+  left: 50%;
+  margin-right: -50%;
+  transform: translate(-50%, -50%);
+}
+
+#search input[type=text], #results-search input[type=text] {
+  float:inherit;
+  padding: 6px;
+  border: 1px solid lightgrey;
+  margin-top: 8px;
+  font-size: 17px;
+  vertical-align: center;
+}
+
+h1 {
+  position: absolute;
+  width: 519px;
+  height: 84px;
+  top: 30%;
+  left: 50%;
+  margin-right: -50%;
+  transform: translate(-50%, -50%);
+
+  font-family: Roboto;
+  font-style: normal;
+  font-weight: normal;
+  font-size: 72px;
+  line-height: 84px;
+  text-align: center;
+  color: #000000;
+}
+
+#side-nav{
+  position: absolute;
+  top: 30%;
+  left: 2%;
+  margin-right: -50%;
+}
