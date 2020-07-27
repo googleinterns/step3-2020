@@ -467,6 +467,17 @@ for (i = 0; i < acc.length; i++) {
 }
 }
 
+function openHamburger() {
+  document.getElementById("drawer").style.display = "block";
+  document.getElementById("drawer").style.zIndex="11";
+}
+
+function closeHamburger() {  document.getElementById("drawer").style.display = "none";
+}
+
+
+
+
 function getRecommendations() {
   const statusElement = document.getElementById('login-status');
   const contentElement = document.getElementById('recommended-orgs');
@@ -485,7 +496,10 @@ function getRecommendations() {
     
     const listElement = document.createElement('ul');
     rated.forEach(org => {
-      listElement.appendChild(getOrgNameAndId(org));
+      const ratedOrg = document.createElement("span");
+      ratedOrg.setAttribute("class", "mdc-chip");
+      ratedOrg.appendChild(getOrgNameAndId(org));
+      listElement.appendChild(ratedOrg);
     });
     contentElement.appendChild(listElement)
 
@@ -495,7 +509,11 @@ function getRecommendations() {
 
     const liElement = document.createElement('ul');
     recommended.forEach(org => {
-      liElement.appendChild(getOrgNameAndId(org));
+      const reccomendOrg = document.createElement("span");
+      reccomendOrg.setAttribute("class", "mdc-chip");
+      reccomendOrg.appendChild(getOrgNameAndId(org));
+      reccomendOrg.appendChild(getOrgNameAndId(org));
+      liElement.appendChild(reccomendOrg);
     });
     contentElement.appendChild(liElement);
   });
