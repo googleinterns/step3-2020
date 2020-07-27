@@ -110,6 +110,7 @@ function getOrgAsHtmlDescription(org, results) {
   nameElement.setAttribute('href', 'https://' + org.link);
   nameElement.setAttribute('target', '_blank');
   nameElement.innerText = org.name;
+  nameElement.onclick = function() { event.stopPropagation(); };
   orgElement.appendChild(nameElement);
   
   // about
@@ -160,7 +161,7 @@ function getOrgAsHtmlDescription(org, results) {
 
   // make the whole list element clickable and take user to organization.html pasing id as parameter
   if (results) {
-    orgElement.onclick = function() { redirectId(org.id); }
+    orgElement.onclick = function() { redirectId(org.id); };
   }
   return orgElement;
 }
