@@ -171,6 +171,59 @@ function openSearch() {
 function closeSearch() {
   document.getElementById("myOverlay").style.display = "none";
 }
+/**
+ * Checks if current user is admin
+ * Redirects invalid users to home page
+ */
+
+function loadAdminPage() {
+  const qs = "/admin";
+  fetch(qs).then(response => response.json()).then(adminText => {
+    if (adminText['user'] === 'Admin') {
+      setUpForAdmin(adminText);
+    } else { 
+      alert("You are unauthorized for this page");
+      window.location.replace("/index.html");
+    }
+  });
+}
+
+/**
+ * Sets up UI on page for admin
+ * Adds functionality for dynamically selecting action items
+ */
+
+function setUpForAdmin(adminText) {
+  //admin UI to page
+      document.getElementById('navActionItems').style.display = 'block';
+      document.getElementById('uploadOrgs').innerHTML += adminText['uploadCSV'];
+      document.getElementById('quality').innerHTML += adminText['compareQuality'];
+      document.getElementById('similarity').innerHTML += adminText['similarityWorkFlow'];
+      document.getElementById('filter').innerHTML += adminText['filterWorkFlow'];
+      //Hide items
+      hideWorkFlows();
+      //Add click functionality to display desired UI
+      document.getElementById('actionItems').childNodes.forEach(child => {
+        child.addEventListener('click', function() {
+          hideWorkFlows();
+          this.setAttribute('class', 'mdc-list-item mdc-list-item--activated');
+          document.getElementById(this.getAttribute("value")).style.display = "block";
+        });
+      })
+      getUploads(); 
+}
+
+//Hides unselected UI
+function hideWorkFlows() {
+  document.getElementById('uploadOrgs').style.display = "none";
+  document.getElementById('quality').style.display = "none";
+  document.getElementById('similarity').style.display = "none";
+  document.getElementById('filter').style.display = "none";
+  document.getElementById('uploadOrgsItem').setAttribute('class', 'mdc-list-item mdc-list-item')
+  document.getElementById('qualityItem').setAttribute('class', 'mdc-list-item mdc-list-item')
+  document.getElementById('similarityItem').setAttribute('class', 'mdc-list-item mdc-list-item')
+  document.getElementById('filterItem').setAttribute('class', 'mdc-list-item mdc-list-item')
+}
 
 function getUploads() {
   const qs = "/verify";
