@@ -83,3 +83,12 @@ h1 {
 .search-icon {
   cursor:pointer;
 }
+
+.adminAction {
+  position: absolute;
+  height: 80%;
+  width: 70%;
+  float: right;
+  top: 10%;
+  left:30%;
+}
