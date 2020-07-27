@@ -23,6 +23,11 @@ body{
   justify-content: space-between;
 }
 
+.mdc-card__media--square{
+  height: 300px;
+  width: 300px;
+}
+
 .icon{
   width:40px;
   height:40px;
@@ -75,4 +80,9 @@ h6{
   overflow: hidden;
   transition: max-height 0.2s ease-out;
 }
+
+
+
+
+
 
