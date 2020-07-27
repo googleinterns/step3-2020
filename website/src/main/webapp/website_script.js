@@ -335,9 +335,11 @@ function addToClassTree(tree, parent, classPath) {
     nested.firstChild.firstChild.style.marginLeft = pathElem.offsetLeft + 30 + 'px';
     tree[parent].forEach(child => nested.firstChild.firstChild.appendChild(addToClassTree(tree, child, classPath + '/' + child)));
     pathElem.appendChild(nested);
-  } 
-  // Event for opening accordion
-  pathElem.addEventListener('mouseover', navItemActivate);
+    // Event for opening accordion
+    pathElem.addEventListener('mouseover', navItemActivate);
+  } else {
+    pathElem.removeChild(pathElem.firstChild.nextSibling);
+  }
   // Event for making query
   const pageElement = document.getElementById('current-page');
   pathElem.onclick = function() {
@@ -355,6 +357,7 @@ function addToClassTree(tree, parent, classPath) {
  * Open accordion, close any other paths on current level
  */
 function navItemActivate() {
+  this.setAttribute('class', 'mdc-list-item mdc-list-item--activated');
   this.firstChild.nextSibling.innerText = 'expand_more';
   const navMenu = this.parentNode;
   navMenu.childNodes.forEach(child => child.dispatchEvent(new CustomEvent('close')));
@@ -370,6 +373,7 @@ function navItemActivate() {
  * Close accordion, close any paths in decending levels
  */
 function navItemDeactivate() {
+  this.setAttribute('class', 'mdc-list-item mdc-list-item');
   this.firstChild.nextSibling.innerText = 'chevron_right';
   this.childNodes.forEach(child => child.dispatchEvent(new CustomEvent('close')));
   const navMenu = this.parentNode;
