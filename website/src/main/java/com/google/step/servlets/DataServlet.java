@@ -16,15 +16,6 @@ package com.google.step.servlets;
 
 import java.io.IOException;
 
-import com.google.appengine.api.datastore.DatastoreService;
-import com.google.appengine.api.datastore.DatastoreServiceFactory;
-import com.google.appengine.api.datastore.Entity;
-import com.google.appengine.api.datastore.Query.SortDirection;
-import com.google.appengine.api.datastore.FetchOptions;
-import com.google.appengine.api.datastore.Key;
-import com.google.appengine.api.datastore.KeyFactory;
-import com.google.appengine.api.datastore.PreparedQuery;
-import com.google.appengine.api.datastore.Query;
 import com.google.cloud.language.v1.ClassifyTextRequest;
 import com.google.cloud.language.v1.ClassifyTextResponse;
 import com.google.cloud.language.v1.LanguageServiceClient;
@@ -44,6 +35,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.fileupload.FileItemStream;
 import org.apache.commons.fileupload.FileItemIterator;
 import org.apache.commons.fileupload.FileUploadException;
+import org.apache.commons.fileupload.FileUploadBase.InvalidContentTypeException;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 
 /** Servlet that returns some example content. TODO: modify this file to handle comments data */
@@ -58,7 +50,7 @@ public class DataServlet extends HttpServlet {
       //Set up Proxy for handling SQL server
       CloudSQLManager database = CloudSQLManager.setUp();
       //Get all distinct classifications to develop tree
-      ResultSet classes = database.getDistinct(orgsWithClass, Arrays.asList("class"), Arrays.asList("class IS NOT NULL ORDER BY class DESC"));
+      ResultSet classes = database.getDistinct("g4npOrgs", Arrays.asList("class"), Arrays.asList("class IS NOT NULL ORDER BY class DESC"));
       Map<String, Set<String>> classTree = createClassificationTree(classes);
       // TreeSet<String> roots = new TreeSet(classTree.get("roots"));
       // printClassTree(classTree, roots, roots.first(), "" );
@@ -67,6 +59,7 @@ public class DataServlet extends HttpServlet {
       response.setCharacterEncoding("UTF-8");
       Gson gson = new Gson();
       response.getWriter().println(gson.toJson(classTree));
+      database.tearDown();
     } catch (SQLException ex) {
       System.err.println(ex);
     }
@@ -81,7 +74,12 @@ public class DataServlet extends HttpServlet {
         "name TEXT NOT NULL", 
         "link TEXT NOT NULL", 
         "about TEXT NOT NULL",
-        "class VARCHAR(255) NOT NULL");
+        "class VARCHAR(255) NOT NULL",
+        "neighbor1 INTEGER",
+        "neighbor2 INTEGER", 
+        "neighbor3 INTEGER", 
+        "neighbor4 INTEGER",
+        "upvotes INTEGER,");
 
     try {
       //Set up Proxy for handling SQL server
@@ -93,7 +91,7 @@ public class DataServlet extends HttpServlet {
       database.createTable(targetTable, columns);
       //Classify each org from, file, and add to target table
       PreparedStatement statement = database.buildInsertStatement(targetTable, columns);  
-      int startIndex = getLastEntryIndex(targetTable, database) + 1;
+      int startIndex = database.getLastEntryIndex(targetTable) + 1;
       NLPService service = new NLPService();
       if (orgsNoClassification != null) {
         passFileToStatement(orgsNoClassification, statement, startIndex, service);
@@ -108,24 +106,14 @@ public class DataServlet extends HttpServlet {
     } catch(Exception ex) {
       System.err.println(ex);
     }
-  }
-
-  //Helper functions for processing new CSV files
-  private int getLastEntryIndex(String tableName, CloudSQLManager database) {
-    try {
-      ResultSet maxIndexSet = database.getDistinct(tableName, Arrays.asList("MAX(id) AS id"), null); 
-      maxIndexSet.next();
-      int lastEntryIndex = maxIndexSet.getInt("id");
-    return lastEntryIndex;
-    } catch (SQLException ex) {
-      System.err.println(ex);
-      return 0;
-    }
+    response.sendRedirect("/admin.html");
   }
 
   //helper functions to process uploads
   private class NLPService implements ClassHandler{
     private LanguageServiceClient service;
+    private boolean localTesting = true;
+
     NLPService() throws IOException {
       this.service = LanguageServiceClient.create();
     }
@@ -241,15 +229,19 @@ public class DataServlet extends HttpServlet {
   private CSVReader getCSVReaderFrom(HttpServletRequest request) throws FileUploadException, IOException {
     //create file upload handler
     ServletFileUpload upload = new ServletFileUpload();
-    //Search request for file
-    FileItemIterator iter = upload.getItemIterator(request);
-    while (iter.hasNext()) {
-      FileItemStream item = iter.next();
-      if (!item.isFormField()) {
-        InputStreamReader fileStreamReader = new InputStreamReader(item.openStream()); 
-        return new CSVReaderBuilder(fileStreamReader).withSkipLines(1).build();
+    try {
+      //Search request for file
+      FileItemIterator iter = upload.getItemIterator(request);
+      while (iter.hasNext()) {
+        FileItemStream item = iter.next();
+        if (!item.isFormField()) {
+          InputStreamReader fileStreamReader = new InputStreamReader(item.openStream()); 
+          return new CSVReaderBuilder(fileStreamReader).withSkipLines(1).build();
+        }
       }
-    }
+    } catch(InvalidContentTypeException ex) {
+      return null;
+    } 
     return null;
   }
 }

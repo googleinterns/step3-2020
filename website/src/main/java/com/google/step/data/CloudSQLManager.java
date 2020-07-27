@@ -1,5 +1,7 @@
 package com.google.step.data;
 
+import com.google.step.similarity.OrganizationsProtos.Organizations;
+import com.google.step.data.*;
 import com.opencsv.*;
 import com.opencsv.exceptions.CsvValidationException;
 import com.zaxxer.hikari.HikariConfig;
@@ -7,22 +9,20 @@ import com.zaxxer.hikari.HikariDataSource;
 import java.io.*;
 import java.sql.*;
 import javax.sql.DataSource;
-import java.util.List;
-import java.util.ArrayList;
+import java.util.*;
 import java.util.stream.Collectors;
+
 
 public final class CloudSQLManager {
   // Saving credentials in environment variables is convenient, but not secure - consider a more
   // secure solution such as https://cloud.google.com/kms/ to help keep secrets safe.
-  private static final String CLOUD_SQL_CONNECTION_NAME =
-      "mit-step-2020:us-west2:organizations";
-  private static final String DB_USER = "root";
-  // TODO: Fix this soon, this is pushed to a public repo
-  private static final String DB_PASS = "jMMAak8xh7a7bCnq";
-  private static final String DB_NAME = "orgs";
   private Connection conn;
 
-  private static DataSource createConnectionPool() {
+  private static DataSource createConnectionPool(SecretsManager secrets) {
+    String CLOUD_SQL_CONNECTION_NAME = secrets.getConnection();
+    String DB_NAME  = secrets.getEnvironment();
+    String DB_USER  = secrets.getUserName();
+    String DB_PASS  = secrets.getPasscode();
     // The configuration object specifies behaviors for the connection pool.
     HikariConfig config = new HikariConfig();
 
@@ -49,7 +49,8 @@ public final class CloudSQLManager {
   }
 
   public static CloudSQLManager setUp() throws SQLException {
-    DataSource pool = createConnectionPool();
+    SecretsManager secrets = SecretsManager.getSecrets();
+    DataSource pool = createConnectionPool(secrets);
     Connection conn = pool.getConnection();
     return new CloudSQLManager(conn);
   }
@@ -58,7 +59,7 @@ public final class CloudSQLManager {
     this.conn.close();
   }
 
-  //Get contents of an entire table
+  // Get contents of an entire table
   public ResultSet get(String tableName) throws SQLException{
     String query = String.format("SELECT * FROM %s;", tableName);
     Statement stmt = this.conn.createStatement();
@@ -79,11 +80,20 @@ public final class CloudSQLManager {
   //Get distinct specifcied columns from table matching given clauses if any
   public ResultSet getDistinct(String tableName, List<String> columns, List<String> clauses) throws SQLException {
     String values = String.join(", ", columns);
-    String where = (clauses == null) ? ";" : String.format(" WHERE %s;", String.join("AND", clauses)); 
+    String where = (clauses == null) ? ";" : String.format(" WHERE %s;", String.join(" OR ", clauses)); 
     String query = String.format("SELECT DISTINCT %s FROM %s%s", values, tableName, where);
     Statement stmt = this.conn.createStatement();
     return stmt.executeQuery(query);
   }
+
+  //Get all GN4P orgs similar to org
+  public ResultSet getPossibleComparisons(String tableName, OrganizationInfo org) throws SQLException {
+    List<String> attributes = Arrays.asList(
+        String.format("name LIKE %s", "'%" + org.getName() + "%'"),
+        String.format("link LIKE %s", "'%" + org.getLink() + "%'"),
+        String.format("about LIKE %s", "'%" + org.getAbout() + "%'"));
+    return this.getDistinct(tableName, Arrays.asList("*"), attributes);
+  } 
 
   //create a prepared statement for insertion into a preexisting table
   public PreparedStatement buildInsertStatement(String tableName, List<String> columns) throws SQLException {
@@ -96,6 +106,8 @@ public final class CloudSQLManager {
         .collect(Collectors.joining(","));
     String stmtText = String.format("INSERT INTO %s (%s) VALUES (%s);", 
         tableName, columnNames, String.join(",", placeHolders));
+
+    System.out.println(stmtText);
     return conn.prepareStatement(stmtText);
   }
 
@@ -109,11 +121,26 @@ public final class CloudSQLManager {
     }
   }
 
+  public ResultSet checkIfExist(String email) throws SQLException {
+    String query = "SELECT COUNT(*) as rowExists from recommendations where email = '" + email + "';";
+    Statement stmt = this.conn.createStatement();
+    return stmt.executeQuery(query);
+  }
+
+  public ResultSet countOrgsWithNeighbors(String keyword) throws SQLException {
+    String similarTo = (!keyword.isEmpty()) ? 
+        "WHERE (name LIKE '%" + keyword + "%' OR about LIKE '% " + keyword + "%' OR class LIKE '%" + keyword + "%')" 
+        : "";
+    String query = "SELECT COUNT(*) AS total FROM g4npOrgs " + similarTo + ";";
+    Statement stmt = this.conn.createStatement();
+    return stmt.executeQuery(query);
+  }
+
   public ResultSet getOrgsWithNeighbors(String keyword, int offset) throws SQLException { 
     String similarTo = (!keyword.isEmpty()) ? 
         "WHERE (name LIKE '%" + keyword + "%' OR about LIKE '% " + keyword + "%' OR class LIKE '%" + keyword + "%')" 
         : "";
-    String preliminaryQuery = String.format("(SELECT * FROM orgTable %s LIMIT " + offset + ", 10)", similarTo);    
+    String preliminaryQuery = String.format("(SELECT * FROM g4npOrgs %s LIMIT " + offset + ", 10)", similarTo);    
     String query = String.join("\n","SELECT",
             "preliminary.*, "  ,
             "n1.name AS neighbor1_name, ",
@@ -121,22 +148,21 @@ public final class CloudSQLManager {
             "n3.name AS neighbor3_name, ",
             "n4.name AS neighbor4_name ",
         String.format("FROM (%s) AS preliminary", preliminaryQuery),
-        "INNER JOIN orgTable AS n1 ",
+        "INNER JOIN g4npOrgs AS n1 ",
             "ON preliminary.neighbor1 = n1.id",
-        "INNER JOIN orgTable AS n2 ",
+        "INNER JOIN g4npOrgs AS n2 ",
             "ON preliminary.neighbor2 = n2.id",
-        "INNER JOIN orgTable AS n3 ",
+        "INNER JOIN g4npOrgs AS n3 ",
             "ON preliminary.neighbor3 = n3.id",
-        "INNER JOIN orgTable AS n4 ",
+        "INNER JOIN g4npOrgs AS n4 ",
             "ON preliminary.neighbor4 = n4.id",
         "ORDER BY upvotes DESC;");
-    System.out.println(query);
     Statement stmt = this.conn.createStatement();
     return stmt.executeQuery(query);
   }
 
   public ResultSet getOrgDetails(int id) throws SQLException {
-    String preliminaryQuery = "SELECT * FROM orgTable WHERE id = " + id;
+    String preliminaryQuery = "SELECT * FROM g4npOrgs WHERE id = " + id;
     String query = String.join("\n","SELECT",
             "preliminary.*, "  ,
             "n1.name AS neighbor1_name, ",
@@ -144,13 +170,13 @@ public final class CloudSQLManager {
             "n3.name AS neighbor3_name, ",
             "n4.name AS neighbor4_name ",
         String.format("FROM (%s) AS preliminary", preliminaryQuery),
-        "INNER JOIN orgTable AS n1 ",
+        "INNER JOIN g4npOrgs AS n1 ",
             "ON preliminary.neighbor1 = n1.id",
-        "INNER JOIN orgTable AS n2 ",
+        "INNER JOIN g4npOrgs AS n2 ",
             "ON preliminary.neighbor2 = n2.id",
-        "INNER JOIN orgTable AS n3 ",
+        "INNER JOIN g4npOrgs AS n3 ",
             "ON preliminary.neighbor3 = n3.id",
-        "INNER JOIN orgTable AS n4 ",
+        "INNER JOIN g4npOrgs AS n4 ",
             "ON preliminary.neighbor4 = n4.id;");
     Statement stmt = this.conn.createStatement();
     return stmt.executeQuery(query);
@@ -162,27 +188,123 @@ public final class CloudSQLManager {
     return stmt.executeQuery(query);
   }
 
+  public ResultSet getPreviousRatings(String email) throws SQLException {
+    String query = "SELECT id FROM ratings WHERE email = '" + email + "' AND rating > 0;";
+    Statement stmt = this.conn.createStatement();
+    return stmt.executeQuery(query);
+  }
+
+  public ResultSet getOrgNameFromId(int id) throws SQLException {
+    String query = "SELECT name FROM g4npOrgs WHERE id = " + id + ";";
+    Statement stmt = this.conn.createStatement();
+    return stmt.executeQuery(query);
+  }
+
   public void executeStatement(String query) throws SQLException {
     // create the java mysql update preparedstatement
     Statement stmt = this.conn.createStatement();
     stmt.executeUpdate(query);
   }
 
+  public void alterTableNeighbor() throws SQLException {
+    String sql = "ALTER TABLE g4npOrgs ADD (neighbor1 INTEGER, neighbor2 INTEGER, neighbor3 INTEGER, neighbor4 INTEGER);";
+    PreparedStatement stmt = conn.prepareStatement(sql);
+    stmt.execute();
+  }
+  
+  public ResultSet getFirstUploadOrg(String tableName) throws SQLException {
+    String query = String.format("SELECT * FROM %s ORDER BY id LIMIT 1", tableName);
+    Statement stmt = this.conn.createStatement();
+    return stmt.executeQuery(query);
+  } 
+
+  public void deleteOrg(String tableName, int id) throws SQLException {
+    String updateQuery = String.format("DELETE FROM %s WHERE id=%d;", tableName, id);
+    Statement stmt = this.conn.createStatement();
+    stmt.executeUpdate(updateQuery);
+  }
+
+  //Helper functions for processing new CSV files
+  public int getLastEntryIndex(String tableName) {
+    try {
+      ResultSet maxIndexSet = this.getDistinct(tableName, Arrays.asList("MAX(id) AS id"), null); 
+      maxIndexSet.next();
+      int lastEntryIndex = maxIndexSet.getInt("id");
+    return lastEntryIndex;
+    } catch (SQLException ex) {
+      System.err.println(ex);
+      return 0;
+    }
+  }
+
   public void alterTable() throws SQLException {
-    String sql = "ALTER TABLE orgTable ADD (upvotes INTEGER);";
+    String sql = "ALTER TABLE g4npOrgs ADD (upvotes INTEGER);";
     PreparedStatement stmt = conn.prepareStatement(sql);
     stmt.execute();
   }
 
   public ResultSet getUpvotes(int id) throws SQLException {
-    String query = "SELECT upvotes FROM orgTable WHERE id = " + id;
+    String query = "SELECT upvotes FROM g4npOrgs WHERE id = " + id;
     Statement stmt = this.conn.createStatement();
     return stmt.executeQuery(query);
   }
 
   public void setUpvotes(int id, int votes) throws SQLException {
-    String query = "UPDATE orgTable SET upvotes = " + votes + " WHERE id = " + id;
+    String query = "UPDATE g4npOrgs SET upvotes = " + votes + " WHERE id = " + id;
     executeStatement(query);
+  }
+
+  public ResultSet getRecommendationForUser(String email) throws SQLException {
+    String query = "SELECT * FROM recommendations WHERE email = '" + email + "';";
+    Statement stmt = this.conn.createStatement();
+    return stmt.executeQuery(query);
+  }
+
+  public void uploadKnn(List<Organizations.Organization> orgs) throws SQLException {
+    String query = "UPDATE g4npOrgs SET neighbor1 = ?, neighbor2 = ?, neighbor3 = ?, neighbor4 = ? where id = ?;";
+    // create the java mysql update preparedstatement
+    PreparedStatement preparedStmt = this.conn.prepareStatement(query);
+    int count = 0;
+    for (Organizations.Organization org : orgs) {
+      System.out.println(count++);
+      List<Organizations.Organization.Neighbor> neighbors = org.getNeighborsList();
+      preparedStmt.setInt(1, neighbors.get(0).getId());
+      preparedStmt.setInt(2, neighbors.get(1).getId());
+      preparedStmt.setInt(3, neighbors.get(2).getId());
+      preparedStmt.setInt(4, neighbors.get(3).getId());
+      preparedStmt.setInt(5, org.getId());
+      // execute the java preparedstatement
+      preparedStmt.executeUpdate();
+    }
+  }
+
+  public void uploadRecommendations(Map<String, List<Double>> people) throws SQLException {
+    for (String email : people.keySet()) {
+      int rowExists = 0;
+      ResultSet rs = checkIfExist(email);
+      if (rs.next()) {
+        rowExists = rs.getInt("rowExists");
+      }
+      String query = "INSERT INTO recommendations (email, rec1, rec2, rec3) VALUES (?, ?, ?, ?);";
+      if (rowExists != 0) {
+        query = "UPDATE recommendations SET rec1 = ?, rec2 = ?, rec3 = ? where email = ?;";
+      }
+      PreparedStatement statement = this.conn.prepareStatement(query);
+      List<Double> ids = people.get(email);
+      if (rowExists != 0) {
+        statement.setInt(1, ids.get(0).intValue());
+        statement.setInt(2, ids.get(1).intValue());
+        statement.setInt(3, ids.get(2).intValue());
+        statement.setString(4, email);
+      } else {
+        statement.setString(1, email);
+        statement.setInt(2, ids.get(0).intValue());
+        statement.setInt(3, ids.get(1).intValue());
+        statement.setInt(4, ids.get(2).intValue());
+      }
+      
+      statement.execute();
+    }
   }
 
 }

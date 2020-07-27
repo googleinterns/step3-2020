@@ -40,4 +40,10 @@ public interface ClassHandler {
   default Document convertStringToDoc(String text) {
     return Document.newBuilder().setContent(text).setType(Type.PLAIN_TEXT).build();
   }
+
+  public static ClassifyTextResponse getTestCategory() {
+    ClassificationCategory c = ClassificationCategory.newBuilder().build()
+        .toBuilder().setName("/Fake/Fake1/Fake2/Fake3").build();
+    return ClassifyTextResponse.newBuilder().addCategories(c).build();
+  }
 }
