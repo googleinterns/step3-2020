@@ -1,7 +1,6 @@
 package com.google.step.servlets;
 
-import com.google.appengine.api.users.UserService;
-import com.google.appengine.api.users.UserServiceFactory;
+import com.google.appengine.api.users.*;
 import com.google.gson.Gson;
 import com.google.step.data.*;
 import java.sql.*;
@@ -94,7 +93,13 @@ public class AdminServlet extends HttpServlet {
     UserService userService = UserServiceFactory.getUserService();
     response.setContentType("application/json; charset=UTF-8");
     response.setCharacterEncoding("UTF-8");
-    if (userService.isUserAdmin()) {
+    boolean loggedIn;
+    try {
+      loggedIn = userService.isUserAdmin();
+    } catch (IllegalStateException ex) {
+      loggedIn = false;
+    }
+    if (loggedIn) {
       try {
         CloudSQLManager database = CloudSQLManager.setUp();
         int orgsSize = database.getLastEntryIndex("g4npOrgs");
