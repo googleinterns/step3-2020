@@ -80,6 +80,10 @@ h1 {
   display: none;
 }
 
+.search-icon {
+  cursor:pointer;
+}
+
 .adminAction {
   position: absolute;
   height: 80%;

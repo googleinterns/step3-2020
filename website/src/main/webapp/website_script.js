@@ -2,6 +2,12 @@
  * Add the searched organizations by keyword
  */
 function searchOrgs(page, key) {
+  var keyword = key;
+  if (key === undefined) {
+    keyword = document.getElementById('keyword').value;
+  }
+  closeSearch();
+  removeChildren('existing-organizations');
   const pageElement = document.getElementById('current-page');
   // -1 for prev page and -2 for next page
   if (page === -1) {
@@ -13,18 +19,8 @@ function searchOrgs(page, key) {
   } else {
     pageElement.innerText = page;
   }
-  removeChildren('existing-organizations');
-  var keyword = key;
-  if (key === undefined) {
-    keyword = document.getElementById('keyword').value;
-  }
   const qs = '/sql?' + updateQueryString('keyword', keyword) + '&' + updateQueryString('page', pageElement.innerText);
   addOrgs(qs, 1, keyword);
-}
-
-function search() {
-  const keyword = document.getElementById('keyword').value;
-  redirectKeyword(keyword);
 }
 
 function addPagination(count, keyword) {
@@ -43,10 +39,6 @@ function addPagination(count, keyword) {
     prevPage.className = 'page_num';
     prevPage.onclick = function() { searchOrgs(-1, keyword); };
     prevPage.innerText = 'prev';
-    // TODO: make the prev and next spans show up
-    // const prevPageSpan = document.createElement('span');
-    // prevPageSpan.className = 'uk-pagination-previous';
-    // prevPage.appendChild(prevPageSpan);
     paginationElement.appendChild(prevPage);
 
     const pages = count / 10 + 1;
@@ -63,9 +55,6 @@ function addPagination(count, keyword) {
     nextPage.className = 'page_num';
     nextPage.onclick = function() { searchOrgs(-2, keyword); };
     nextPage.innerText = 'next';
-    // const nextPageSpan = document.createElement('span');
-    // nextPageSpan.className = 'uk-pagination-next';
-    // nextPage.appendChild(nextPageSpan);
     paginationElement.appendChild(nextPage);
   }
 }
@@ -206,18 +195,50 @@ function redirectRating(up, id) {
   event.stopPropagation();
 }
 
+function indexPageSearch() {
+  const keywordInput = document.getElementById('keyword');
+  const keyword = keywordInput.value;
+  if (keyword !== '') {
+    redirectKeyword(keyword);
+  } else {
+    alert('Please enter a keyword to search');
+  }
+}
+
+function searchByKeyword() {
+  var keyword = document.getElementById('keyword').value;
+  if (keyword === '') {
+    alert('Please enter a keyword to search');
+  } else {
+    searchOrgs(0, keyword);
+  }
+  closeSearch();
+}
+
 function redirectKeyword(keyword) {
   const qs = updateQueryString('keyword', keyword);
   const redirect = '/results.html?' + qs;
   window.location = redirect;
 }
  
+function addCloseListener() {
+  document.addEventListener('click', event => {
+    if (event.target.id === 'myOverlay') {
+      closeSearch();
+    }
+  });
+}
+
+function detailSearch() {
+  indexPageSearch();
+  closeSearch();
+}
+
 function addListener() {
   const inputBox = document.getElementById('keyword');
   inputBox.addEventListener('keyup', function(event) {
     if (event.key === 'Enter') {
-      search();
-      closeSearch();
+      detailSearch();
     }
   });
 }
@@ -226,9 +247,7 @@ function addListenerResults() {
   const inputBox = document.getElementById('keyword');
   inputBox.addEventListener('keyup', function(event) {
     if (event.key === 'Enter') {
-      var keyword = document.getElementById('keyword').value;
-      searchOrgs(0, keyword);
-      closeSearch();
+      searchByKeyword();
     }
   });
 }
@@ -237,7 +256,7 @@ function addIndexListener() {
   const inputBox = document.getElementById('keyword');
   inputBox.addEventListener('keyup', function(event) {
       if (event.key === 'Enter') {
-        search();
+        indexPageSearch();
       }
   });
 }
@@ -409,7 +428,7 @@ function setUpIndexpage() {
 }
 
 function setUpAboutPage(){
-  addIndexListener();
+  addListener();
   getLoginStatus();
 }
 
@@ -451,6 +470,7 @@ function getLoginStatus() {
 
 /**  Open the search box */
 function openSearch() {
+  addCloseListener();
   document.getElementById("myOverlay").style.display = "block";
 }
 

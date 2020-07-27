@@ -32,18 +32,17 @@
       </div>
     </header>
   </div>
+  
   <!-- search by keyword -->
-      <div id="myOverlay" class="overlay">
-        <span class="closebtn material-icons" onclick="closeSearch()" title="Close Overlay">
-          <span class="material-icons">clear</span>
-        </span>
-        <div id="results-search">
-          <input type="text" id="keyword" placeholder="Search by keyword">
-                <button onclick="indexPageSearch();">Search</button>
-
-          <!-- <span class="material-icons" onclick="searchOrgs(0);">search</span> -->
-        </div>      
-      </div>
+  <div id="myOverlay" class="overlay">
+    <span class="closebtn material-icons" onclick="closeSearch()" title="Close Overlay">
+      <span class="material-icons">clear</span>
+    </span>
+    <div id="results-search">
+      <input type="text" id="keyword" placeholder="Search by keyword">
+      <span onclick="detailSearch();" class="material-icons search-icon">search</span>
+    </div>      
+  </div>
   <br><br><br><br>
 
   <div id="about-page">
