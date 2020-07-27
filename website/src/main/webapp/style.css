@@ -80,6 +80,6 @@ h1 {
   display: none;
 }
 
-#search-icon {
+.search-icon {
   cursor:pointer;
 }
