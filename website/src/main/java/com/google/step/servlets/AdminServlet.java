@@ -13,11 +13,6 @@ import javax.servlet.http.HttpServletResponse;
 
 @WebServlet("/admin")
 public class AdminServlet extends HttpServlet {
-  //Object to stringify and send out for invalid users
-  private final class InvalidUser {
-    String user = "Invalid user";
-  }
-
   //Admin object contains all html for admin UI
   private final class AdminDashboard {
     String user = "Admin";
@@ -108,7 +103,7 @@ public class AdminServlet extends HttpServlet {
         System.err.println(ex);
       }
     } else {
-      response.getWriter().println(new Gson().toJson(new InvalidUser()));
+      response.getWriter().println("{\"user\": \"Invalid User\"}");
     }
   }
 }

@@ -195,22 +195,22 @@ function loadAdminPage() {
 
 function setUpForAdmin(adminText) {
   //admin UI to page
-      document.getElementById('navActionItems').style.display = 'block';
-      document.getElementById('uploadOrgs').innerHTML += adminText['uploadCSV'];
-      document.getElementById('quality').innerHTML += adminText['compareQuality'];
-      document.getElementById('similarity').innerHTML += adminText['similarityWorkFlow'];
-      document.getElementById('filter').innerHTML += adminText['filterWorkFlow'];
-      //Hide items
+  document.getElementById('navActionItems').style.display = 'block';
+  document.getElementById('uploadOrgs').innerHTML = adminText['uploadCSV'];
+  document.getElementById('quality').innerHTML = adminText['compareQuality'];
+  document.getElementById('similarity').innerHTML = adminText['similarityWorkFlow'];
+  document.getElementById('filter').innerHTML = adminText['filterWorkFlow'];
+  //Hide items
+  hideWorkFlows();
+  //Add click functionality to display desired UI
+  document.getElementById('actionItems').childNodes.forEach(child => {
+    child.addEventListener('click', function() {
       hideWorkFlows();
-      //Add click functionality to display desired UI
-      document.getElementById('actionItems').childNodes.forEach(child => {
-        child.addEventListener('click', function() {
-          hideWorkFlows();
-          this.setAttribute('class', 'mdc-list-item mdc-list-item--activated');
-          document.getElementById(this.getAttribute("value")).style.display = "block";
-        });
-      })
-      getUploads(); 
+      this.setAttribute('class', 'mdc-list-item mdc-list-item--activated');
+      document.getElementById(this.getAttribute("value")).style.display = "block";
+    });
+  })
+  getUploads(); 
 }
 
 //Hides unselected UI
