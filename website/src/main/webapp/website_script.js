@@ -19,8 +19,7 @@ function searchOrgs(page, key) {
     keyword = document.getElementById('keyword').value;
   }
   const qs = '/sql?' + updateQueryString('keyword', keyword) + '&' + updateQueryString('page', pageElement.innerText);
-  addTitle(keyword);
-  addOrgs(qs, 1);
+  addOrgs(qs, 1, keyword);
 }
 
 function search() {
@@ -34,8 +33,12 @@ function addPagination(count, keyword) {
   document.getElementById('pagination').style.display = 'inline-block';
   if (count !== undefined) {
     removeChildren('pagination-list');
+
+    if (count === 0) {
+      return;
+    }
+
     const paginationElement = document.getElementById('pagination-list');
-    
     const prevPage = document.createElement('li');
     prevPage.className = 'page_num';
     prevPage.onclick = function() { searchOrgs(-1, keyword); };
@@ -67,12 +70,15 @@ function addPagination(count, keyword) {
   }
 }
 
-function addOrgs(qs, results) {
+function addOrgs(qs, results, keyword) {
   fetch(qs).then(response => response.json()).then(text => {
     const orgsContainer = document.getElementById('existing-organizations');
     if (results) {
       const count = text[0];
-      addPagination(count);
+      addPagination(count, keyword);
+      if (keyword !== undefined) {
+        addTitle(keyword, count);
+      }
       const data = text[1];
       data.forEach(entry => {
         orgsContainer.appendChild(getOrgAsHtmlDescription(entry, results));
@@ -221,7 +227,6 @@ function addListenerResults() {
   inputBox.addEventListener('keyup', function(event) {
     if (event.key === 'Enter') {
       var keyword = document.getElementById('keyword').value;
-      addTitle(keyword);
       searchOrgs(0, keyword);
       closeSearch();
     }
@@ -237,9 +242,13 @@ function addIndexListener() {
   });
 }
  
-function addTitle(keyword) {
+function addTitle(keyword, count) {
   const element = document.getElementById('results-title');
-  element.innerText = 'Results for [' + keyword + ']: ';
+  if (count > 0) {
+    element.innerText = 'Results for [' + keyword + ']: ';
+  } else {
+    element.innerText = 'No results found for [' + keyword + ']';
+  }
 }
 
 /**
@@ -316,11 +325,7 @@ function addToClassTree(tree, parent, classPath) {
     if (!pageElement) {	
       redirectKeyword(classPath);	
     } else {	
-      const qs = '/sql?' + updateQueryString('keyword', classPath) + '&' + updateQueryString('page', pageElement.innerText);	
-      removeChildren('existing-organizations');	
-      addTitle(classPath);	
-      addPagination();	
-      addOrgs(qs, 1);	
+      searchOrgs(0, classPath);
     }	
   };
 
