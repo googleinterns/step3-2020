@@ -25,6 +25,15 @@ ul, #myUL {
   top: 5%;
 }
 
+#login-drawer{
+  display:none;
+  
+  z-index:9;
+  position: absolute;
+  top: 5%;
+  right: 0%;
+}
+
 
 #existing-organizations {
   list-style-type: none;

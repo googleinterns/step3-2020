@@ -26,9 +26,7 @@
             <span class='mdc-top-app-bar__title'>Nonprofit Finder</span>
           </section>
           <section class='mdc-top-app-bar__section mdc-top-app-bar__section--align-end' role='toolbar'>
-            <p id='login-status'></p>
-            <a id='login-link'></a>
-            <a id='loginIcon'><button class='material-icons mdc-top-app-bar__action-item mdc-icon-button' aria-label='Options'>account_circle</button></a>
+            <button id='loginIcon' onclick='openLoginStatus();' class='material-icons mdc-top-app-bar__action-item mdc-icon-button' aria-label='Options'>account_circle</button>
           </section>
         </div>
       </header>
@@ -49,6 +47,18 @@
               <i class="material-icons mdc-list-item__graphic">favorite</i>
               <span class="mdc-list-item__text">AI Recommender</span>
             </a>
+          </nav>
+        </div>
+      </aside>
+    </div>
+
+    <!-- Login Status -->
+    <div id="login-drawer">
+      <aside class="mdc-drawer">
+        <div class="mdc-drawer__content">
+          <nav class="mdc-list">
+            <p class="mdc-list-item" id="login-status"></p>
+            <a id="login-link" class="mdc-list-item"></a>
           </nav>
         </div>
       </aside>
