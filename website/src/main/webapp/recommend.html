@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="stylesheets/style.css">
+    <link rel="stylesheet" href="stylesheets/recommend.css">
+    <script src="scripts/website_script.js"></script>
+
+    <!-- uikit framework -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/uikit/3.5.4/css/uikit.min.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/uikit/3.5.4/js/uikit.min.js"></script>
+    <!-- material design -->
+    <link href="https://unpkg.com/material-components-web@latest/dist/material-components-web.min.css" rel="stylesheet">
+    <script src="https://unpkg.com/material-components-web@latest/dist/material-components-web.min.js"></script>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+  </head>
+
+  <body id="body" onload="setUpRecommendations();">
+    <!-- top navigation bar -->
+    <div id="top-nav"></div>
+    <!-- hamburger menu -->
+    <div id="drawer">
+      <aside class="mdc-drawer">
+        <div class="mdc-drawer__content">
+          <nav class="mdc-list">
+            <a class="mdc-list-item" href="about.html" aria-current="page" tabindex="0">
+              <span class="mdc-list-item__ripple"></span>
+              <i class="material-icons mdc-list-item__graphic">info</i>
+              <span class="mdc-list-item__text">About</span>
+            </a>
+            <a class="mdc-list-item" href="recommend.html">
+              <span class="mdc-list-item__ripple"></span>
+              <i class="material-icons mdc-list-item__graphic">favorite</i>
+              <span class="mdc-list-item__text">AI Recommender</span>
+            </a>
+          </nav>
+        </div>
+      </aside>
+    </div>
+    <!-- Login Status -->
+    <div id="login-drawer">
+      <aside class="mdc-drawer">
+        <div class="mdc-drawer__content">
+          <nav class="mdc-list">
+            <p class="mdc-list-item" id="login-status"></p>
+            <a id="login-link" class="mdc-list-item"></a>
+          </nav>
+        </div>
+      </aside>
+    </div>
+
+    <!-- search by keyword -->
+    <div id="myOverlay" class="overlay">
+      <span class="closebtn material-icons" onclick="closeSearch()" title="Close Overlay">
+        <span class="material-icons">clear</span>
+      </span>
+      <div id="results-search">
+        <input type="text" id="keyword" placeholder="Search by keyword">
+          <span onclick="indexPageSearch();" class="material-icons">search</span>
+      </div>      
+    </div>
+
+    <!-- side navigation bar -->
+    <div id= "side-nav">
+      <ul id="roots" class="uk-nav-default uk-nav-parent-icon" uk-nav>
+      </ul>
+    </div>
+
+    <h1>AI Recommendations</h1>
+    <h2>Here are some personalized recommendations that our machine learning program thinks you may like</h2>
+    <div id="recommended-orgs"></div>
+
+  </body>
+</html>

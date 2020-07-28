@@ -21,7 +21,7 @@ import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletRequest;
 
 public final class OrganizationInfo {
-  private final int id;
+  private int id;
   private final String name;
   private final String link;
   private final String about;
@@ -116,6 +116,15 @@ public final class OrganizationInfo {
     return new OrganizationInfo(index, name, link, about, category);
   }
 
+  public static OrganizationInfo getSubmissionOrgFrom(ResultSet rs) throws SQLException {
+    int id = rs.getInt("id");
+    String name = rs.getString("name");
+    String link = rs.getString("link");
+    String about = rs.getString("about");
+    String categoryString = rs.getString("class");
+    List<String> category = Arrays.asList(categoryString.split("/",0));
+    return new OrganizationInfo(id, name, link, about, category);
+  }
   //Get org from SQL result to send to front end
   public static OrganizationInfo getResultOrgFrom(ResultSet rs) throws SQLException {
     int id = rs.getInt("id");
@@ -145,9 +154,9 @@ public final class OrganizationInfo {
     statement.setString(5, classPath);
     statement.addBatch();
 
-    if (this.id % 500 == 0){
-        statement.executeBatch();
-      } 
+    if (this.id % 500 == 0) {
+      statement.executeBatch();
+    } 
   }
 
   //Getters for testing
@@ -156,4 +165,6 @@ public final class OrganizationInfo {
   public String getAbout() {return this.about;}
   public String getLink() {return this.link;}
   public List<String> getCategory() {return this.classification;}
+
+  public void setID(int index) {this.id = index;} 
 }

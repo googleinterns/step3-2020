@@ -1,4 +1,3 @@
-
 #existing-organizations {
   transition: 0.3s;
   width: 600px;
@@ -89,8 +88,8 @@ color: rgba(0, 0, 0, 0.54)
 
 .overlay .closebtn {
   position: absolute;
-  top: 10%;
-  right: 45px;
+  top: 0.5%;
+  right: 20%;
   font-size: 60px;
   cursor: pointer;
   color: white;
@@ -113,4 +112,16 @@ color: rgba(0, 0, 0, 0.54)
   background: #f1f1f1;
 }
 
+/* when mouse hovers over pagination, it turns into a hand */
+.page_num:hover{
+  cursor:pointer;
+}
 
+
+#submission {
+  float: left;
+}
+
+#comparisons {
+  float:  right;
+}

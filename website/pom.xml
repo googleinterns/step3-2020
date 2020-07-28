@@ -37,16 +37,22 @@
     </dependency>
     <!-- LocalService for Testing Datastore -->
     <dependency>
-        <groupId>com.google.appengine</groupId>
-        <artifactId>appengine-testing</artifactId>
-        <version>1.4.0</version>
-        <scope>test</scope>
+      <groupId>com.google.appengine</groupId>
+      <artifactId>appengine-testing</artifactId>
+      <version>1.4.0</version>
+      <scope>test</scope>
     </dependency>
     <!-- Google NLP -->
     <dependency>
       <groupId>com.google.cloud</groupId>
       <artifactId>google-cloud-language</artifactId>
       <version>1.99.4</version>
+    </dependency>
+    <!-- https://mvnrepository.com/artifact/com.google.cloud/google-cloud-secretmanager -->
+    <dependency>
+        <groupId>com.google.cloud</groupId>
+        <artifactId>google-cloud-secretmanager</artifactId>
+        <version>1.1.0</version>
     </dependency>
     <!-- URL Validator -->
     <dependency>

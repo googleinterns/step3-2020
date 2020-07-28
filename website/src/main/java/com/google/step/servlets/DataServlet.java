@@ -16,6 +16,7 @@ package com.google.step.servlets;
 
 import java.io.IOException;
 
+<<<<<<< HEAD
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
@@ -27,6 +28,8 @@ import com.google.appengine.api.datastore.PreparedQuery;
 import com.google.appengine.api.datastore.Query;
 import com.google.apphosting.api.DeadlineExceededException;
 import com.google.cloud.language.v1.ClassificationCategory;
+=======
+>>>>>>> master
 import com.google.cloud.language.v1.ClassifyTextRequest;
 import com.google.cloud.language.v1.ClassifyTextResponse;
 import com.google.cloud.language.v1.LanguageServiceClient;
@@ -46,6 +49,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.fileupload.FileItemStream;
 import org.apache.commons.fileupload.FileItemIterator;
 import org.apache.commons.fileupload.FileUploadException;
+import org.apache.commons.fileupload.FileUploadBase.InvalidContentTypeException;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 
 /** Servlet that returns some example content. TODO: modify this file to handle comments data */
@@ -60,7 +64,7 @@ public class DataServlet extends HttpServlet {
       //Set up Proxy for handling SQL server
       CloudSQLManager database = CloudSQLManager.setUp();
       //Get all distinct classifications to develop tree
-      ResultSet classes = database.getDistinct(orgsWithClass, Arrays.asList("class"), Arrays.asList("class IS NOT NULL ORDER BY class DESC"));
+      ResultSet classes = database.getDistinct("g4npOrgs", Arrays.asList("class"), Arrays.asList("class IS NOT NULL ORDER BY class DESC"));
       Map<String, Set<String>> classTree = createClassificationTree(classes);
       // TreeSet<String> roots = new TreeSet(classTree.get("roots"));
       // printClassTree(classTree, roots, roots.first(), "" );
@@ -69,6 +73,7 @@ public class DataServlet extends HttpServlet {
       response.setCharacterEncoding("UTF-8");
       Gson gson = new Gson();
       response.getWriter().println(gson.toJson(classTree));
+      database.tearDown();
     } catch (SQLException ex) {
       System.err.println(ex);
     }
@@ -79,31 +84,53 @@ public class DataServlet extends HttpServlet {
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
     try {
       CSVReader file = getCSVReaderFrom(request);
-      ProcessData dataProcessor = new ProcessData(file);
-      Thread processData = new Thread(dataProcessor);
-      processData.start();
-      response.sendRedirect("/upload.html");
-    } catch (FileUploadException ex) {
-      System.out.println("Please dont");
-    }
-  }
+      if (file != null) { 
+        ProcessData dataProcessor = new ProcessData(file);
+        Thread processData = new Thread(dataProcessor);
+        processData.start();
+        response.sendRedirect("/admin.html");
+      } else {
+        //Column Information for database to be created
+        List<String> columns = Arrays.asList(
+            "id INTEGER PRIMARY KEY", 
+            "name TEXT NOT NULL", 
+            "link TEXT NOT NULL", 
+            "about TEXT NOT NULL",
+            "class VARCHAR(255) NOT NULL",
+            "neighbor1 INTEGER",
+            "neighbor2 INTEGER", 
+            "neighbor3 INTEGER", 
+            "neighbor4 INTEGER",
+            "upvotes INTEGER,");
 
-  //Helper functions for processing new CSV files
-  private int getLastEntryIndex(String tableName, CloudSQLManager database) {
-    try {
-      ResultSet maxIndexSet = database.getDistinct(tableName, Arrays.asList("MAX(id) AS id"), null); 
-      maxIndexSet.next();
-      int lastEntryIndex = maxIndexSet.getInt("id");
-    return lastEntryIndex;
+        //Set up Proxy for handling SQL server
+        CloudSQLManager database = CloudSQLManager.setUp();
+        String targetTable = orgsToCheck;
+        //Create table for orgs to verify with classification
+        database.createTable(targetTable, columns);
+        //Classify each org from, file, and add to target table
+        PreparedStatement statement = database.buildInsertStatement(orgsToCheck, columns);  
+        int startIndex = database.getLastEntryIndex(orgsToCheck) + 1;
+        NLPService service = new NLPService();
+        passSubmissionToStatement(request, statement, startIndex, service);
+        //Wrap up
+        database.tearDown();
+        response.sendRedirect("/upload.html");
+      }
     } catch (SQLException ex) {
       System.err.println(ex);
-      return 0;
+    } catch(Exception ex) {
+      System.err.println(ex);
+    } catch (FileUploadException ex) {
+      System.err.println(ex);
     }
   }
 
   //helper functions to process uploads
   private class NLPService implements ClassHandler{
     private LanguageServiceClient service;
+    private boolean localTesting = true;
+
     NLPService() throws IOException {
       this.service = LanguageServiceClient.create();
     }
@@ -153,83 +180,54 @@ public class DataServlet extends HttpServlet {
     statement.executeBatch();
   }
 
-
-  //TODO: re upload orgs with fixed classifications to delete this
-  private static Set<String> hardCodedRoots = new TreeSet<>(Arrays.asList(
-      "Adult",
-      "Arts & Entertainment",
-      "Autos & Vehicles",
-      "Beauty & Fitness",
-      "Books & Literature",
-      "Business & Industrial",
-      "Computers & Electronics",
-      "Finance",
-      "Food & Drink",
-      "Health",
-      "Hobbies & Leisure",
-      "Home & Garden",
-      "Internet & Telecom",
-      "Jobs & Education",
-      "Law & Government",
-      "News",
-      "Online Communities",
-      "People & Society",
-      "Pets & Animals",
-      "Real Estate",
-      "Reference",
-      "Science",
-      "Sensitive Subjects",
-      "Shopping",
-      "Sports",
-      "Travel"
-    )
-  );
-
   //Developing classification tree from already processed org info
   public static Map<String, Set<String>> createClassificationTree(ResultSet classes) throws SQLException {
-    Map<String, Set<String>> classTree = new HashMap<>();
+    Map<String, Set<String>> classTree = new TreeMap<>();
     classTree.put("roots", new TreeSet<String>());
-      while (classes.next()) {
-        Queue<String> parsed = Arrays.stream(classes.getString("class").split("/", 0))
-            .collect(Collectors.toCollection(LinkedList::new));
-        classTree.get("roots").add(parsed.peek());
-        while (!parsed.isEmpty()) {
-          String parent = parsed.remove();
-          try {
-            if (hardCodedRoots.contains(parsed.peek())) {
-              if (!classTree.containsKey(parent)) {
-                classTree.put(parent, new TreeSet<>());
-              }
-              break;
-            } 
-          } catch(NullPointerException ex){
-            System.err.println();
-          }
-          List<String> child = (parsed.peek() != null) ? Arrays.asList(parsed.peek()) : new ArrayList<String>();
-          if (classTree.containsKey(parent)) {
-            classTree.get(parent).addAll(child);
-          } else {
-            classTree.put(parent, new TreeSet<>(child));
-          }
-        }
+    while (classes.next()) {
+      Queue<String> parsed = Arrays.stream(classes.getString("class").split("/", 0))
+          .collect(Collectors.toCollection(LinkedList::new));
+      classTree.get("roots").add(parsed.peek());
+      while (!parsed.isEmpty()) {
+        String parent = parsed.remove();
+        String child = parsed.peek();
+        if (!classTree.containsKey(parent)) {
+          classTree.put(parent, new TreeSet<>());
+        } 
+        if (child != null) {
+          classTree.get(parent).add(child);
+        } 
       }
-      classes.close();
-      return classTree;
+    }
+    classes.close();
+    classTree.put("Miscellaneous", new TreeSet<>());
+    for (String parent : classTree.get("roots")) {
+      if (classTree.get(parent).isEmpty()) {
+        classTree.get("Miscellaneous").add(parent);
+      }
+    }
+    classTree.get("roots").removeAll(classTree.get("Miscellaneous"));
+    classTree.get("roots").add("Miscellaneous");
+    return classTree;
   }
 
   //Process HTTP Request for CSV file
   private CSVReader getCSVReaderFrom(HttpServletRequest request) throws FileUploadException, IOException {
     //create file upload handler
     ServletFileUpload upload = new ServletFileUpload();
-    //Search request for file
-    FileItemIterator iter = upload.getItemIterator(request);
-    while (iter.hasNext()) {
-      FileItemStream item = iter.next();
-      if (!item.isFormField()) {
-        InputStreamReader fileStreamReader = new InputStreamReader(item.openStream()); 
-        return new CSVReaderBuilder(fileStreamReader).withSkipLines(1).build();
+    try {
+      //Search request for file
+      FileItemIterator iter = upload.getItemIterator(request);
+      while (iter.hasNext()) {
+        FileItemStream item = iter.next();
+        if (!item.isFormField()) {
+          InputStreamReader fileStreamReader = new InputStreamReader(item.openStream()); 
+          return new CSVReaderBuilder(fileStreamReader).withSkipLines(1).build();
+        }
       }
-    }
+    } catch(InvalidContentTypeException ex) {
+      return null;
+    } 
     return null;
   }
 }
