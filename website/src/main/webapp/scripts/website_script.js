@@ -500,10 +500,23 @@ function accordion(){
 function openHamburger() {
   document.getElementById("drawer").style.display = "block";
   document.getElementById("drawer").style.zIndex="11";
+
+  document.addEventListener('click', event => {
+    console.log(event.target.id);
+    if (event.target.id !== 'hamburger') {
+      closeHamburger();
+    }
+  });
 }
 
 function closeHamburger() {  
+  console.log('closing hamburger');
   document.getElementById("drawer").style.display = "none";
+  document.removeEventListener('click', event => {
+    if (event.target.id !== 'hamburger') {
+      closeHamburger();
+    }
+  });
 }
 
 
