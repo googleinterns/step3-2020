@@ -351,14 +351,15 @@ function addToClassTree(tree, parent, classPath) {
     pathElem.removeChild(pathElem.firstChild.nextSibling);
   }
   // Event for making query
+  // pathElem.firstChild.nextSibling.addEventListener('onmouseover', turnOffSearch);
   const pageElement = document.getElementById('current-page');
-  pathElem.lastChild.onclick = function() {
+  pathElem.onclick = function () {
     if (!pageElement) {	
       redirectKeyword(classPath);	
     } else {	
       searchOrgs(0, classPath);
     }	
-  };
+  }
 
   return pathElem;
 }
@@ -381,6 +382,7 @@ function navItemActivate() {
   const nextPath = this.parentNode.nextSibling;
   const targetLayer = this.parentNode.lastChild.firstChild.firstChild;
   navMenu.insertBefore(targetLayer, nextPath); 
+  event.stopPropagation()
 }
 
 /**
