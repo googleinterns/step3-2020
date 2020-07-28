@@ -85,8 +85,9 @@ h6{
 
 #drawer{
   display:none;
-  top:10%;
-  z-index: 10;
+  
+  z-index:9;
+  position: relative;
 }
 
 

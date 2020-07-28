@@ -2,6 +2,12 @@
  * Add the searched organizations by keyword
  */
 function searchOrgs(page, key) {
+  var keyword = key;
+  if (key === undefined) {
+    keyword = document.getElementById('keyword').value;
+  }
+  closeSearch();
+  removeChildren('existing-organizations');
   const pageElement = document.getElementById('current-page');
   // -1 for prev page and -2 for next page
   if (page === -1) {
@@ -13,19 +19,8 @@ function searchOrgs(page, key) {
   } else {
     pageElement.innerText = page;
   }
-  removeChildren('existing-organizations');
-  var keyword = key;
-  if (key === undefined) {
-    keyword = document.getElementById('keyword').value;
-  }
   const qs = '/sql?' + updateQueryString('keyword', keyword) + '&' + updateQueryString('page', pageElement.innerText);
-  addTitle(keyword);
-  addOrgs(qs, 1);
-}
-
-function search() {
-  const keyword = document.getElementById('keyword').value;
-  redirectKeyword(keyword);
+  addOrgs(qs, 1, keyword);
 }
 
 function addPagination(count, keyword) {
@@ -34,16 +29,16 @@ function addPagination(count, keyword) {
   document.getElementById('pagination').style.display = 'inline-block';
   if (count !== undefined) {
     removeChildren('pagination-list');
+
+    if (count === 0) {
+      return;
+    }
+
     const paginationElement = document.getElementById('pagination-list');
-    
     const prevPage = document.createElement('li');
     prevPage.className = 'page_num';
     prevPage.onclick = function() { searchOrgs(-1, keyword); };
     prevPage.innerText = 'prev';
-    // TODO: make the prev and next spans show up
-    // const prevPageSpan = document.createElement('span');
-    // prevPageSpan.className = 'uk-pagination-previous';
-    // prevPage.appendChild(prevPageSpan);
     paginationElement.appendChild(prevPage);
 
     const pages = count / 10 + 1;
@@ -60,19 +55,19 @@ function addPagination(count, keyword) {
     nextPage.className = 'page_num';
     nextPage.onclick = function() { searchOrgs(-2, keyword); };
     nextPage.innerText = 'next';
-    // const nextPageSpan = document.createElement('span');
-    // nextPageSpan.className = 'uk-pagination-next';
-    // nextPage.appendChild(nextPageSpan);
     paginationElement.appendChild(nextPage);
   }
 }
 
-function addOrgs(qs, results) {
+function addOrgs(qs, results, keyword) {
   fetch(qs).then(response => response.json()).then(text => {
     const orgsContainer = document.getElementById('existing-organizations');
     if (results) {
       const count = text[0];
-      addPagination(count);
+      addPagination(count, keyword);
+      if (keyword !== undefined) {
+        addTitle(keyword, count);
+      }
       const data = text[1];
       data.forEach(entry => {
         orgsContainer.appendChild(getOrgAsHtmlDescription(entry, results));
@@ -115,6 +110,7 @@ function getOrgAsHtmlDescription(org, results) {
   nameElement.setAttribute('href', 'https://' + org.link);
   nameElement.setAttribute('target', '_blank');
   nameElement.innerText = org.name;
+  nameElement.onclick = function() { event.stopPropagation(); };
   orgElement.appendChild(nameElement);
   
   // about
@@ -165,7 +161,7 @@ function getOrgAsHtmlDescription(org, results) {
 
   // make the whole list element clickable and take user to organization.html pasing id as parameter
   if (results) {
-    orgElement.onclick = function() { redirectId(org.id); }
+    orgElement.onclick = function() { redirectId(org.id); };
   }
   return orgElement;
 }
@@ -200,18 +196,50 @@ function redirectRating(up, id) {
   event.stopPropagation();
 }
 
+function indexPageSearch() {
+  const keywordInput = document.getElementById('keyword');
+  const keyword = keywordInput.value;
+  if (keyword !== '') {
+    redirectKeyword(keyword);
+  } else {
+    alert('Please enter a keyword to search');
+  }
+}
+
+function searchByKeyword() {
+  var keyword = document.getElementById('keyword').value;
+  if (keyword === '') {
+    alert('Please enter a keyword to search');
+  } else {
+    searchOrgs(0, keyword);
+  }
+  closeSearch();
+}
+
 function redirectKeyword(keyword) {
   const qs = updateQueryString('keyword', keyword);
   const redirect = '/results.html?' + qs;
   window.location = redirect;
 }
  
+function addCloseListener() {
+  document.addEventListener('click', event => {
+    if (event.target.id === 'myOverlay') {
+      closeSearch();
+    }
+  });
+}
+
+function detailSearch() {
+  indexPageSearch();
+  closeSearch();
+}
+
 function addListener() {
   const inputBox = document.getElementById('keyword');
   inputBox.addEventListener('keyup', function(event) {
     if (event.key === 'Enter') {
-      search();
-      closeSearch();
+      detailSearch();
     }
   });
 }
@@ -220,10 +248,7 @@ function addListenerResults() {
   const inputBox = document.getElementById('keyword');
   inputBox.addEventListener('keyup', function(event) {
     if (event.key === 'Enter') {
-      var keyword = document.getElementById('keyword').value;
-      addTitle(keyword);
-      searchOrgs(0, keyword);
-      closeSearch();
+      searchByKeyword();
     }
   });
 }
@@ -232,14 +257,18 @@ function addIndexListener() {
   const inputBox = document.getElementById('keyword');
   inputBox.addEventListener('keyup', function(event) {
       if (event.key === 'Enter') {
-        search();
+        indexPageSearch();
       }
   });
 }
  
-function addTitle(keyword) {
+function addTitle(keyword, count) {
   const element = document.getElementById('results-title');
-  element.innerText = 'Results for [' + keyword + ']: ';
+  if (count > 0) {
+    element.innerText = 'Results for [' + keyword + ']: ';
+  } else {
+    element.innerText = 'No results found for [' + keyword + ']';
+  }
 }
 
 /**
@@ -316,11 +345,7 @@ function addToClassTree(tree, parent, classPath) {
     if (!pageElement) {	
       redirectKeyword(classPath);	
     } else {	
-      const qs = '/sql?' + updateQueryString('keyword', classPath) + '&' + updateQueryString('page', pageElement.innerText);	
-      removeChildren('existing-organizations');	
-      addTitle(classPath);	
-      addPagination();	
-      addOrgs(qs, 1);	
+      searchOrgs(0, classPath);
     }	
   };
 
@@ -404,7 +429,7 @@ function setUpIndexpage() {
 }
 
 function setUpAboutPage(){
-  addIndexListener();
+  addListener();
   getLoginStatus();
 }
 
@@ -421,7 +446,11 @@ function getLoginStatus() {
       const statusElement = document.getElementById('login-status');
       statusElement.innerText = 'Hello!  ';
       const logoutElement = document.getElementById('login-link');
-      logoutElement.href = link;
+      if (!link.includes('http')) {
+        logoutElement.href = link;
+      } else {
+        logoutElement.href = 'https://mit-step-2020.wl.r.appspot.com/_ah/logout?continue=https://mit-step-2020.wl.r.appspot.com/';
+      }
       logoutElement.innerText = 'Logout';
       const loginIcon = document.getElementById('loginIcon')
       loginIcon.href = link;
@@ -442,6 +471,7 @@ function getLoginStatus() {
 
 /**  Open the search box */
 function openSearch() {
+  addCloseListener();
   document.getElementById("myOverlay").style.display = "block";
 }
 
@@ -536,7 +566,7 @@ function navbar(){
   // document.getElementById("top-nav").innerHTML="<header class='mdc-top-app-bar'><div class='mdc-top-app-bar__row'><section class='mdc-top-app-bar__section mdc-top-app-bar__section--align-start'>Hello</section></div> this is the navbar</header>"
 
 
-  document.getElementById("top-nav").innerHTML="    <header class='mdc-top-app-bar' id='app-bar'><div class='mdc-top-app-bar__row'><section class='mdc-top-app-bar__section mdc-top-app-bar__section--align-start'><button onclick='openHamburger();' class='material-icons mdc-top-app-bar__navigation-icon mdc-icon-button' aria-label='Open navigation menu'>menu</button><a href='/index.html'><button class='material-icons mdc-top-app-bar__action-item mdc-icon-button' aria-label='Home'>home</button></a> <a class='about2' d webhref='/about.html'><span id='about' title='about'>About</span></a><a href='/recommend.html'><button class='material-icons mdc-top-app-bar__action-item mdc-icon-button' aria-label='favorite'>favorite</button></a><span class='mdc-top-app-bar__title'>Nonprofit Finder</span></section><section class='mdc-top-app-bar__section mdc-top-app-bar__section--align-end' role='toolbar'><button class='material-icons mdc-top-app-bar__action-item mdc-icon-button' aria-label='Search' onclick='openSearch()'>search</button> <p id='login-status'></p><a id='login-link'></a> <a id='loginIcon'><button class='material-icons mdc-top-app-bar__action-item mdc-icon-button' aria-label='Options'>account_circle</button></a></section></div></header>";
+  document.getElementById("top-nav").innerHTML="    <header class='mdc-top-app-bar' id='app-bar'><div class='mdc-top-app-bar__row'><section class='mdc-top-app-bar__section mdc-top-app-bar__section--align-start'><button onclick='openHamburger();' class='material-icons mdc-top-app-bar__navigation-icon mdc-icon-button' aria-label='Open navigation menu'>menu</button><a href='/index.html'><button class='material-icons mdc-top-app-bar__action-item mdc-icon-button' aria-label='Home'>home</button></a> <a class='about2' href='/about.html'><span id='about' title='about'>About</span></a><a href='/recommend.html'><button class='material-icons mdc-top-app-bar__action-item mdc-icon-button' aria-label='favorite'>favorite</button></a><span class='mdc-top-app-bar__title'>Nonprofit Finder</span></section><section class='mdc-top-app-bar__section mdc-top-app-bar__section--align-end' role='toolbar'><button class='material-icons mdc-top-app-bar__action-item mdc-icon-button' aria-label='Search' onclick='openSearch()'>search</button> <p id='login-status'></p><a id='login-link'></a> <a id='loginIcon'><button class='material-icons mdc-top-app-bar__action-item mdc-icon-button' aria-label='Options'>account_circle</button></a></section></div></header>";
 
   // document.getElementById("myOverlay").innerHTML="<span class='closebtn material-icons' onclick='closeSearch()' title='Close Overlay'><span class='material-icons'>clear</span></span><div id=’results-search’><input type=’text’ id=’keyword’ placeholder=’Search by keyword’><span class=’material-icons’ onclick=’search();’>search</span> </div>";
   

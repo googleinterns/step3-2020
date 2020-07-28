@@ -41,7 +41,7 @@
 
   
   <!-- search by keyword -->
-      <div id="myOverlay" class="overlay">
+      <!-- <div id="myOverlay" class="overlay">
         <span class="closebtn material-icons" onclick="closeSearch()" title="Close Overlay">
           <span class="material-icons">clear</span>
         </span>
@@ -49,21 +49,21 @@
           <input type="text" id="keyword" placeholder="Search by keyword">
             <span class="material-icons" onclick="search();">search</span> 
         </div>      
-      </div>
+      </div> -->
 
     <!-- hamburger menu -->
 <div id="drawer">
   <aside class="mdc-drawer">
     <div class="mdc-drawer__content">
       <nav class="mdc-list">
-        <a class="mdc-list-item" href="#" aria-current="page" tabindex="0">
+        <a class="mdc-list-item" href="about.html" aria-current="page" tabindex="0">
           <span class="mdc-list-item__ripple"></span>
-          <i class="material-icons mdc-list-item__graphic" aria-hidden="true">info</i>
+          <i class="material-icons mdc-list-item__graphic">info</i>
           <span class="mdc-list-item__text">About</span>
         </a>
-        <a class="mdc-list-item" href="#">
+        <a class="mdc-list-item" href="recommend.html">
           <span class="mdc-list-item__ripple"></span>
-          <i class="material-icons mdc-list-item__graphic" aria-hidden="true">favorite</i>
+          <i class="material-icons mdc-list-item__graphic">favorite</i>
           <span class="mdc-list-item__text">AI Recommender</span>
         </a>
       </nav>
@@ -73,6 +73,15 @@
 
 
 
+
+  
+  <!-- search by keyword -->
+  <div id="myOverlay" class="overlay">
+    <div id="results-search">
+      <input type="text" id="keyword" placeholder="Search by keyword">
+      <span onclick="detailSearch();" class="material-icons search-icon">search</span>
+    </div>      
+  </div>
 
   <br><br><br><br>
 

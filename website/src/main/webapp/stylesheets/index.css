@@ -39,3 +39,28 @@ h1 {
   left: 2%;
   margin-right: -50%;
 }
+
+#existing-organizations {
+  list-style-type: none;
+}
+
+#pagination {
+  display: none;
+}
+
+.hidden {
+  display: none;
+}
+
+.search-icon {
+  cursor:pointer;
+}
+
+.adminAction {
+  position: absolute;
+  height: 80%;
+  width: 70%;
+  float: right;
+  top: 10%;
+  left:30%;
+}
