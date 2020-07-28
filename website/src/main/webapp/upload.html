@@ -55,16 +55,43 @@
     </div>
 
     <center>
-      <h1>Nonprofit Finder</h2>
-      <form id="uploadForm" action="/data" method="POST">
-        <label for="orgName">Organization Title:</label><br></br>
-        <input type="text" id="name" name="name" required><br></br>
-        <label for="webLink">Website Link:</label><br></br>
-        <input type="text" id="link" name="link" required><br></br>
-        <label for="about">About Section:</label><br></br>
-        <textarea id="about" name="about" rows="6" cols="45"></textarea><br></br>
-        <input id="submit" type="submit">
-      </form>
+      <div id="uploadForm">
+        <form style="position:relative; top:4%" action="/data" method="POST">
+          <label class="mdc-tab__content" id="my-label-id">
+            <span class="mdc-tab__text-label">Organization Title</span>  
+          </label><br>
+          <label class="mdc-text-field mdc-text-field--filled">
+            <span class="mdc-text-field__ripple"></span>
+            <input id="name" name="name" class="mdc-text-field__input" type="text" aria-labelledby="name">
+            <span class="mdc-line-ripple"></span>
+          </label>
+          <br><br><br>
+          <label class="mdc-tab__content" id="my-label-id">
+            <span class="mdc-tab__text-label">Website Link</span>  
+          </label><br>
+          <label class="mdc-text-field mdc-text-field--filled">
+            <span class="mdc-text-field__ripple"></span>
+            <input id="link" name="link" class="mdc-text-field__input" type="text" aria-labelledby="Link">
+            <span class="mdc-line-ripple"></span>
+          </label>
+          <br><br><br>
+          <label class="mdc-tab__content" id="my-label-id">
+            <span class="mdc-tab__text-label">Mission Statement</span>  
+          </label><br>
+          <label class="mdc-text-field mdc-text-field--filled mdc-text-field--textarea mdc-text-field--no-label">
+            <span class="mdc-text-field__ripple"></span>
+            <span class="mdc-text-field__resizer">
+              <textarea id="about" name="about" class="mdc-text-field__input" rows="8" cols="40" aria-label="Label"></textarea>
+            </span>
+            <span class="mdc-line-ripple"></span>
+          </label>
+          <div class="mdc-text-field-helper-line">
+            <div class="mdc-text-field-helper-text" id="my-helper-id" aria-hidden="false">About Section</div>
+          </div>
+          <br><br>
+          <input id="submit" type="submit" class="mdc-button mdc-button--raised">
+        </form>
+      </div>
     </center>
   </body>
 </html>
