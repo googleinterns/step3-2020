@@ -161,68 +161,35 @@ public class DataServlet extends HttpServlet {
     statement.executeBatch();
   }
 
-
-  //TODO: re upload orgs with fixed classifications to delete this
-  private static Set<String> hardCodedRoots = new TreeSet<>(Arrays.asList(
-      "Adult",
-      "Arts & Entertainment",
-      "Autos & Vehicles",
-      "Beauty & Fitness",
-      "Books & Literature",
-      "Business & Industrial",
-      "Computers & Electronics",
-      "Finance",
-      "Food & Drink",
-      "Health",
-      "Hobbies & Leisure",
-      "Home & Garden",
-      "Internet & Telecom",
-      "Jobs & Education",
-      "Law & Government",
-      "News",
-      "Online Communities",
-      "People & Society",
-      "Pets & Animals",
-      "Real Estate",
-      "Reference",
-      "Science",
-      "Sensitive Subjects",
-      "Shopping",
-      "Sports",
-      "Travel"
-    )
-  );
-
   //Developing classification tree from already processed org info
   public static Map<String, Set<String>> createClassificationTree(ResultSet classes) throws SQLException {
-    Map<String, Set<String>> classTree = new HashMap<>();
+    Map<String, Set<String>> classTree = new TreeMap<>();
     classTree.put("roots", new TreeSet<String>());
-      while (classes.next()) {
-        Queue<String> parsed = Arrays.stream(classes.getString("class").split("/", 0))
-            .collect(Collectors.toCollection(LinkedList::new));
-        classTree.get("roots").add(parsed.peek());
-        while (!parsed.isEmpty()) {
-          String parent = parsed.remove();
-          try {
-            if (hardCodedRoots.contains(parsed.peek())) {
-              if (!classTree.containsKey(parent)) {
-                classTree.put(parent, new TreeSet<>());
-              }
-              break;
-            } 
-          } catch(NullPointerException ex){
-            System.err.println();
-          }
-          List<String> child = (parsed.peek() != null) ? Arrays.asList(parsed.peek()) : new ArrayList<String>();
-          if (classTree.containsKey(parent)) {
-            classTree.get(parent).addAll(child);
-          } else {
-            classTree.put(parent, new TreeSet<>(child));
-          }
-        }
+    while (classes.next()) {
+      Queue<String> parsed = Arrays.stream(classes.getString("class").split("/", 0))
+          .collect(Collectors.toCollection(LinkedList::new));
+      classTree.get("roots").add(parsed.peek());
+      while (!parsed.isEmpty()) {
+        String parent = parsed.remove();
+        String child = parsed.peek();
+        if (!classTree.containsKey(parent)) {
+          classTree.put(parent, new TreeSet<>());
+        } 
+        if (child != null) {
+          classTree.get(parent).add(child);
+        } 
       }
-      classes.close();
-      return classTree;
+    }
+    classes.close();
+    classTree.put("Miscellaneous", new TreeSet<>());
+    for (String parent : classTree.get("roots")) {
+      if (classTree.get(parent).isEmpty()) {
+        classTree.get("Miscellaneous").add(parent);
+      }
+    }
+    classTree.get("roots").removeAll(classTree.get("Miscellaneous"));
+    classTree.get("roots").add("Miscellaneous");
+    return classTree;
   }
 
   //Process HTTP Request for CSV file
