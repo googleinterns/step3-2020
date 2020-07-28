@@ -21,7 +21,8 @@ ul, #myUL {
   display:none;
   
   z-index:9;
-  position: relative;
+  position: absolute;
+  top: 5%;
 }
 
 
