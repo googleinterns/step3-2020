@@ -16,20 +16,7 @@ package com.google.step.servlets;
 
 import java.io.IOException;
 
-<<<<<<< HEAD
-import com.google.appengine.api.datastore.DatastoreService;
-import com.google.appengine.api.datastore.DatastoreServiceFactory;
-import com.google.appengine.api.datastore.Entity;
-import com.google.appengine.api.datastore.Query.SortDirection;
-import com.google.appengine.api.datastore.FetchOptions;
-import com.google.appengine.api.datastore.Key;
-import com.google.appengine.api.datastore.KeyFactory;
-import com.google.appengine.api.datastore.PreparedQuery;
-import com.google.appengine.api.datastore.Query;
 import com.google.apphosting.api.DeadlineExceededException;
-import com.google.cloud.language.v1.ClassificationCategory;
-=======
->>>>>>> master
 import com.google.cloud.language.v1.ClassifyTextRequest;
 import com.google.cloud.language.v1.ClassifyTextResponse;
 import com.google.cloud.language.v1.LanguageServiceClient;
@@ -121,9 +108,7 @@ public class DataServlet extends HttpServlet {
       System.err.println(ex);
     } catch(Exception ex) {
       System.err.println(ex);
-    } catch (FileUploadException ex) {
-      System.err.println(ex);
-    }
+    } 
   }
 
   //helper functions to process uploads
