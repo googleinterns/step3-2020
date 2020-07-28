@@ -354,6 +354,7 @@ function addToClassTree(tree, parent, classPath) {
   // pathElem.firstChild.nextSibling.addEventListener('onmouseover', turnOffSearch);
   const pageElement = document.getElementById('current-page');
   pathElem.onclick = function () {
+    event.stopPropagation();
     if (!pageElement) {	
       redirectKeyword(classPath);	
     } else {	
