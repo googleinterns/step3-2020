@@ -94,3 +94,13 @@ h6{
   left: 2%;
   margin-right: -50%;
 }
+
+.caret {
+  color: transparent; 
+  background-color: transparent; 
+  border-color: transparent; 
+  outline:none;
+  cursor: default;
+  height: 30px;
+  width: 30px;
+}
