@@ -360,7 +360,7 @@ function addToClassTree(tree, parent, classPath) {
     } else {	
       searchOrgs(0, classPath);
     }	
-  }
+  };
 
   return pathElem;
 }
@@ -383,7 +383,7 @@ function navItemActivate() {
   const nextPath = this.parentNode.nextSibling;
   const targetLayer = this.parentNode.lastChild.firstChild.firstChild;
   navMenu.insertBefore(targetLayer, nextPath); 
-  event.stopPropagation()
+  event.stopPropagation();
 }
 
 /**
@@ -523,7 +523,6 @@ function accordion(){
 }
 
 function openHamburger() {
-  console.log("opening hamburger");
   document.getElementById("drawer").style.display = "block";
   document.getElementById("drawer").style.zIndex="11";
 
@@ -535,7 +534,6 @@ function openHamburger() {
 }
 
 function closeHamburger() {  
-  console.log("closing hamburger");
   document.getElementById("drawer").style.display = "none";
   document.removeEventListener('click', event => {
     if (event.target.id !== 'hamburger') {
