@@ -1,45 +1,8 @@
-/* top navigation bar */
-.mdc-top-app-bar{
-  box-shadow: 0 2px 2px -2px rgba(0,0,0,1);
-  position: relative;
-  top: 0%;
-}
-
-/* search overlay effect */
-.overlay {
-  height: 100%;
-  width: 100%;
-  display: none;
-  position: fixed;
-  z-index: 8;
-  top: 0;
-  right: 0;
-}
-
-.overlay .closebtn {
+h1 {
   position: absolute;
-  top: 10%;
-  right: 45px;
-  font-size: 60px;
-  cursor: pointer;
-  color: white;
-}
-
-.overlay .closebtn:hover {
-  color: #ccc;
-}
-
-.overlay input[type=text] {
-  padding: 15px;
-  font-size: 17px;
-  border: none;
-  float: left;
-  width: 80%;
-  background: white;
-}
-
-.overlay input[type=text]:hover {
-  background: #f1f1f1;
+  top: 30%;
+  left: 50%;
+  text-align: center;
 }
 
 h2 {
@@ -56,3 +19,11 @@ h2 {
   left: 20%;
 }
 
+#results-search {
+  position: relative;
+  top: 1%;
+  left: 6%;
+  width: 70%;
+  margin-top: 30px;
+  margin: auto;
+}
