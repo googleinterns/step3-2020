@@ -17,26 +17,42 @@
 
   <body id="body" onload="setUpIndexpage();">
     <!-- top navigation bar -->
-    <div id="top-nav"></div>
-        <!-- hamburger menu -->
-<div id="drawer">
-  <aside class="mdc-drawer">
-    <div class="mdc-drawer__content">
-      <nav class="mdc-list">
-        <a class="mdc-list-item" href="about.html" aria-current="page" tabindex="0">
-          <span class="mdc-list-item__ripple"></span>
-          <i class="material-icons mdc-list-item__graphic">info</i>
-          <span class="mdc-list-item__text">About</span>
-        </a>
-        <a class="mdc-list-item" href="recommend.html">
-          <span class="mdc-list-item__ripple"></span>
-          <i class="material-icons mdc-list-item__graphic">favorite</i>
-          <span class="mdc-list-item__text">AI Recommender</span>
-        </a>
-      </nav>
+    <div id="top-nav">
+      <header class='mdc-top-app-bar' id='app-bar'>
+        <div class='mdc-top-app-bar__row'>
+          <section class='mdc-top-app-bar__section mdc-top-app-bar__section--align-start'>
+            <button id='hamburger' onclick='openHamburger();' class='material-icons mdc-top-app-bar__navigation-icon mdc-icon-button' aria-label='Open navigation menu'>menu</button>
+            <a href='/index.html'><button class='material-icons mdc-top-app-bar__action-item mdc-icon-button' aria-label='Home'>home</button></a> 
+            <span class='mdc-top-app-bar__title'>Nonprofit Finder</span>
+          </section>
+          <section class='mdc-top-app-bar__section mdc-top-app-bar__section--align-end' role='toolbar'>
+            <p id='login-status'></p>
+            <a id='login-link'></a>
+            <a id='loginIcon'><button class='material-icons mdc-top-app-bar__action-item mdc-icon-button' aria-label='Options'>account_circle</button></a>
+          </section>
+        </div>
+      </header>
     </div>
-  </aside>
-</div>
+
+    <!-- hamburger menu -->
+    <div id="drawer">
+      <aside class="mdc-drawer">
+        <div class="mdc-drawer__content">
+          <nav class="mdc-list">
+            <a class="mdc-list-item" href="about.html" aria-current="page" tabindex="0">
+              <span class="mdc-list-item__ripple"></span>
+              <i class="material-icons mdc-list-item__graphic">info</i>
+              <span class="mdc-list-item__text">About</span>
+            </a>
+            <a class="mdc-list-item" href="recommend.html">
+              <span class="mdc-list-item__ripple"></span>
+              <i class="material-icons mdc-list-item__graphic">favorite</i>
+              <span class="mdc-list-item__text">AI Recommender</span>
+            </a>
+          </nav>
+        </div>
+      </aside>
+    </div>
 
     <center>
       <h1>Nonprofit Finder</h2>
@@ -45,12 +61,12 @@
         <input type="text" id="keyword" placeholder="Search by keyword">
         <span class="material-icons search-icon" onclick="indexPageSearch();">search</span>
       </div>
-
-      <div id= "side-nav">
-        <ul id="roots" class="uk-nav-default uk-nav-parent-icon" uk-nav>
-        </ul>
-      </div>
-
     </center>
+
+    <div id= "side-nav">
+      <ul id="roots" class="uk-nav-default uk-nav-parent-icon" uk-nav>
+      </ul>
+    </div>
+
   </body>
 </html>

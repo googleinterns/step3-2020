@@ -33,13 +33,6 @@ h1 {
   color: #000000;
 }
 
-#side-nav{
-  position: absolute;
-  top: 30%;
-  left: 2%;
-  margin-right: -50%;
-}
-
 #existing-organizations {
   list-style-type: none;
 }

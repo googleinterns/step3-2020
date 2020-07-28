@@ -235,15 +235,6 @@ function detailSearch() {
   closeSearch();
 }
 
-function addListener() {
-  const inputBox = document.getElementById('keyword');
-  inputBox.addEventListener('keyup', function(event) {
-    if (event.key === 'Enter') {
-      detailSearch();
-    }
-  });
-}
-
 function addListenerResults() {
   const inputBox = document.getElementById('keyword');
   inputBox.addEventListener('keyup', function(event) {
@@ -253,11 +244,11 @@ function addListenerResults() {
   });
 }
 
-function addIndexListener() {
+function addListener() {
   const inputBox = document.getElementById('keyword');
   inputBox.addEventListener('keyup', function(event) {
       if (event.key === 'Enter') {
-        indexPageSearch();
+        detailSearch();
       }
   });
 }
@@ -265,9 +256,9 @@ function addIndexListener() {
 function addTitle(keyword, count) {
   const element = document.getElementById('results-title');
   if (count > 0) {
-    element.innerText = 'Results for [' + keyword + ']: ';
+    element.innerText = 'Results for ' + keyword + ': ';
   } else {
-    element.innerText = 'No results found for [' + keyword + ']';
+    element.innerText = 'No results found for ' + keyword;
   }
 }
 
@@ -336,9 +327,11 @@ function addToClassTree(tree, parent, classPath) {
     nested.firstChild.firstChild.style.marginLeft = pathElem.offsetLeft + 30 + 'px';
     tree[parent].forEach(child => nested.firstChild.firstChild.appendChild(addToClassTree(tree, child, classPath + '/' + child)));
     pathElem.appendChild(nested);
-  } 
-  // Event for opening accordion
-  pathElem.addEventListener('mouseover', navItemActivate);
+    // Event for opening accordion
+    pathElem.addEventListener('mouseover', navItemActivate);
+  } else {
+    pathElem.removeChild(pathElem.firstChild.nextSibling);
+  }
   // Event for making query
   const pageElement = document.getElementById('current-page');
   pathElem.onclick = function() {
@@ -356,6 +349,7 @@ function addToClassTree(tree, parent, classPath) {
  * Open accordion, close any other paths on current level
  */
 function navItemActivate() {
+  this.setAttribute('class', 'mdc-list-item mdc-list-item--activated');
   this.firstChild.nextSibling.innerText = 'expand_more';
   const navMenu = this.parentNode;
   navMenu.childNodes.forEach(child => child.dispatchEvent(new CustomEvent('close')));
@@ -371,6 +365,7 @@ function navItemActivate() {
  * Close accordion, close any paths in decending levels
  */
 function navItemDeactivate() {
+  this.setAttribute('class', 'mdc-list-item mdc-list-item');
   this.firstChild.nextSibling.innerText = 'chevron_right';
   this.childNodes.forEach(child => child.dispatchEvent(new CustomEvent('close')));
   const navMenu = this.parentNode;
@@ -427,17 +422,15 @@ function getResults() {
 }
 
 function setUpIndexpage() {
-  addIndexListener();
+  addListener();
   getClassifications();
   getLoginStatus();
-  setUpNavbar();
 }
 
 function setUpAboutPage(){
   addListener();
   getLoginStatus();
   setUpNavbar();
-
 }
 
 /**
@@ -489,30 +482,40 @@ function closeSearch() {
 
 function accordion(){
   var acc = document.getElementsByClassName("accordion");
-var i;
+  var i;
 
-for (i = 0; i < acc.length; i++) {
-  acc[i].addEventListener("click", function() {
-    this.classList.toggle("active");
-    var panel = this.nextElementSibling;
-    if (panel.style.maxHeight) {
-      panel.style.maxHeight = null;
-    } else {
-      panel.style.maxHeight = panel.scrollHeight + "px";
-    }
-  });
-}
+  for (i = 0; i < acc.length; i++) {
+    acc[i].addEventListener("click", function() {
+      this.classList.toggle("active");
+      var panel = this.nextElementSibling;
+      if (panel.style.maxHeight) {
+        panel.style.maxHeight = null;
+      } else {
+        panel.style.maxHeight = panel.scrollHeight + "px";
+      }
+    });
+  }
 }
 
 function openHamburger() {
   document.getElementById("drawer").style.display = "block";
   document.getElementById("drawer").style.zIndex="11";
+
+  document.addEventListener('click', event => {
+    if (event.target.id !== 'hamburger') {
+      closeHamburger();
+    }
+  });
 }
 
-function closeHamburger() {  document.getElementById("drawer").style.display = "none";
+function closeHamburger() {  
+  document.getElementById("drawer").style.display = "none";
+  document.removeEventListener('click', event => {
+    if (event.target.id !== 'hamburger') {
+      closeHamburger();
+    }
+  });
 }
-
-
 
 
 function getRecommendations() {
@@ -567,17 +570,13 @@ function getOrgNameAndId(org) {
 }
 
 
-
-
 function setUpNavbar(){
 
-  document.getElementById("top-nav").innerHTML="    <header class='mdc-top-app-bar' id='app-bar'><div class='mdc-top-app-bar__row'><section class='mdc-top-app-bar__section mdc-top-app-bar__section--align-start'><button onclick='openHamburger();' class='material-icons mdc-top-app-bar__navigation-icon mdc-icon-button' aria-label='Open navigation menu'>menu</button><a href='/index.html'><button class='material-icons mdc-top-app-bar__action-item mdc-icon-button' aria-label='Home'>home</button></a> <span class='mdc-top-app-bar__title'>Nonprofit Finder</span></section><section class='mdc-top-app-bar__section mdc-top-app-bar__section--align-end' role='toolbar'><button class='material-icons mdc-top-app-bar__action-item mdc-icon-button' aria-label='Search' onclick='openSearch()'>search</button> <p id='login-status'></p><a id='login-link'></a> <a id='loginIcon'><button class='material-icons mdc-top-app-bar__action-item mdc-icon-button' aria-label='Options'>account_circle</button></a></section></div></header>";
+  document.getElementById("top-nav").innerHTML="    <header class='mdc-top-app-bar' id='app-bar'><div class='mdc-top-app-bar__row'><section class='mdc-top-app-bar__section mdc-top-app-bar__section--align-start'><button id='hamburger' onclick='openHamburger();' class='material-icons mdc-top-app-bar__navigation-icon mdc-icon-button' aria-label='Open navigation menu'>menu</button><a href='/index.html'><button class='material-icons mdc-top-app-bar__action-item mdc-icon-button' aria-label='Home'>home</button></a> <span class='mdc-top-app-bar__title'>Nonprofit Finder</span></section><section class='mdc-top-app-bar__section mdc-top-app-bar__section--align-end' role='toolbar'><button class='material-icons mdc-top-app-bar__action-item mdc-icon-button' aria-label='Search' onclick='openSearch()'>search</button> <p id='login-status'></p><a id='login-link'></a> <a id='loginIcon'><button class='material-icons mdc-top-app-bar__action-item mdc-icon-button' aria-label='Options'>account_circle</button></a></section></div></header>";
 
   // document.getElementById("myOverlay").innerHTML="<span class='closebtn material-icons' onclick='closeSearch()' title='Close Overlay'><span class='material-icons'>clear</span></span><div id=’results-search’><input type=’text’ id=’keyword’ placeholder=’Search by keyword’><span class=’material-icons’ onclick=’search();’>search</span> </div>";
   
-  addListener;
-
-  
+  addListener();
 
 }
 
