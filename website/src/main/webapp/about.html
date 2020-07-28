@@ -12,27 +12,9 @@
     <script src="https://unpkg.com/material-components-web@latest/dist/material-components-web.min.js"></script>
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
   </head>
-  <body id="body" onload="navbar();setUpAboutPage(); ">
+  <body id="body" onload="setUpAboutPage(); ">
   <!-- top navigation bar -->
-  <div id="top-nav">
-    <!-- <header class="mdc-top-app-bar" id="app-bar">
-      <div class="mdc-top-app-bar__row">
-        <section class="mdc-top-app-bar__section mdc-top-app-bar__section--align-start">
-          <button onclick="openHamburger();" class="material-icons mdc-top-app-bar__navigation-icon mdc-icon-button" aria-label="Open navigation menu">menu</button>
-          <a href="/index.html"><button class="material-icons mdc-top-app-bar__action-item mdc-icon-button" aria-label="Home">home</button></a>
-          <a href="/about.html"><span id="about" title='about'>About</span></a>
-          <a href="/recommend.html"><button class="material-icons mdc-top-app-bar__action-item mdc-icon-button" aria-label="favorite">favorite</button></a>
-          <span class="mdc-top-app-bar__title">Nonprofit Finder</span>
-        </section>
-        <section class="mdc-top-app-bar__section mdc-top-app-bar__section--align-end" role="toolbar">
-          <button class="material-icons mdc-top-app-bar__action-item mdc-icon-button" aria-label="Search" onclick="openSearch()">search</button>
-          <p id="login-status"></p>
-          <a id="login-link"></a>
-          <a id="loginIcon"><button class="material-icons mdc-top-app-bar__action-item mdc-icon-button" aria-label="Options">account_circle</button></a>
-        </section>
-      </div>
-    </header> -->
-  </div>
+  <div id="top-nav"></div>
 
         <div id= "side-nav">
         <ul id="roots" class="uk-nav-default uk-nav-parent-icon" uk-nav>
@@ -40,16 +22,7 @@
         </div>
 
   
-  <!-- search by keyword -->
-      <!-- <div id="myOverlay" class="overlay">
-        <span class="closebtn material-icons" onclick="closeSearch()" title="Close Overlay">
-          <span class="material-icons">clear</span>
-        </span>
-        <div id="results-search">
-          <input type="text" id="keyword" placeholder="Search by keyword">
-            <span class="material-icons" onclick="search();">search</span> 
-        </div>      
-      </div> -->
+
 
     <!-- hamburger menu -->
 <div id="drawer">
@@ -93,7 +66,7 @@
   <br>
   <div id="bios">
     <div class="mdc-card"> 
-      <img class="mdc-card__media--square" src="images/tonypan_profile.jpg">
+      <center><img class="mdc-card__media--square" src="images/tonypan_profile.jpg"></center>
       <h5>Tony Pan</h5> 
       I am a rising junior studying Computer Science and Math at the University of Michigan College of Engineering. I am passionate about Machine Learning and  intelligent robotics.
       <div class="mdc-card__actions">
@@ -109,7 +82,7 @@
     </div>
     <div class="mdc-card"> 
       <img class="mdc-card__media--square" src="images/profilePic.jpg">
-      <h5>Elijah Rodriguez</h5>
+      <center><h5>Elijah Rodriguez</h5></center>
       I am a rising junior in Computer Science at the University of Illinois at Chicago. I have an interest in back-end development, comic books and dancing. 
       <div class="mdc-card__actions">
         <button class="mdc-button mdc-button--outlined">
@@ -123,7 +96,7 @@
       </div>
     </div>
     <div class="mdc-card"> 
-      <img class="mdc-card__media--square" src="images/iris.jpg">
+      <center><img class="mdc-card__media--square" src="images/iris.jpg"></center>
       <h5>Iris Beckham</h5> 
       I am a rising sophomore in Computer Science at Washington University in St. Louis. I have an interest in front-end development, user-interaction design, and dance. 
       <div class="mdc-card__actions">

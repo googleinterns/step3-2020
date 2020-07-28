@@ -17,6 +17,15 @@ ul, #myUL {
 }
 
 
+#drawer{
+  display:none;
+  
+  z-index:9;
+  position: relative;
+}
+
+
+
 
 #existing-organizations {
   list-style-type: none;

@@ -65,7 +65,7 @@ h6{
   font-size: 13px;
   color: #777;
   float: right;
-  margin-left: 5px;
+  /* margin-left: 5px; */
 }
 
 .active:after {
@@ -80,15 +80,5 @@ h6{
   overflow: hidden;
   transition: max-height 0.2s ease-out;
 }
-
-
-
-#drawer{
-  display:none;
-  
-  z-index:9;
-  position: relative;
-}
-
 
 
