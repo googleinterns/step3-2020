@@ -25,6 +25,15 @@ ul, #myUL {
   top: 5%;
 }
 
+#login-drawer{
+  display:none;
+  
+  z-index:9;
+  position: absolute;
+  top: 5%;
+  right: 0%;
+}
+
 
 #existing-organizations {
   list-style-type: none;
@@ -107,4 +116,14 @@ h6{
   border-spacing: 10px;
   border-width: .4px;
   box-shadow:  3px 3px whitesmoke;
+}
+
+.caret {
+  color: transparent; 
+  background-color: transparent; 
+  border-color: transparent; 
+  outline:none;
+  cursor: default;
+  height: 30px;
+  width: 30px;
 }

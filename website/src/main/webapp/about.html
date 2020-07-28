@@ -12,15 +12,9 @@
     <script src="https://unpkg.com/material-components-web@latest/dist/material-components-web.min.js"></script>
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
   </head>
-
   <body id="body" onload="setUpAboutPage(); ">
     <!-- top navigation bar -->
     <div id="top-nav"></div>
-
-    <div id= "side-nav">
-      <ul id="roots" class="uk-nav-default uk-nav-parent-icon" uk-nav>
-      </ul>
-    </div>
 
     <!-- hamburger menu -->
     <div id="drawer">
@@ -41,8 +35,18 @@
         </div>
       </aside>
     </div>
-
-
+    <!-- Login Status -->
+    <div id="login-drawer">
+      <aside class="mdc-drawer">
+        <div class="mdc-drawer__content">
+          <nav class="mdc-list">
+            <p class="mdc-list-item" id="login-status"></p>
+            <a id="login-link" class="mdc-list-item"></a>
+          </nav>
+        </div>
+      </aside>
+    </div>
+    
   <!-- search by keyword -->
   <div id="myOverlay" class="overlay">
     <div id="results-search">
