@@ -2,9 +2,9 @@
 <html>
   <head>
     <meta charset="UTF-8">
-    <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="recommend.css">
-    <script src="website_script.js"></script>
+    <link rel="stylesheet" href="stylesheets/style.css">
+    <link rel="stylesheet" href="stylesheets/recommend.css">
+    <script src="scripts/website_script.js"></script>
 
     <!-- uikit framework -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/uikit/3.5.4/css/uikit.min.css" />
@@ -17,23 +17,25 @@
 
   <body id="body" onload="setUpRecommendations();">
     <!-- top navigation bar -->
-    <div id="top-nav">
-      <header class="mdc-top-app-bar">
-        <div class="mdc-top-app-bar__row">
-          <section class="mdc-top-app-bar__section mdc-top-app-bar__section--align-start">
-            <button class="material-icons mdc-top-app-bar__navigation-icon mdc-icon-button" aria-label="Open navigation menu">menu</button>
-            <a href="/index.html"><button class="material-icons mdc-top-app-bar__action-item mdc-icon-button" aria-label="Home">home</button></a>
-            <a href="/about.html"><span title='about'>About</span></a>
-            <span class="mdc-top-app-bar__title">Nonprofit Finder</span>
-          </section>
-          <section class="mdc-top-app-bar__section mdc-top-app-bar__section--align-end" role="toolbar">
-            <button class="material-icons mdc-top-app-bar__action-item mdc-icon-button" aria-label="Search" onclick="openSearch()">search</button>
-            <p id="login-status"></p>
-            <a id="login-link"></a>
-            <a id="loginIcon"><button class="material-icons mdc-top-app-bar__action-item mdc-icon-button" aria-label="Options">account_circle</button></a>
-          </section>
+    <div id="top-nav"></div>
+    <!-- hamburger menu -->
+    <div id="drawer">
+      <aside class="mdc-drawer">
+        <div class="mdc-drawer__content">
+          <nav class="mdc-list">
+            <a class="mdc-list-item" href="about.html" aria-current="page" tabindex="0">
+              <span class="mdc-list-item__ripple"></span>
+              <i class="material-icons mdc-list-item__graphic">info</i>
+              <span class="mdc-list-item__text">About</span>
+            </a>
+            <a class="mdc-list-item" href="recommend.html">
+              <span class="mdc-list-item__ripple"></span>
+              <i class="material-icons mdc-list-item__graphic">favorite</i>
+              <span class="mdc-list-item__text">AI Recommender</span>
+            </a>
+          </nav>
         </div>
-      </header>
+      </aside>
     </div>
 
     <!-- search by keyword -->

@@ -1,0 +1,96 @@
+/* Remove default bullets */
+ul, #myUL {
+  list-style-type: none;
+}
+
+.navbar {
+  width: 100%;
+  background-color: lightgrey;
+  display: flex;
+  justify-content: space-around;
+
+  font-family: Roboto;
+  font-style: normal;
+  font-weight: normal;
+  font-size: 30px;
+  line-height: 84px;
+}
+
+
+#drawer{
+  display:none;
+  
+  z-index:9;
+  position: relative;
+}
+
+
+#existing-organizations {
+  list-style-type: none;
+}
+
+#pagination {
+  display: none;
+}
+
+.hidden {
+  display: none;
+}
+
+
+/* material design typography */
+h1{
+  font: Roboto;
+  font-weight: lighter;
+  size: 96px;
+  letter-spacing: -1.5px;
+}
+
+h2{
+  font: Roboto;
+  font-weight: lighter;
+  size: 60px;
+  letter-spacing: -0.5px;
+}
+
+h3{
+  font: Roboto;
+  font-weight: normal;
+  size: 48px;
+  letter-spacing: 0px;
+}
+
+h3{
+  font: Roboto;
+  font-weight: normal;
+  size: 48px;
+  letter-spacing: 0px;
+}
+
+h4{
+  font: Roboto;
+  font-weight: normal;
+  size: 34px;;
+  letter-spacing: 0.25px;
+}
+
+h5{
+  font: Roboto;
+  font-weight: normal;
+  size: 24px;
+  letter-spacing: 0px;
+}
+
+h6{
+  font: Roboto;
+  font-weight: medium;
+  size: 20px;
+  letter-spacing: 0.15px;
+}
+
+#side-nav{
+  position: absolute;
+  top: 8%;
+  left: 2%;
+  margin-right: -50%;
+}
