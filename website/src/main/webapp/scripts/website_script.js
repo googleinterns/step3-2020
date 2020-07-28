@@ -256,9 +256,9 @@ function addListener() {
 function addTitle(keyword, count) {
   const element = document.getElementById('results-title');
   if (count > 0) {
-    element.innerText = 'Results for [' + keyword + ']: ';
+    element.innerText = 'Results for ' + keyword + ': ';
   } else {
-    element.innerText = 'No results found for [' + keyword + ']';
+    element.innerText = 'No results found for ' + keyword;
   }
 }
 
