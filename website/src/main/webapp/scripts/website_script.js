@@ -502,7 +502,6 @@ function openHamburger() {
   document.getElementById("drawer").style.zIndex="11";
 
   document.addEventListener('click', event => {
-    console.log(event.target.id);
     if (event.target.id !== 'hamburger') {
       closeHamburger();
     }
@@ -510,7 +509,6 @@ function openHamburger() {
 }
 
 function closeHamburger() {  
-  console.log('closing hamburger');
   document.getElementById("drawer").style.display = "none";
   document.removeEventListener('click', event => {
     if (event.target.id !== 'hamburger') {
@@ -574,7 +572,7 @@ function getOrgNameAndId(org) {
 
 function setUpNavbar(){
 
-  document.getElementById("top-nav").innerHTML="    <header class='mdc-top-app-bar' id='app-bar'><div class='mdc-top-app-bar__row'><section class='mdc-top-app-bar__section mdc-top-app-bar__section--align-start'><button onclick='openHamburger();' class='material-icons mdc-top-app-bar__navigation-icon mdc-icon-button' aria-label='Open navigation menu'>menu</button><a href='/index.html'><button class='material-icons mdc-top-app-bar__action-item mdc-icon-button' aria-label='Home'>home</button></a> <span class='mdc-top-app-bar__title'>Nonprofit Finder</span></section><section class='mdc-top-app-bar__section mdc-top-app-bar__section--align-end' role='toolbar'><button class='material-icons mdc-top-app-bar__action-item mdc-icon-button' aria-label='Search' onclick='openSearch()'>search</button> <p id='login-status'></p><a id='login-link'></a> <a id='loginIcon'><button class='material-icons mdc-top-app-bar__action-item mdc-icon-button' aria-label='Options'>account_circle</button></a></section></div></header>";
+  document.getElementById("top-nav").innerHTML="    <header class='mdc-top-app-bar' id='app-bar'><div class='mdc-top-app-bar__row'><section class='mdc-top-app-bar__section mdc-top-app-bar__section--align-start'><button id='hamburger' onclick='openHamburger();' class='material-icons mdc-top-app-bar__navigation-icon mdc-icon-button' aria-label='Open navigation menu'>menu</button><a href='/index.html'><button class='material-icons mdc-top-app-bar__action-item mdc-icon-button' aria-label='Home'>home</button></a> <span class='mdc-top-app-bar__title'>Nonprofit Finder</span></section><section class='mdc-top-app-bar__section mdc-top-app-bar__section--align-end' role='toolbar'><button class='material-icons mdc-top-app-bar__action-item mdc-icon-button' aria-label='Search' onclick='openSearch()'>search</button> <p id='login-status'></p><a id='login-link'></a> <a id='loginIcon'><button class='material-icons mdc-top-app-bar__action-item mdc-icon-button' aria-label='Options'>account_circle</button></a></section></div></header>";
 
   // document.getElementById("myOverlay").innerHTML="<span class='closebtn material-icons' onclick='closeSearch()' title='Close Overlay'><span class='material-icons'>clear</span></span><div id=’results-search’><input type=’text’ id=’keyword’ placeholder=’Search by keyword’><span class=’material-icons’ onclick=’search();’>search</span> </div>";
   
