@@ -114,3 +114,12 @@ h6{
   height: 30px;
   width: 30px;
 }
+
+.adminAction {
+  position: absolute;
+  height: 80%;
+  width: 70%;
+  float: right;
+  top: 10%;
+  left:30%;
+}
