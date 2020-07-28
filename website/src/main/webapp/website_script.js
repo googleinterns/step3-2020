@@ -297,6 +297,10 @@ function createNewNavDrawer() {
   divElem.setAttribute('class', 'mdc-drawer__content');
   const navElem = document.createElement('nav');
   navElem.setAttribute('class', 'mdc-list');
+  const divider = document.createElement('li');
+  divider.setAttribute('role', 'separator');
+  divider.setAttribute('class', 'mdc-list-divider');
+  navElem.appendChild(divider);
   divElem.appendChild(navElem);
   asideElem.appendChild(divElem);
   return asideElem;
@@ -315,11 +319,14 @@ function createNavItem(parent, classPath) {
   const span2 = document.createElement('span');
   span2.setAttribute('class', 'mdc-list-item__text');
   span2.innerText = parent;
+  const b = document.createElement('button');
+  b.setAttribute('class', 'caret');
   const icon = document.createElement('i');
   icon.setAttribute('class', 'material-icons mdc-list-item__graphic');
   icon.innerText = 'chevron_right';
+  b.appendChild(icon);
   parentElem.appendChild(span1);
-  parentElem.appendChild(icon);
+  parentElem.appendChild(b);
   parentElem.appendChild(span2);
   parentElem.style.position = 'relative';
   return parentElem;
@@ -333,17 +340,28 @@ function addToClassTree(tree, parent, classPath) {
 
   if (tree[parent].length !== 0) {
     const nested = createNewNavDrawer();
-    nested.firstChild.firstChild.style.marginLeft = pathElem.offsetLeft + 30 + 'px';
-    tree[parent].forEach(child => nested.firstChild.firstChild.appendChild(addToClassTree(tree, child, classPath + '/' + child)));
+    const layer = nested.firstChild.firstChild; 
+    layer.style.marginLeft = pathElem.offsetLeft + 30 + 'px';
+    const divider = layer.firstChild;
+    tree[parent].forEach(child => {
+      if (tree[child].length !== 0) {
+        layer.appendChild(addToClassTree(tree, child, classPath + '/' + child));
+      } else {
+        layer.insertBefore(addToClassTree(tree, child, classPath + '/' + child), divider);
+      }
+    });
+    if (divider === layer.firstChild) {
+      layer.removeChild(divider);
+    }
     pathElem.appendChild(nested);
     // Event for opening accordion
-    pathElem.addEventListener('mouseover', navItemActivate);
+    pathElem.firstChild.nextSibling.addEventListener('click', navItemActivate);
   } else {
     pathElem.removeChild(pathElem.firstChild.nextSibling);
   }
   // Event for making query
   const pageElement = document.getElementById('current-page');
-  pathElem.onclick = function() {
+  pathElem.lastChild.onclick = function() {
     if (!pageElement) {	
       redirectKeyword(classPath);	
     } else {	
@@ -358,15 +376,19 @@ function addToClassTree(tree, parent, classPath) {
  * Open accordion, close any other paths on current level
  */
 function navItemActivate() {
-  this.setAttribute('class', 'mdc-list-item mdc-list-item--activated');
-  this.firstChild.nextSibling.innerText = 'expand_more';
-  const navMenu = this.parentNode;
-  navMenu.childNodes.forEach(child => child.dispatchEvent(new CustomEvent('close')));
+  this.parentNode.setAttribute('class', 'mdc-list-item mdc-list-item--activated');
+  this.firstChild.innerText = 'expand_more';
+  const navMenu = this.parentNode.parentNode;
+  navMenu.childNodes.forEach(child => {
+    if (child.getAttribute('role') !== 'separator') {
+      child.firstChild.nextSibling.dispatchEvent(new CustomEvent('close'));
+    }
+  });
   this.addEventListener('click', navItemDeactivate);
   this.addEventListener('close', navItemDeactivate);
-  this.removeEventListener('mouseover', navItemActivate);
-  const nextPath = this.nextSibling;
-  const targetLayer = this.lastChild.firstChild.firstChild;
+  this.removeEventListener('click', navItemActivate);
+  const nextPath = this.parentNode.nextSibling;
+  const targetLayer = this.parentNode.lastChild.firstChild.firstChild;
   navMenu.insertBefore(targetLayer, nextPath); 
 }
 
@@ -374,13 +396,13 @@ function navItemActivate() {
  * Close accordion, close any paths in decending levels
  */
 function navItemDeactivate() {
-  this.setAttribute('class', 'mdc-list-item mdc-list-item');
-  this.firstChild.nextSibling.innerText = 'chevron_right';
-  this.childNodes.forEach(child => child.dispatchEvent(new CustomEvent('close')));
-  const navMenu = this.parentNode;
-  const nextPath = this.nextSibling;
-  this.lastChild.firstChild.appendChild(nextPath);
-  this.addEventListener('mouseover', navItemActivate);
+  this.parentNode.setAttribute('class', 'mdc-list-item mdc-list-item');
+  this.firstChild.innerText = 'chevron_right';
+  this.parentNode.parentNode.childNodes.forEach(child => child.dispatchEvent(new CustomEvent('close')));
+  const navMenu = this.parentNode.parentNode;
+  const nextPath = this.parentNode.nextSibling;
+  this.parentNode.lastChild.firstChild.appendChild(nextPath);
+  this.addEventListener('click', navItemActivate);
   this.removeEventListener('click', navItemDeactivate);
   this.removeEventListener('close', navItemDeactivate);
 }
