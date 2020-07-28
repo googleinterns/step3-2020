@@ -235,15 +235,6 @@ function detailSearch() {
   closeSearch();
 }
 
-function addListener() {
-  const inputBox = document.getElementById('keyword');
-  inputBox.addEventListener('keyup', function(event) {
-    if (event.key === 'Enter') {
-      detailSearch();
-    }
-  });
-}
-
 function addListenerResults() {
   const inputBox = document.getElementById('keyword');
   inputBox.addEventListener('keyup', function(event) {
@@ -253,11 +244,11 @@ function addListenerResults() {
   });
 }
 
-function addIndexListener() {
+function addListener() {
   const inputBox = document.getElementById('keyword');
   inputBox.addEventListener('keyup', function(event) {
       if (event.key === 'Enter') {
-        indexPageSearch();
+        detailSearch();
       }
   });
 }
@@ -412,6 +403,8 @@ function setUpResults() {
   getClassifications();
   getResults();
   getLoginStatus();
+  setUpNavbar();
+
 }
 
 function setUpDetailsPage() {
@@ -419,6 +412,8 @@ function setUpDetailsPage() {
   getClassifications();
   loadOrg();
   getLoginStatus();
+  setUpNavbar();
+
 }
 
 function setUpRecommendations() {
@@ -449,7 +444,7 @@ function getResults() {
 }
 
 function setUpIndexpage() {
-  addIndexListener();
+  addListener();
   getClassifications();
   getLoginStatus();
 }
@@ -457,6 +452,7 @@ function setUpIndexpage() {
 function setUpAboutPage(){
   addListener();
   getLoginStatus();
+  setUpNavbar();
 }
 
 /**
@@ -506,6 +502,33 @@ function closeSearch() {
   document.getElementById("myOverlay").style.display = "none";
 }
 
+function accordion(){
+  var acc = document.getElementsByClassName("accordion");
+  var i;
+
+  for (i = 0; i < acc.length; i++) {
+    acc[i].addEventListener("click", function() {
+      this.classList.toggle("active");
+      var panel = this.nextElementSibling;
+      if (panel.style.maxHeight) {
+        panel.style.maxHeight = null;
+      } else {
+        panel.style.maxHeight = panel.scrollHeight + "px";
+      }
+    });
+  }
+}
+
+function openHamburger() {
+  document.getElementById("drawer").style.display = "block";
+  document.getElementById("drawer").style.zIndex="11";
+}
+
+function closeHamburger() {  
+  document.getElementById("drawer").style.display = "none";
+}
+
+
 function getRecommendations() {
   const statusElement = document.getElementById('login-status');
   const contentElement = document.getElementById('recommended-orgs');
@@ -524,7 +547,10 @@ function getRecommendations() {
     
     const listElement = document.createElement('ul');
     rated.forEach(org => {
-      listElement.appendChild(getOrgNameAndId(org));
+      const ratedOrg = document.createElement("span");
+      ratedOrg.setAttribute("class", "mdc-chip");
+      ratedOrg.appendChild(getOrgNameAndId(org));
+      listElement.appendChild(ratedOrg);
     });
     contentElement.appendChild(listElement)
 
@@ -534,7 +560,11 @@ function getRecommendations() {
 
     const liElement = document.createElement('ul');
     recommended.forEach(org => {
-      liElement.appendChild(getOrgNameAndId(org));
+      const reccomendOrg = document.createElement("span");
+      reccomendOrg.setAttribute("class", "mdc-chip");
+      reccomendOrg.appendChild(getOrgNameAndId(org));
+      reccomendOrg.appendChild(getOrgNameAndId(org));
+      liElement.appendChild(reccomendOrg);
     });
     contentElement.appendChild(liElement);
   });
@@ -548,4 +578,24 @@ function getOrgNameAndId(org) {
   nameElement.innerText = org.name;
   listElement.appendChild(nameElement);
   return listElement;
+}
+
+
+function setUpNavbar(){
+
+  document.getElementById("top-nav").innerHTML="    <header class='mdc-top-app-bar' id='app-bar'><div class='mdc-top-app-bar__row'><section class='mdc-top-app-bar__section mdc-top-app-bar__section--align-start'><button onclick='openHamburger();' class='material-icons mdc-top-app-bar__navigation-icon mdc-icon-button' aria-label='Open navigation menu'>menu</button><a href='/index.html'><button class='material-icons mdc-top-app-bar__action-item mdc-icon-button' aria-label='Home'>home</button></a> <span class='mdc-top-app-bar__title'>Nonprofit Finder</span></section><section class='mdc-top-app-bar__section mdc-top-app-bar__section--align-end' role='toolbar'><button class='material-icons mdc-top-app-bar__action-item mdc-icon-button' aria-label='Search' onclick='openSearch()'>search</button> <p id='login-status'></p><a id='login-link'></a> <a id='loginIcon'><button class='material-icons mdc-top-app-bar__action-item mdc-icon-button' aria-label='Options'>account_circle</button></a></section></div></header>";
+
+  // document.getElementById("myOverlay").innerHTML="<span class='closebtn material-icons' onclick='closeSearch()' title='Close Overlay'><span class='material-icons'>clear</span></span><div id=’results-search’><input type=’text’ id=’keyword’ placeholder=’Search by keyword’><span class=’material-icons’ onclick=’search();’>search</span> </div>";
+  
+  addListener();
+
+}
+
+function addJquery(){
+    var script = document.createElement("SCRIPT");
+    script.src = 'https://code.jquery.com/jquery-3.5.1.min.js';
+    script.integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0=";
+    script.crossorigin="anonymous";
+    script.type = 'text/javascript';
+    document.getElementsByTagName("head")[0].appendChild(script);
 }
