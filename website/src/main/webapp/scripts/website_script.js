@@ -417,12 +417,11 @@ function setUpDetailsPage() {
 function setUpRecommendations() {
   setUpNavbar();
   addListener();
-  getClassifications();
   getLoginStatus().then(loggedIn => {
     if (loggedIn) {
       getRecommendations();
     } else {
-      alert('Log in to get personalized recommendations');
+      alert('Please log in to get personalized recommendations');
     }
   });
 }
@@ -619,7 +618,6 @@ function getRecommendations() {
     recommended.forEach(org => {
       const reccomendOrg = document.createElement("span");
       reccomendOrg.setAttribute("class", "mdc-chip");
-      reccomendOrg.appendChild(getOrgNameAndId(org));
       reccomendOrg.appendChild(getOrgNameAndId(org));
       liElement.appendChild(reccomendOrg);
     });
