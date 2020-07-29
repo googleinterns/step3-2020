@@ -288,6 +288,10 @@ function createNewNavDrawer() {
   divElem.setAttribute('class', 'mdc-drawer__content');
   const navElem = document.createElement('nav');
   navElem.setAttribute('class', 'mdc-list');
+  const divider = document.createElement('li');
+  divider.setAttribute('role', 'separator');
+  divider.setAttribute('class', 'mdc-list-divider');
+  navElem.appendChild(divider);
   divElem.appendChild(navElem);
   asideElem.appendChild(divElem);
   return asideElem;
@@ -306,11 +310,14 @@ function createNavItem(parent, classPath) {
   const span2 = document.createElement('span');
   span2.setAttribute('class', 'mdc-list-item__text');
   span2.innerText = parent;
+  const b = document.createElement('button');
+  b.setAttribute('class', 'caret');
   const icon = document.createElement('i');
   icon.setAttribute('class', 'material-icons mdc-list-item__graphic');
   icon.innerText = 'chevron_right';
+  b.appendChild(icon);
   parentElem.appendChild(span1);
-  parentElem.appendChild(icon);
+  parentElem.appendChild(b);
   parentElem.appendChild(span2);
   parentElem.style.position = 'relative';
   return parentElem;
@@ -324,17 +331,30 @@ function addToClassTree(tree, parent, classPath) {
 
   if (tree[parent].length !== 0) {
     const nested = createNewNavDrawer();
-    nested.firstChild.firstChild.style.marginLeft = pathElem.offsetLeft + 30 + 'px';
-    tree[parent].forEach(child => nested.firstChild.firstChild.appendChild(addToClassTree(tree, child, classPath + '/' + child)));
+    const layer = nested.firstChild.firstChild; 
+    layer.style.marginLeft = pathElem.offsetLeft + 30 + 'px';
+    const divider = layer.firstChild;
+    tree[parent].forEach(child => {
+      if (tree[child].length !== 0) {
+        layer.appendChild(addToClassTree(tree, child, classPath + '/' + child));
+      } else {
+        layer.insertBefore(addToClassTree(tree, child, classPath + '/' + child), divider);
+      }
+    });
+    if (divider === layer.firstChild) {
+      layer.removeChild(divider);
+    }
     pathElem.appendChild(nested);
     // Event for opening accordion
-    pathElem.addEventListener('mouseover', navItemActivate);
+    pathElem.firstChild.nextSibling.addEventListener('click', navItemActivate);
   } else {
     pathElem.removeChild(pathElem.firstChild.nextSibling);
   }
   // Event for making query
+  // pathElem.firstChild.nextSibling.addEventListener('onmouseover', turnOffSearch);
   const pageElement = document.getElementById('current-page');
-  pathElem.onclick = function() {
+  pathElem.onclick = function () {
+    event.stopPropagation();
     if (!pageElement) {	
       redirectKeyword(classPath);	
     } else {	
@@ -349,29 +369,34 @@ function addToClassTree(tree, parent, classPath) {
  * Open accordion, close any other paths on current level
  */
 function navItemActivate() {
-  this.setAttribute('class', 'mdc-list-item mdc-list-item--activated');
-  this.firstChild.nextSibling.innerText = 'expand_more';
-  const navMenu = this.parentNode;
-  navMenu.childNodes.forEach(child => child.dispatchEvent(new CustomEvent('close')));
+  this.parentNode.setAttribute('class', 'mdc-list-item mdc-list-item--activated');
+  this.firstChild.innerText = 'expand_more';
+  const navMenu = this.parentNode.parentNode;
+  navMenu.childNodes.forEach(child => {
+    if (child.getAttribute('role') !== 'separator') {
+      child.firstChild.nextSibling.dispatchEvent(new CustomEvent('close'));
+    }
+  });
   this.addEventListener('click', navItemDeactivate);
   this.addEventListener('close', navItemDeactivate);
-  this.removeEventListener('mouseover', navItemActivate);
-  const nextPath = this.nextSibling;
-  const targetLayer = this.lastChild.firstChild.firstChild;
+  this.removeEventListener('click', navItemActivate);
+  const nextPath = this.parentNode.nextSibling;
+  const targetLayer = this.parentNode.lastChild.firstChild.firstChild;
   navMenu.insertBefore(targetLayer, nextPath); 
+  event.stopPropagation();
 }
 
 /**
  * Close accordion, close any paths in decending levels
  */
 function navItemDeactivate() {
-  this.setAttribute('class', 'mdc-list-item mdc-list-item');
-  this.firstChild.nextSibling.innerText = 'chevron_right';
-  this.childNodes.forEach(child => child.dispatchEvent(new CustomEvent('close')));
-  const navMenu = this.parentNode;
-  const nextPath = this.nextSibling;
-  this.lastChild.firstChild.appendChild(nextPath);
-  this.addEventListener('mouseover', navItemActivate);
+  this.parentNode.setAttribute('class', 'mdc-list-item mdc-list-item');
+  this.firstChild.innerText = 'chevron_right';
+  this.parentNode.parentNode.childNodes.forEach(child => child.dispatchEvent(new CustomEvent('close')));
+  const navMenu = this.parentNode.parentNode;
+  const nextPath = this.parentNode.nextSibling;
+  this.parentNode.lastChild.firstChild.appendChild(nextPath);
+  this.addEventListener('click', navItemActivate);
   this.removeEventListener('click', navItemDeactivate);
   this.removeEventListener('close', navItemDeactivate);
 }
@@ -395,6 +420,7 @@ function setUpDetailsPage() {
 }
 
 function setUpRecommendations() {
+  setUpNavbar();
   addListener();
   getClassifications();
   getLoginStatus().then(loggedIn => {
@@ -444,7 +470,7 @@ function getLoginStatus() {
     if (link.includes('logout')) {
       // is logged in 
       const statusElement = document.getElementById('login-status');
-      statusElement.innerText = 'Hello!  ';
+      statusElement.innerText = 'Hello!';
       const logoutElement = document.getElementById('login-link');
       if (!link.includes('http')) {
         logoutElement.href = link;
@@ -517,6 +543,26 @@ function closeHamburger() {
   });
 }
 
+function openLoginStatus() {
+  document.getElementById("login-drawer").style.display = "block";
+  document.getElementById("login-drawer").style.zIndex="11";
+
+  document.addEventListener('click', event => {
+    if (event.target.id !== 'loginIcon') {
+      closeLoginStatus();
+    }
+  });
+}
+
+function closeLoginStatus() {  
+  document.getElementById("login-drawer").style.display = "none";
+  document.removeEventListener('click', event => {
+    if (event.target.id !== 'loginIcon') {
+      closeLoginStatus();
+    }
+  });
+}
+
 
 function getRecommendations() {
   const statusElement = document.getElementById('login-status');
@@ -571,8 +617,7 @@ function getOrgNameAndId(org) {
 
 
 function setUpNavbar(){
-
-  document.getElementById("top-nav").innerHTML="    <header class='mdc-top-app-bar' id='app-bar'><div class='mdc-top-app-bar__row'><section class='mdc-top-app-bar__section mdc-top-app-bar__section--align-start'><button id='hamburger' onclick='openHamburger();' class='material-icons mdc-top-app-bar__navigation-icon mdc-icon-button' aria-label='Open navigation menu'>menu</button><a href='/index.html'><button class='material-icons mdc-top-app-bar__action-item mdc-icon-button' aria-label='Home'>home</button></a> <span class='mdc-top-app-bar__title'>Nonprofit Finder</span></section><section class='mdc-top-app-bar__section mdc-top-app-bar__section--align-end' role='toolbar'><button class='material-icons mdc-top-app-bar__action-item mdc-icon-button' aria-label='Search' onclick='openSearch()'>search</button> <p id='login-status'></p><a id='login-link'></a> <a id='loginIcon'><button class='material-icons mdc-top-app-bar__action-item mdc-icon-button' aria-label='Options'>account_circle</button></a></section></div></header>";
+  document.getElementById("top-nav").innerHTML="    <header class='mdc-top-app-bar' id='app-bar' style=\"left:0%\"><div class='mdc-top-app-bar__row'><section class='mdc-top-app-bar__section mdc-top-app-bar__section--align-start'><button id='hamburger' onclick='openHamburger();' class='material-icons mdc-top-app-bar__navigation-icon mdc-icon-button' aria-label='Open navigation menu'>menu</button><a href='/index.html'><button class='material-icons mdc-top-app-bar__action-item mdc-icon-button' aria-label='Home'>home</button></a> <span class='mdc-top-app-bar__title'>Nonprofit Finder</span></section><section class='mdc-top-app-bar__section mdc-top-app-bar__section--align-end' role='toolbar'><button class='material-icons mdc-top-app-bar__action-item mdc-icon-button' aria-label='Search' onclick='openSearch()'>search</button><button id='loginIcon' onclick='openLoginStatus();' class='material-icons mdc-top-app-bar__action-item mdc-icon-button' aria-label='Options'>account_circle</button></section></div></header>";
 
   // document.getElementById("myOverlay").innerHTML="<span class='closebtn material-icons' onclick='closeSearch()' title='Close Overlay'><span class='material-icons'>clear</span></span><div id=’results-search’><input type=’text’ id=’keyword’ placeholder=’Search by keyword’><span class=’material-icons’ onclick=’search();’>search</span> </div>";
   
@@ -587,4 +632,114 @@ function addJquery(){
     script.crossorigin="anonymous";
     script.type = 'text/javascript';
     document.getElementsByTagName("head")[0].appendChild(script);
+}
+
+/**
+ * Checks if current user is admin
+ * Redirects invalid users to home page
+ */
+function loadAdminPage() {
+  getLoginStatus();
+  const qs = "/admin";
+  fetch(qs).then(response => response.json()).then(adminText => {
+    if (adminText['user'] === 'Admin') {
+      setUpForAdmin(adminText);
+    } else { 
+      alert("You are unauthorized for this page");
+      window.location.replace("/index.html");
+    }
+  });
+}
+
+/**
+ * Sets up UI on page for admin
+ * Adds functionality for dynamically selecting action items
+ */
+function setUpForAdmin(adminText) {
+  // admin UI to page
+  document.getElementById('navActionItems').style.display = 'block';
+  document.getElementById('uploadOrgs').innerHTML = adminText['uploadCSV'];
+  document.getElementById('quality').innerHTML = adminText['compareQuality'];
+  document.getElementById('similarity').innerHTML = adminText['similarityWorkFlow'];
+  document.getElementById('filter').innerHTML = adminText['filterWorkFlow'];
+  // Hide items
+  hideWorkFlows();
+  // Add click functionality to display desired UI
+  document.getElementById('actionItems').childNodes.forEach(child => {
+    child.addEventListener('click', function() {
+      hideWorkFlows();
+      this.setAttribute('class', 'mdc-list-item mdc-list-item--activated');
+      document.getElementById(this.getAttribute("value")).style.display = "block";
+    });
+  })
+  getUploads(); 
+}
+
+// Hides unselected UI
+function hideWorkFlows() {
+  document.getElementById('uploadOrgs').style.display = "none";
+  document.getElementById('quality').style.display = "none";
+  document.getElementById('similarity').style.display = "none";
+  document.getElementById('filter').style.display = "none";
+  document.getElementById('uploadOrgsItem').setAttribute('class', 'mdc-list-item mdc-list-item')
+  document.getElementById('qualityItem').setAttribute('class', 'mdc-list-item mdc-list-item')
+  document.getElementById('similarityItem').setAttribute('class', 'mdc-list-item mdc-list-item')
+  document.getElementById('filterItem').setAttribute('class', 'mdc-list-item mdc-list-item')
+}
+
+function getUploads() {
+  const qs = "/verify";
+  fetch(qs).then(response => response.json()).then(comparisonMap => {
+    const submission = document.getElementById('submission');
+    const comparisons = document.getElementById('comparisons');
+    submission.appendChild(getOrgUploadHtmlDescription(comparisonMap["submission"][0], true));
+    comparisonMap["similar"].forEach( org => comparisons.appendChild(getOrgUploadHtmlDescription(org, false)));
+  });
+}
+
+/**
+ * Creates list element from org
+ */
+function getOrgUploadHtmlDescription(org, submission) {
+  const orgElement = document.createElement('div');
+  orgElement.setAttribute("class", "mdc-card");
+  // org name
+  const nameElement = document.createElement('h3');
+  nameElement.setAttribute("id", "org-name");
+  nameElement.innerText = org.name;
+  orgElement.appendChild(nameElement);
+  // org link
+  const linkElement = document.createElement('a');
+  linkElement.setAttribute("id", "org-link");
+  linkElement.setAttribute('href', 'https://' + org.link);
+  linkElement.setAttribute('target', '_blank');
+  linkElement.innerText = 'https://' + org.link;
+  orgElement.appendChild(linkElement);
+  // about
+  const aboutElement = document.createElement('p');
+  aboutElement.setAttribute("id", "about");
+  aboutElement.innerText = org.about;
+  orgElement.appendChild(aboutElement);
+  
+  if (submission) {
+    const approve = document.createElement('button');
+    approve.onclick = function() { sendUploadDecision("approve", org.id); }
+    approve.innerText = 'Approve';
+    const discard = document.createElement('button');
+    discard.onclick = function() { sendUploadDecision("discard", org.id); }
+    discard.innerText = 'Discard';
+
+    orgElement.appendChild(approve);
+    orgElement.appendChild(discard);
+  }
+
+  return orgElement;
+}
+
+function sendUploadDecision(decision, id) { 
+  const params = "do=" + decision + '&id=' + id;
+  fetch('/verify?' + params, {method: 'POST'}).then(response => {
+    alert("Request complete! response:", response);
+    location.reload();
+  });
 }

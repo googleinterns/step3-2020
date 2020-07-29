@@ -45,8 +45,8 @@ h6{
   font-size: 20px;
 }
 
-#about2, #login-link{
-  color:white;
+#about2 {
+  color:black;
 }
 
 
@@ -80,5 +80,3 @@ h6{
   overflow: hidden;
   transition: max-height 0.2s ease-out;
 }
-
-

@@ -25,6 +25,15 @@ ul, #myUL {
   top: 5%;
 }
 
+#login-drawer{
+  display:none;
+  
+  z-index:9;
+  position: absolute;
+  top: 5%;
+  right: 0%;
+}
+
 
 #existing-organizations {
   list-style-type: none;
@@ -94,4 +103,57 @@ h6{
   top: 8%;
   left: 2%;
   margin-right: -50%;
+}
+
+#uploadForm {
+  position: absolute;
+  top: 12%;
+  left: 40%;
+  height: 700px;
+  width:420px;
+  border: solid lightgray;
+  border-radius: 10px;
+  border-spacing: 10px;
+  border-width: .4px;
+  box-shadow:  3px 3px whitesmoke;
+}
+
+.caret {
+  color: transparent; 
+  background-color: transparent; 
+  border-color: transparent; 
+  outline:none;
+  cursor: default;
+  height: 30px;
+  width: 30px;
+}
+
+.adminAction {
+  position: absolute;
+  height: 80%;
+  width: 70%;
+  float: right;
+  top: 10%;
+  left:30%;
+}
+
+#search {
+  position: absolute;
+  top: 40%;
+  left: 50%;
+  margin-right: -50%;
+  transform: translate(-50%, -50%);
+}
+
+#search input[type=text], #results-search input[type=text] {
+  float:inherit;
+  padding: 6px;
+  border: 1px solid lightgrey;
+  margin-top: 8px;
+  font-size: 17px;
+  vertical-align: center;
+}
+
+.search-icon {
+  cursor:pointer;
 }

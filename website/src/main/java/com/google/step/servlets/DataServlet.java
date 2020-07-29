@@ -16,6 +16,7 @@ package com.google.step.servlets;
 
 import java.io.IOException;
 
+import com.google.apphosting.api.DeadlineExceededException;
 import com.google.cloud.language.v1.ClassifyTextRequest;
 import com.google.cloud.language.v1.ClassifyTextResponse;
 import com.google.cloud.language.v1.LanguageServiceClient;
@@ -68,45 +69,46 @@ public class DataServlet extends HttpServlet {
 
   @Override
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
-    //Column Information for database to be created
-    List<String> columns = Arrays.asList(
-        "id INTEGER PRIMARY KEY", 
-        "name TEXT NOT NULL", 
-        "link TEXT NOT NULL", 
-        "about TEXT NOT NULL",
-        "class VARCHAR(255) NOT NULL",
-        "neighbor1 INTEGER",
-        "neighbor2 INTEGER", 
-        "neighbor3 INTEGER", 
-        "neighbor4 INTEGER",
-        "upvotes INTEGER,");
-
     try {
-      //Set up Proxy for handling SQL server
-      CloudSQLManager database = CloudSQLManager.setUp();
-      //Get file reader for orgs with no classifiation
-      CSVReader orgsNoClassification = getCSVReaderFrom(request);
-      String targetTable = (orgsNoClassification != null) ? orgsWithClass : orgsToCheck;
-      //Create table for orgs with classification
-      database.createTable(targetTable, columns);
-      //Classify each org from, file, and add to target table
-      PreparedStatement statement = database.buildInsertStatement(targetTable, columns);  
-      int startIndex = database.getLastEntryIndex(targetTable) + 1;
-      NLPService service = new NLPService();
-      if (orgsNoClassification != null) {
-        passFileToStatement(orgsNoClassification, statement, startIndex, service);
+      CSVReader file = getCSVReaderFrom(request);
+      if (file != null) { 
+        ProcessData dataProcessor = new ProcessData(file);
+        Thread processData = new Thread(dataProcessor);
+        processData.start();
+        response.sendRedirect("/admin.html");
       } else {
+        //Column Information for database to be created
+        List<String> columns = Arrays.asList(
+            "id INTEGER PRIMARY KEY", 
+            "name TEXT NOT NULL", 
+            "link TEXT NOT NULL", 
+            "about TEXT NOT NULL",
+            "class VARCHAR(255) NOT NULL",
+            "neighbor1 INTEGER",
+            "neighbor2 INTEGER", 
+            "neighbor3 INTEGER", 
+            "neighbor4 INTEGER",
+            "upvotes INTEGER,");
+
+        //Set up Proxy for handling SQL server
+        CloudSQLManager database = CloudSQLManager.setUp();
+        String targetTable = orgsToCheck;
+        //Create table for orgs to verify with classification
+        database.createTable(targetTable, columns);
+        //Classify each org from, file, and add to target table
+        PreparedStatement statement = database.buildInsertStatement(orgsToCheck, columns);  
+        int startIndex = database.getLastEntryIndex(orgsToCheck) + 1;
+        NLPService service = new NLPService();
         passSubmissionToStatement(request, statement, startIndex, service);
+        //Wrap up
+        database.tearDown();
+        response.sendRedirect("/upload.html");
       }
-      //Wrap up
-      database.tearDown();
-      response.sendRedirect("/index.html");
     } catch (SQLException ex) {
       System.err.println(ex);
     } catch(Exception ex) {
       System.err.println(ex);
-    }
-    response.sendRedirect("/admin.html");
+    } 
   }
 
   //helper functions to process uploads
@@ -124,7 +126,7 @@ public class DataServlet extends HttpServlet {
         return this.service.classifyText(request);
       } catch (Exception ex) {
         System.err.println(ex);
-      }
+      } 
       return null;
     }
   }
@@ -152,9 +154,11 @@ public class DataServlet extends HttpServlet {
       try {
         //Throttles calls to NLP API
         Thread.sleep(100);
-      } catch (InterruptedException e) { 
+      } catch (InterruptedException ex) { 
         // Restore the interrupted status
-        Thread.currentThread().interrupt();
+        System.err.println(ex);
+      } catch (DeadlineExceededException ex) {
+        System.err.println(ex);
       }
     }
     orgsFileReader.close();

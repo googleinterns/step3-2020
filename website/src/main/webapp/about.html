@@ -2,6 +2,8 @@
 <html>
   <head>
     <meta charset="UTF-8">
+    <title>About Us</title>
+    <link rel="icon" type="image/png" href="/images/favicon.png">
     <link rel="stylesheet" href="stylesheets/style.css">
     <link rel="stylesheet" href="stylesheets/about.css">
     <link rel="stylesheet" href="stylesheets/results.css">
@@ -12,15 +14,9 @@
     <script src="https://unpkg.com/material-components-web@latest/dist/material-components-web.min.js"></script>
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
   </head>
-
   <body id="body" onload="setUpAboutPage(); ">
     <!-- top navigation bar -->
     <div id="top-nav"></div>
-
-    <div id= "side-nav">
-      <ul id="roots" class="uk-nav-default uk-nav-parent-icon" uk-nav>
-      </ul>
-    </div>
 
     <!-- hamburger menu -->
     <div id="drawer">
@@ -37,19 +33,42 @@
               <i class="material-icons mdc-list-item__graphic">favorite</i>
               <span class="mdc-list-item__text">AI Recommender</span>
             </a>
+            <a class="mdc-list-item" href="admin.html">
+              <span class="mdc-list-item__ripple"></span>
+              <i class="material-icons mdc-list-item__graphic">admin_panel_settings</i>
+              <span class="mdc-list-item__text">Administrator</span>
+            </a>
+            <a class="mdc-list-item" href="upload.html">
+              <span class="mdc-list-item__ripple"></span>
+              <i class="material-icons mdc-list-item__graphic">cloud_upload</i>
+              <span class="mdc-list-item__text">Submit Organization</span>
+            </a>
           </nav>
         </div>
       </aside>
     </div>
-
-
-  <!-- search by keyword -->
-  <div id="myOverlay" class="overlay">
-    <div id="results-search">
-      <input type="text" id="keyword" placeholder="Search by keyword">
-      <span onclick="detailSearch();" class="material-icons search-icon">search</span>
-    </div>      
-  </div>
+    <!-- Login Status -->
+    <div id="login-drawer">
+      <aside class="mdc-drawer">
+        <div class="mdc-drawer__content">
+          <nav class="mdc-list">
+            <p class="mdc-list-item" id="login-status"></p>
+            <a id="login-link" class="mdc-list-item"></a>
+          </nav>
+        </div>
+      </aside>
+    </div>
+    
+    <!-- search by keyword -->
+    <div id="myOverlay" class="overlay">
+      <span class="closebtn material-icons" onclick="closeSearch()" title="Close Overlay">
+        <span class="material-icons">clear</span>
+      </span>
+      <div id="results-search">
+        <input type="text" id="keyword" placeholder="Search by keyword">
+          <span onclick="detailSearch();" class="material-icons search-icon">search</span>
+      </div>      
+    </div>
 
   <br><br><br><br>
 
