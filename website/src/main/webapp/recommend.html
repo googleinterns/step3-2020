@@ -2,7 +2,10 @@
 <html>
   <head>
     <meta charset="UTF-8">
+    <title>AI Recommendations</title>
+    <link rel="icon" type="image/png" href="/images/favicon.png">
     <link rel="stylesheet" href="stylesheets/style.css">
+    <link rel="stylesheet" href="stylesheets/results.css">
     <link rel="stylesheet" href="stylesheets/recommend.css">
     <script src="scripts/website_script.js"></script>
 
@@ -33,6 +36,11 @@
               <i class="material-icons mdc-list-item__graphic">favorite</i>
               <span class="mdc-list-item__text">AI Recommender</span>
             </a>
+            <a class="mdc-list-item" href="upload.html">
+              <span class="mdc-list-item__ripple"></span>
+              <i class="material-icons mdc-list-item__graphic">cloud_upload</i>
+              <span class="mdc-list-item__text">Submit Organization</span>
+            </a>
           </nav>
         </div>
       </aside>
@@ -56,7 +64,7 @@
       </span>
       <div id="results-search">
         <input type="text" id="keyword" placeholder="Search by keyword">
-          <span onclick="indexPageSearch();" class="material-icons">search</span>
+        <span class="material-icons search-icon" onclick="searchByKeyword();">search</span>
       </div>      
     </div>
 

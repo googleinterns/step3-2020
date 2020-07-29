@@ -3,22 +3,102 @@
   <head>
     <meta charset="UTF-8">
     <link rel="stylesheet" href="stylesheets/style.css">
-    <script src="scripts/prototype_script.js"></script>
+    <link rel="stylesheet" href="stylesheets/index.css">
+    <script src="scripts/website_script.js"></script>
+      
+    <!-- uikit framework   -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/uikit/3.5.4/css/uikit.min.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/uikit/3.5.4/js/uikit.min.js"></script>
+    <!-- material design -->
+    <link href="https://unpkg.com/material-components-web@latest/dist/material-components-web.min.css" rel="stylesheet">
+    <script src="https://unpkg.com/material-components-web@latest/dist/material-components-web.min.js"></script>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
   </head>
-  <body id="body">
-    <form id="uploadForm" action="/data" method="POST">
-    	<label for="orgName">Organization Title:</label><br></br>
-      <input type="text" id="name" name="name" required><br></br>
-      <label for="webLink">Website Link:</label><br></br>
-      <input type="text" id="link" name="link" required><br></br>
-      <label for="about">About Section:</label><br></br>
-      <textarea id="about" name="about" rows="6" cols="45"></textarea><br></br>
-      <input id="submit" type="submit">
-    </form>
-    <form id="uploadFormCSV" action="/data" method="POST" enctype="multipart/form-data">
-    	<label for="orgName">Organization Files:</label><br></br>
-      <input type="file" id="file" name="file" required><br></br>
-      <input id="submit" type="submit"><br></br>
-    </form>
+
+  <body id="body" onload="setUpIndexpage();">
+  
+    <!-- top navigation bar -->
+    <div id="top-nav">
+      <header class='mdc-top-app-bar' id='app-bar'>
+        <div class='mdc-top-app-bar__row'>
+          <section class='mdc-top-app-bar__section mdc-top-app-bar__section--align-start'>
+            <button id='hamburger' onclick='openHamburger();' class='material-icons mdc-top-app-bar__navigation-icon mdc-icon-button' aria-label='Open navigation menu'>menu</button>
+            <a href='/index.html'><button class='material-icons mdc-top-app-bar__action-item mdc-icon-button' aria-label='Home'>home</button></a> 
+            <span class='mdc-top-app-bar__title'>Nonprofit Finder</span>
+          </section>
+          <section class='mdc-top-app-bar__section mdc-top-app-bar__section--align-end' role='toolbar'>
+            <p id='login-status'></p>
+            <a id='login-link'></a>
+            <a id='loginIcon'><button class='material-icons mdc-top-app-bar__action-item mdc-icon-button' aria-label='Options'>account_circle</button></a>
+          </section>
+        </div>
+      </header>
+    </div>
+
+    <!-- hamburger menu -->
+    <div id="drawer">
+      <aside class="mdc-drawer">
+        <div class="mdc-drawer__content">
+          <nav class="mdc-list">
+            <a class="mdc-list-item" href="about.html" aria-current="page" tabindex="0">
+              <span class="mdc-list-item__ripple"></span>
+              <i class="material-icons mdc-list-item__graphic">info</i>
+              <span class="mdc-list-item__text">About</span>
+            </a>
+            <a class="mdc-list-item" href="recommend.html">
+              <span class="mdc-list-item__ripple"></span>
+              <i class="material-icons mdc-list-item__graphic">favorite</i>
+              <span class="mdc-list-item__text">AI Recommender</span>
+            </a>
+            <a class="mdc-list-item" href="upload.html">
+              <span class="mdc-list-item__ripple"></span>
+              <i class="material-icons mdc-list-item__graphic">cloud_upload</i>
+              <span class="mdc-list-item__text">Submit Organization</span>
+            </a>
+          </nav>
+        </div>
+      </aside>
+    </div>
+
+    <center>
+      <div id="uploadForm">
+        <form style="position:relative; top:4%" action="/data" method="POST">
+          <label class="mdc-tab__content" id="my-label-id">
+            <span class="mdc-tab__text-label">Organization Title</span>  
+          </label><br>
+          <label class="mdc-text-field mdc-text-field--filled">
+            <span class="mdc-text-field__ripple"></span>
+            <input id="name" name="name" class="mdc-text-field__input" type="text" aria-labelledby="name">
+            <span class="mdc-line-ripple"></span>
+          </label>
+          <br><br><br>
+          <label class="mdc-tab__content" id="my-label-id">
+            <span class="mdc-tab__text-label">Website Link</span>  
+          </label><br>
+          <label class="mdc-text-field mdc-text-field--filled">
+            <span class="mdc-text-field__ripple"></span>
+            <input id="link" name="link" class="mdc-text-field__input" type="text" aria-labelledby="Link">
+            <span class="mdc-line-ripple"></span>
+          </label>
+          <br><br><br>
+          <label class="mdc-tab__content" id="my-label-id">
+            <span class="mdc-tab__text-label">Mission Statement</span>  
+          </label><br>
+          <label class="mdc-text-field mdc-text-field--filled mdc-text-field--textarea mdc-text-field--no-label">
+            <span class="mdc-text-field__ripple"></span>
+            <span class="mdc-text-field__resizer">
+              <textarea id="about" name="about" class="mdc-text-field__input" rows="8" cols="40" aria-label="Label"></textarea>
+            </span>
+            <span class="mdc-line-ripple"></span>
+          </label>
+          <div class="mdc-text-field-helper-line">
+            <div class="mdc-text-field-helper-text" id="my-helper-id" aria-hidden="false">About Section</div>
+          </div>
+          <br><br>
+          <input id="submit" type="submit" class="mdc-button mdc-button--raised">
+        </form>
+      </div>
+    </center>
+
   </body>
 </html>

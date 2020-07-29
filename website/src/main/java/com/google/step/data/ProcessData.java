@@ -1,21 +1,7 @@
-// Copyright 2019 Google LLC
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//     https://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+package com.google.step.data;
 
-package com.google.step.servlets;
-
-import java.io.IOException;
-
+import com.google.apphosting.api.DeadlineExceededException;
+import com.google.cloud.language.v1.ClassificationCategory;
 import com.google.cloud.language.v1.ClassifyTextRequest;
 import com.google.cloud.language.v1.ClassifyTextResponse;
 import com.google.cloud.language.v1.LanguageServiceClient;
@@ -28,63 +14,35 @@ import java.lang.Process.*;
 import java.sql.*;
 import java.util.*;
 import java.util.stream.Collectors;
-import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.fileupload.FileItemStream;
 import org.apache.commons.fileupload.FileItemIterator;
 import org.apache.commons.fileupload.FileUploadException;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 
-/** Servlet that returns some example content. TODO: modify this file to handle comments data */
-@WebServlet("/data")
-public class DataServlet extends HttpServlet {
+
+public class ProcessData implements Runnable {
+  private final CSVReader orgsNoClassification;
   private static String orgsWithClass = "g4npOrgs";
   private static String orgsToCheck = "submissionOrgs";
-    
-  @Override
-  public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-    try {
-      //Set up Proxy for handling SQL server
-      CloudSQLManager database = CloudSQLManager.setUp();
-      //Get all distinct classifications to develop tree
-      ResultSet classes = database.getDistinct(orgsWithClass, Arrays.asList("class"), Arrays.asList("class IS NOT NULL ORDER BY class DESC"));
-      Map<String, Set<String>> classTree = createClassificationTree(classes);
-      // TreeSet<String> roots = new TreeSet(classTree.get("roots"));
-      // printClassTree(classTree, roots, roots.first(), "" );
-      //Send out info
-      response.setContentType("application/json; charset=UTF-8");
-      response.setCharacterEncoding("UTF-8");
-      Gson gson = new Gson();
-      response.getWriter().println(gson.toJson(classTree));
-      database.tearDown();
-    } catch (SQLException ex) {
-      System.err.println(ex);
-    }
+
+  public ProcessData(CSVReader file) {
+    this.orgsNoClassification = file;
   }
 
-
   @Override
-  public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
+  public void run() {
     //Column Information for database to be created
     List<String> columns = Arrays.asList(
         "id INTEGER PRIMARY KEY", 
         "name TEXT NOT NULL", 
         "link TEXT NOT NULL", 
-        "about TEXT NOT NULL",
-        "class VARCHAR(255) NOT NULL",
-        "neighbor1 INTEGER",
-        "neighbor2 INTEGER", 
-        "neighbor3 INTEGER", 
-        "neighbor4 INTEGER",
-        "upvotes INTEGER,");
-
+        "about TEXT NOT NULL", 
+        "class VARCHAR(255) NOT NULL");  
     try {
       //Set up Proxy for handling SQL server
       CloudSQLManager database = CloudSQLManager.setUp();
       //Get file reader for orgs with no classifiation
-      CSVReader orgsNoClassification = getCSVReaderFrom(request);
       String targetTable = (orgsNoClassification != null) ? orgsWithClass : orgsToCheck;
       //Create table for orgs with classification
       database.createTable(targetTable, columns);
@@ -95,11 +53,10 @@ public class DataServlet extends HttpServlet {
       if (orgsNoClassification != null) {
         passFileToStatement(orgsNoClassification, statement, startIndex, service);
       } else {
-        passSubmissionToStatement(request, statement, startIndex, service);
+        //passSubmissionToStatement(request, statement, startIndex, service);
       }
       //Wrap up
       database.tearDown();
-      response.sendRedirect("/index.html");
     } catch (SQLException ex) {
       System.err.println(ex);
     } catch(Exception ex) {
@@ -133,7 +90,7 @@ public class DataServlet extends HttpServlet {
         return this.service.classifyText(request);
       } catch (Exception ex) {
         System.err.println(ex);
-      }
+      } 
       return null;
     }
   }
@@ -161,77 +118,15 @@ public class DataServlet extends HttpServlet {
       try {
         //Throttles calls to NLP API
         Thread.sleep(100);
-      } catch (InterruptedException e) { 
+      } catch (InterruptedException ex) { 
         // Restore the interrupted status
-        Thread.currentThread().interrupt();
+        System.err.println(ex);
+      } catch (DeadlineExceededException ex) {
+        System.err.println(ex);
       }
     }
     orgsFileReader.close();
     statement.executeBatch();
-  }
-
-
-  //TODO: re upload orgs with fixed classifications to delete this
-  private static Set<String> hardCodedRoots = new TreeSet<>(Arrays.asList(
-      "Adult",
-      "Arts & Entertainment",
-      "Autos & Vehicles",
-      "Beauty & Fitness",
-      "Books & Literature",
-      "Business & Industrial",
-      "Computers & Electronics",
-      "Finance",
-      "Food & Drink",
-      "Health",
-      "Hobbies & Leisure",
-      "Home & Garden",
-      "Internet & Telecom",
-      "Jobs & Education",
-      "Law & Government",
-      "News",
-      "Online Communities",
-      "People & Society",
-      "Pets & Animals",
-      "Real Estate",
-      "Reference",
-      "Science",
-      "Sensitive Subjects",
-      "Shopping",
-      "Sports",
-      "Travel"
-    )
-  );
-
-  //Developing classification tree from already processed org info
-  public static Map<String, Set<String>> createClassificationTree(ResultSet classes) throws SQLException {
-    Map<String, Set<String>> classTree = new HashMap<>();
-    classTree.put("roots", new TreeSet<String>());
-      while (classes.next()) {
-        Queue<String> parsed = Arrays.stream(classes.getString("class").split("/", 0))
-            .collect(Collectors.toCollection(LinkedList::new));
-        classTree.get("roots").add(parsed.peek());
-        while (!parsed.isEmpty()) {
-          String parent = parsed.remove();
-          try {
-            if (hardCodedRoots.contains(parsed.peek())) {
-              if (!classTree.containsKey(parent)) {
-                classTree.put(parent, new TreeSet<>());
-              }
-              break;
-            } 
-          } catch(NullPointerException ex){
-            System.err.println();
-          }
-          List<String> child = (parsed.peek() != null) ? Arrays.asList(parsed.peek()) : new ArrayList<String>();
-          if (classTree.containsKey(parent)) {
-            classTree.get(parent).addAll(child);
-          } else {
-            classTree.put(parent, new TreeSet<>(child));
-          }
-        }
-      }
-      classes.close();
-      return classTree;
   }
 
   //Process HTTP Request for CSV file
@@ -249,4 +144,5 @@ public class DataServlet extends HttpServlet {
     }
     return null;
   }
+
 }
