@@ -53,10 +53,10 @@
 
 .mdc-card{
   margin-top: 10%;
-  margin-left: 15%;
-  margin-right: 10%;
-  display: none;
+  margin-left: 400px;
+  width: 50%;
 }
+
 
 #org-name{
   text-align: left;

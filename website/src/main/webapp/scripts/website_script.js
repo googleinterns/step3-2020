@@ -111,6 +111,14 @@ function getOrgAsHtmlDescription(org, results) {
   nameElement.setAttribute('target', '_blank');
   nameElement.innerText = org.name;
   nameElement.onclick = function() { event.stopPropagation(); };
+  const linkElement = document.createElement('span');
+  linkElement.className = 'material-icons';
+  linkElement.innerText= 'link';
+  linkElement.setAttribute('href', 'https://' + org.link);
+  linkElement.setAttribute('target', '_blank');
+ 
+  nameElement.appendChild(linkElement);
+ 
   orgElement.appendChild(nameElement);
   
   // about
