@@ -243,7 +243,7 @@ function addListener() {
   const inputBox = document.getElementById('keyword');
   inputBox.addEventListener('keyup', function(event) {
       if (event.key === 'Enter') {
-        detailSearch();
+        indexPageSearch();
       }
   });
 }
@@ -445,7 +445,6 @@ function getResults() {
 function setUpIndexpage() {
   addListener();
   getClassifications();
-  setUpNavbar();
   getLoginStatus();
 }
 
