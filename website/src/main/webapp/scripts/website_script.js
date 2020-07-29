@@ -230,11 +230,6 @@ function addCloseListener() {
   });
 }
 
-function detailSearch() {
-  indexPageSearch();
-  closeSearch();
-}
-
 function addListenerResults() {
   const inputBox = document.getElementById('keyword');
   inputBox.addEventListener('keyup', function(event) {
@@ -248,7 +243,7 @@ function addListener() {
   const inputBox = document.getElementById('keyword');
   inputBox.addEventListener('keyup', function(event) {
       if (event.key === 'Enter') {
-        detailSearch();
+        indexPageSearch();
       }
   });
 }
@@ -422,12 +417,11 @@ function setUpDetailsPage() {
 function setUpRecommendations() {
   setUpNavbar();
   addListener();
-  getClassifications();
   getLoginStatus().then(loggedIn => {
     if (loggedIn) {
       getRecommendations();
     } else {
-      alert('Log in to get personalized recommendations');
+      alert('Please log in to get personalized recommendations');
     }
   });
 }
@@ -495,6 +489,15 @@ function getLoginStatus() {
   });
 }
 
+function toggleSearch() {
+  const status = document.getElementById("results-search").style.display;
+  if (status === 'block') {
+    closeSearch();
+  } else {
+    openSearch();
+  }
+}
+
 /**  Open the search box */
 function openSearch() {
   addCloseListener();
@@ -523,6 +526,15 @@ function accordion(){
   }
 }
 
+function toggleHamburger() {
+  const status = document.getElementById("drawer").style.display;
+  if (status === 'block') {
+    closeHamburger();
+  } else {
+    openHamburger();
+  }
+}
+
 function openHamburger() {
   document.getElementById("drawer").style.display = "block";
   document.getElementById("drawer").style.zIndex="11";
@@ -541,6 +553,15 @@ function closeHamburger() {
       closeHamburger();
     }
   });
+}
+
+function toggleLoginStatus() {
+  const status = document.getElementById("login-drawer").style.display;
+  if (status === 'block') {
+    closeLoginStatus();
+  } else {
+    openLoginStatus();
+  }
 }
 
 function openLoginStatus() {
@@ -598,7 +619,6 @@ function getRecommendations() {
       const reccomendOrg = document.createElement("span");
       reccomendOrg.setAttribute("class", "mdc-chip");
       reccomendOrg.appendChild(getOrgNameAndId(org));
-      reccomendOrg.appendChild(getOrgNameAndId(org));
       liElement.appendChild(reccomendOrg);
     });
     contentElement.appendChild(liElement);
@@ -616,12 +636,10 @@ function getOrgNameAndId(org) {
 }
 
 
-function setUpNavbar(){
-  document.getElementById("top-nav").innerHTML="<header class='mdc-top-app-bar' id='app-bar' style=\"left:0%\"><div class='mdc-top-app-bar__row'><section class='mdc-top-app-bar__section mdc-top-app-bar__section--align-start'><button id='hamburger' title='menu' onclick='openHamburger();' class='material-icons mdc-top-app-bar__navigation-icon mdc-icon-button' aria-label='Open navigation menu'>menu</button><a href='/index.html'><button title='home' class='material-icons mdc-top-app-bar__action-item mdc-icon-button' aria-label='Home'>home</button></a> <span class='mdc-top-app-bar__title'>Nonprofit Finder</span></section><section class='mdc-top-app-bar__section mdc-top-app-bar__section--align-end' role='toolbar'><button class='material-icons mdc-top-app-bar__action-item mdc-icon-button' title='search by keyword' aria-label='Search' onclick='openSearch()'>search</button><button id='loginIcon' title='login status' onclick='openLoginStatus();' class='material-icons mdc-top-app-bar__action-item mdc-icon-button' aria-label='Options'>account_circle</button></section></div></header>";
+function setUpNavbar() {
+  document.getElementById("top-nav").innerHTML="<header class='mdc-top-app-bar' id='app-bar' style=\"left:0%\"><div class='mdc-top-app-bar__row'><section class='mdc-top-app-bar__section mdc-top-app-bar__section--align-start'><button id='hamburger' title='menu' onclick='toggleHamburger();' class='material-icons mdc-top-app-bar__navigation-icon mdc-icon-button' aria-label='Open navigation menu'>menu</button><a href='/index.html'><button title='home' class='material-icons mdc-top-app-bar__action-item mdc-icon-button' aria-label='Home'>home</button></a> <span class='mdc-top-app-bar__title'>Nonprofit Finder</span></section><section class='mdc-top-app-bar__section mdc-top-app-bar__section--align-end' role='toolbar'><button class='material-icons mdc-top-app-bar__action-item mdc-icon-button' title='search by keyword' aria-label='Search' onclick='toggleSearch();'>search</button><button id='loginIcon' title='login status' onclick='toggleLoginStatus();' class='material-icons mdc-top-app-bar__action-item mdc-icon-button' aria-label='Options'>account_circle</button></section></div></header>";
 
   // document.getElementById("myOverlay").innerHTML="<span class='closebtn material-icons' onclick='closeSearch()' title='Close Overlay'><span class='material-icons'>clear</span></span><div id=’results-search’><input type=’text’ id=’keyword’ placeholder=’Search by keyword’><span class=’material-icons’ onclick=’search();’>search</span> </div>";
-  
-  addListener();
 
 }
 
@@ -639,6 +657,8 @@ function addJquery(){
  * Redirects invalid users to home page
  */
 function loadAdminPage() {
+  setUpNavbar();
+  addListener();
   getLoginStatus();
   const qs = "/admin";
   fetch(qs).then(response => response.json()).then(adminText => {

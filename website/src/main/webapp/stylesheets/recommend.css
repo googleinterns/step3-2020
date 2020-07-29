@@ -1,7 +1,7 @@
 h1 {
   position: absolute;
   top: 30%;
-  left: 50%;
+  left: 45%;
   text-align: center;
 }
 
@@ -12,18 +12,16 @@ h2 {
   left: 20%;
 }
 
+#ps {
+  position: absolute;
+  text-align: center;
+  top: 45%;
+  left: 45%;
+}
+
 #recommended-orgs {
   position: absolute;
   text-align: center;
   top: 50%;
-  left: 20%;
-}
-
-#results-search {
-  position: relative;
-  top: 1%;
-  left: 6%;
-  width: 70%;
-  margin-top: 30px;
-  margin: auto;
+  left: 15%;
 }
