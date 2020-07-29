@@ -105,6 +105,19 @@ h6{
   margin-right: -50%;
 }
 
+#uploadForm {
+  position: absolute;
+  top: 12%;
+  left: 40%;
+  height: 700px;
+  width:420px;
+  border: solid lightgray;
+  border-radius: 10px;
+  border-spacing: 10px;
+  border-width: .4px;
+  box-shadow:  3px 3px whitesmoke;
+}
+
 .caret {
   color: transparent; 
   background-color: transparent; 
