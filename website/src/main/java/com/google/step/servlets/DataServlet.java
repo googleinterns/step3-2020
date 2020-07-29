@@ -88,13 +88,12 @@ public class DataServlet extends HttpServlet {
             "neighbor2 INTEGER", 
             "neighbor3 INTEGER", 
             "neighbor4 INTEGER",
-            "upvotes INTEGER,");
+            "upvotes INTEGER");
 
         //Set up Proxy for handling SQL server
         CloudSQLManager database = CloudSQLManager.setUp();
-        String targetTable = orgsToCheck;
         //Create table for orgs to verify with classification
-        database.createTable(targetTable, columns);
+        database.createTable(orgsToCheck, columns);
         //Classify each org from, file, and add to target table
         PreparedStatement statement = database.buildInsertStatement(orgsToCheck, columns);  
         int startIndex = database.getLastEntryIndex(orgsToCheck) + 1;
@@ -134,34 +133,6 @@ public class DataServlet extends HttpServlet {
   private void passSubmissionToStatement(HttpServletRequest request, PreparedStatement statement, int index, ClassHandler classHandler) throws IOException, SQLException {
     OrganizationInfo org = OrganizationInfo.getClassifiedOrgFrom(request, index, classHandler);
     org.passInfoTo(statement);
-    statement.executeBatch();
-  }
-
-  private void passFileToStatement(CSVReader orgsFileReader, PreparedStatement statement, int index, ClassHandler classHandler) throws IOException, Exception, SQLException {
-    String[] nextRecord = new String[2]; 
-    while ((nextRecord = orgsFileReader.readNext()) != null) {
-      try {
-        //Create a classified Org from record
-        OrganizationInfo org = OrganizationInfo.getClassifiedOrgFrom(nextRecord, index, classHandler);
-        //If valid pass to SQL statement
-        if (org != null) {
-          org.passInfoTo(statement);
-          index ++;
-        }
-      } catch(Exception ex) {
-        System.err.println(ex);
-      }
-      try {
-        //Throttles calls to NLP API
-        Thread.sleep(100);
-      } catch (InterruptedException ex) { 
-        // Restore the interrupted status
-        System.err.println(ex);
-      } catch (DeadlineExceededException ex) {
-        System.err.println(ex);
-      }
-    }
-    orgsFileReader.close();
     statement.executeBatch();
   }
 
