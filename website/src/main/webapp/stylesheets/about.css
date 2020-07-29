@@ -80,3 +80,7 @@ h6{
   overflow: hidden;
   transition: max-height 0.2s ease-out;
 }
+
+.mdc-button--outlined {
+  text-transform: none;
+}
