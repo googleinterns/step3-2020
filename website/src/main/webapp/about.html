@@ -54,13 +54,16 @@
       </aside>
     </div>
     
-  <!-- search by keyword -->
-  <div id="myOverlay" class="overlay">
-    <div id="results-search">
-      <input type="text" id="keyword" placeholder="Search by keyword">
-      <span onclick="detailSearch();" class="material-icons search-icon">search</span>
-    </div>      
-  </div>
+    <!-- search by keyword -->
+    <div id="myOverlay" class="overlay">
+      <span class="closebtn material-icons" onclick="closeSearch()" title="Close Overlay">
+        <span class="material-icons">clear</span>
+      </span>
+      <div id="results-search">
+        <input type="text" id="keyword" placeholder="Search by keyword">
+          <span onclick="detailSearch();" class="material-icons search-icon">search</span>
+      </div>      
+    </div>
 
   <br><br><br><br>
 
