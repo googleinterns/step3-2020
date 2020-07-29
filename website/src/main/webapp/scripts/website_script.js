@@ -447,10 +447,14 @@ function getResults() {
   }
 }
 
-function setUpIndexpage() {
-  addListener();
+function basicSetup() {
   getClassifications();
   getLoginStatus();
+}
+
+function setUpIndexpage() {
+  addListener();
+  basicSetup();
 }
 
 function setUpAboutPage(){
@@ -466,6 +470,7 @@ function setUpAboutPage(){
  */
 function getLoginStatus() {
   return fetch('/login').then(response => response.text()).then(link => {
+    console.log("got here");
     // if user is logged in, server sends the logout link
     if (link.includes('logout')) {
       // is logged in 

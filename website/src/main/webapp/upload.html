@@ -2,6 +2,8 @@
 <html>
   <head>
     <meta charset="UTF-8">
+    <title>Crowdsourcing</title>
+    <link rel="icon" type="image/png" href="/images/favicon.png">
     <link rel="stylesheet" href="stylesheets/style.css">
     <link rel="stylesheet" href="stylesheets/index.css">
     <script src="scripts/website_script.js"></script>
@@ -15,7 +17,7 @@
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
   </head>
 
-  <body id="body" onload="setUpIndexpage();">
+  <body id="body" onload="basicSetup();">
   
     <!-- top navigation bar -->
     <div id="top-nav">
@@ -27,9 +29,7 @@
             <span class='mdc-top-app-bar__title'>Nonprofit Finder</span>
           </section>
           <section class='mdc-top-app-bar__section mdc-top-app-bar__section--align-end' role='toolbar'>
-            <p id='login-status'></p>
-            <a id='login-link'></a>
-            <a id='loginIcon'><button class='material-icons mdc-top-app-bar__action-item mdc-icon-button' aria-label='Options'>account_circle</button></a>
+            <button id='loginIcon' onclick='openLoginStatus();' class='material-icons mdc-top-app-bar__action-item mdc-icon-button' aria-label='Options'>account_circle</button>
           </section>
         </div>
       </header>
@@ -60,6 +60,18 @@
               <i class="material-icons mdc-list-item__graphic">cloud_upload</i>
               <span class="mdc-list-item__text">Submit Organization</span>
             </a>
+          </nav>
+        </div>
+      </aside>
+    </div>
+
+    <!-- Login Status -->
+    <div id="login-drawer">
+      <aside class="mdc-drawer">
+        <div class="mdc-drawer__content">
+          <nav class="mdc-list">
+            <p class="mdc-list-item" id="login-status"></p>
+            <a id="login-link" class="mdc-list-item"></a>
           </nav>
         </div>
       </aside>
