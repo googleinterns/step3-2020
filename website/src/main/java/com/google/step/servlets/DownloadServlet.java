@@ -35,7 +35,6 @@ public class DownloadServlet extends HttpServlet {
       // Set up Proxy for handling SQL server
       CloudSQLManager database = CloudSQLManager.setUp();
       ResultSet result = database.get("g4npOrgs");
-
       response.setContentType("text/plain");
       response.setHeader("Content-disposition", "attachment; filename=database.json");
       OutputStream out = response.getOutputStream();
