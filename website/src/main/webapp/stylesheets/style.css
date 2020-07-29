@@ -127,3 +127,24 @@ h6{
   height: 30px;
   width: 30px;
 }
+
+#search {
+  position: absolute;
+  top: 40%;
+  left: 50%;
+  margin-right: -50%;
+  transform: translate(-50%, -50%);
+}
+
+#search input[type=text], #results-search input[type=text] {
+  float:inherit;
+  padding: 6px;
+  border: 1px solid lightgrey;
+  margin-top: 8px;
+  font-size: 17px;
+  vertical-align: center;
+}
+
+.search-icon {
+  cursor:pointer;
+}

@@ -420,6 +420,7 @@ function setUpDetailsPage() {
 }
 
 function setUpRecommendations() {
+  setUpNavbar();
   addListener();
   getClassifications();
   getLoginStatus().then(loggedIn => {
