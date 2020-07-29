@@ -2,9 +2,11 @@
 <html>
   <head>
     <meta charset="UTF-8">
+    <title>Admin</title>
+    <link rel="icon" type="image/png" href="/images/favicon.png">
     <link rel="stylesheet" href="stylesheets/style.css">
     <link rel="stylesheet" href="stylesheets/results.css">
-    <script src="scripts/prototype_script.js"></script>
+    <script src="scripts/website_script.js"></script>
 
     <!-- uikit framework -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/uikit/3.5.4/css/uikit.min.css" />
@@ -18,23 +20,61 @@
   <body id="body" onload="loadAdminPage();">
     <!-- top navigation bar -->
     <div id="top-nav">
-      <header class="mdc-top-app-bar">
+      <header class="mdc-top-app-bar" id="app-bar">
         <div class="mdc-top-app-bar__row">
           <section class="mdc-top-app-bar__section mdc-top-app-bar__section--align-start">
-            <button class="material-icons mdc-top-app-bar__navigation-icon mdc-icon-button" aria-label="Open navigation menu">menu</button>
-            <a href="index.html"><button class="material-icons mdc-top-app-bar__action-item mdc-icon-button" aria-label="Home">home</button></a>
+            <button id="hamburger" onclick="openHamburger();" class="material-icons mdc-top-app-bar__navigation-icon mdc-icon-button" aria-label="Open navigation menu">menu</button>
+            <a href="/index.html"><button class="material-icons mdc-top-app-bar__action-item mdc-icon-button" aria-label="Home">home</button></a> 
             <span class="mdc-top-app-bar__title">Nonprofit Finder</span>
           </section>
           <section class="mdc-top-app-bar__section mdc-top-app-bar__section--align-end" role="toolbar">
-            <button class="material-icons mdc-top-app-bar__action-item mdc-icon-button" aria-label="Favorite">favorite</button>
-            <button class="material-icons mdc-top-app-bar__action-item mdc-icon-button" aria-label="Search" onclick="openSearch()">search</button>
-            <a id="login-link"></a>
-            <p id="login-status"></p>
-            <a href="/login"><button class="material-icons mdc-top-app-bar__action-item mdc-icon-button" aria-label="Options">account_circle</button></a>
+            <button id="loginIcon" onclick="openLoginStatus();" class="material-icons mdc-top-app-bar__action-item mdc-icon-button" aria-label="Options">account_circle</button>
           </section>
         </div>
       </header>
     </div>
+
+    <!-- hamburger menu -->
+    <div id="drawer">
+      <aside class="mdc-drawer">
+        <div class="mdc-drawer__content">
+          <nav class="mdc-list">
+            <a class="mdc-list-item" href="about.html" aria-current="page" tabindex="0">
+              <span class="mdc-list-item__ripple"></span>
+              <i class="material-icons mdc-list-item__graphic">info</i>
+              <span class="mdc-list-item__text">About</span>
+            </a>
+            <a class="mdc-list-item" href="recommend.html">
+              <span class="mdc-list-item__ripple"></span>
+              <i class="material-icons mdc-list-item__graphic">favorite</i>
+              <span class="mdc-list-item__text">AI Recommender</span>
+            </a>
+            <a class="mdc-list-item" href="admin.html">
+              <span class="mdc-list-item__ripple"></span>
+              <i class="material-icons mdc-list-item__graphic">admin_panel_settings</i>
+              <span class="mdc-list-item__text">Administrator</span>
+            </a>
+            <a class="mdc-list-item" href="upload.html">
+              <span class="mdc-list-item__ripple"></span>
+              <i class="material-icons mdc-list-item__graphic">cloud_upload</i>
+              <span class="mdc-list-item__text">Submit Organization</span>
+            </a>
+          </nav>
+        </div>
+      </aside>
+    </div>
+    <!-- Login Status -->
+    <div id="login-drawer">
+      <aside class="mdc-drawer">
+        <div class="mdc-drawer__content">
+          <nav class="mdc-list">
+            <p class="mdc-list-item" id="login-status"></p>
+            <a id="login-link" class="mdc-list-item"></a>
+          </nav>
+        </div>
+      </aside>
+    </div>
+    
     <aside id="navActionItems" class="mdc-drawer" style="top:10%; left:1%; position:absolute; display:none;">
       <div class="mdc-drawer__header" style="text-align: center;">
         <h2 class="mdc-drawer__title">Workflows</h2>
@@ -64,6 +104,7 @@
         </nav>
       </div>
     </aside>
+    
     <div class="adminAction" id="workflows">
       <div id="quality"></div>
       <div id="uploadOrgs"></div>
