@@ -6,7 +6,7 @@
     <link rel="icon" type="image/png" href="/images/favicon.png">
     <link rel="stylesheet" href="stylesheets/style.css">
     <link rel="stylesheet" href="stylesheets/results.css">
-    <script src="scripts/prototype_script.js"></script>
+    <script src="scripts/website_script.js"></script>
 
     <!-- uikit framework -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/uikit/3.5.4/css/uikit.min.css" />
@@ -20,15 +20,15 @@
   <body id="body" onload="loadAdminPage();">
     <!-- top navigation bar -->
     <div id="top-nav">
-      <header class='mdc-top-app-bar' id='app-bar'>
-        <div class='mdc-top-app-bar__row'>
-          <section class='mdc-top-app-bar__section mdc-top-app-bar__section--align-start'>
-            <button id='hamburger' onclick='openHamburger();' class='material-icons mdc-top-app-bar__navigation-icon mdc-icon-button' aria-label='Open navigation menu'>menu</button>
-            <a href='/index.html'><button class='material-icons mdc-top-app-bar__action-item mdc-icon-button' aria-label='Home'>home</button></a> 
-            <span class='mdc-top-app-bar__title'>Nonprofit Finder</span>
+      <header class="mdc-top-app-bar" id="app-bar">
+        <div class="mdc-top-app-bar__row">
+          <section class="mdc-top-app-bar__section mdc-top-app-bar__section--align-start">
+            <button id="hamburger" onclick="openHamburger();" class="material-icons mdc-top-app-bar__navigation-icon mdc-icon-button" aria-label="Open navigation menu">menu</button>
+            <a href="/index.html"><button class="material-icons mdc-top-app-bar__action-item mdc-icon-button" aria-label="Home">home</button></a> 
+            <span class="mdc-top-app-bar__title">Nonprofit Finder</span>
           </section>
-          <section class='mdc-top-app-bar__section mdc-top-app-bar__section--align-end' role='toolbar'>
-            <button id='loginIcon' onclick='openLoginStatus();' class='material-icons mdc-top-app-bar__action-item mdc-icon-button' aria-label='Options'>account_circle</button>
+          <section class="mdc-top-app-bar__section mdc-top-app-bar__section--align-end" role="toolbar">
+            <button id="loginIcon" onclick="openLoginStatus();" class="material-icons mdc-top-app-bar__action-item mdc-icon-button" aria-label="Options">account_circle</button>
           </section>
         </div>
       </header>
