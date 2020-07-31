@@ -5,6 +5,7 @@ The Activism Platform organizes and promotes activism by connecting users to non
   - Promote accessibility with searching for organizations feature
   - Promote impact and reach with recommending similar organizations feature
   - Promote relevancy with crowdsourcing from users feature
+
 ![Alt Text](readme/search.gif)
 
 
@@ -19,6 +20,9 @@ The Activism Platform organizes and promotes activism by connecting users to non
   - [Machine Learning](#Machine-Learning)
     - [Text Similarity](#Text-Similarity)
     - [Collaborative Filter](#Collaborative-Filter)
+  - [Crowdsourcing](#Crowdsourcing)
+    - [Uploading](#Uploading)
+    - [Moderating](#Moderating)
 - [Technology Stack](#Technology-Stack)
 
 
@@ -47,6 +51,7 @@ We value your opinion! If you like an organization, give it a thumbs up. If you 
 
 #### Pagination
 Believe it or not, we have collected information on thousands of organizations for you! We only show 10 results per page. You can navigate through the other results with our intuitive pagination UI!
+
 ![Alt Text](readme/pagination.gif)
 
 
@@ -71,8 +76,48 @@ We can also make very personalized recommendations to users based on their ratin
 4. Run Singular Value Decomposition (SVD) on the filled matrix, and for dimensionality reduction, only keep k most significant singular values
 5. Recompose a matrix as our prediction
 6. Find three new organizations with the highest predited ratings to recommend to each user
-
+ 
 ![Alt Text](readme/recommend.png)
 
 
+### Crowdsourcing
+Our web app promotes relevancy with a crowdsourcing feature along with admin tools to moderate user uploaded content.
+#### Uploading
+Know an organization that is not yet in our database? Please contribute! You can enter the organization's name, website link, and mission statement in our upload page.
+
+![Alt Text](readme/crowdsource.png)
+
+
+#### Moderating
+To ensure the high quality of the content in our database, we built an admin console to review all uploaded submissions. The admin console displays existing organizations of the same name along with the submitted information for verification. An admin can either approve (send new organization to our database) or not approve (discard this uploaded entry).
+
+![Alt Text](readme/admin.png)
+
+
+### Disclaimers on Data Acquisition
+The nonprofit organizations data is acquired through scraping publicly available information from the Internet. We obtained a list of names of nonprofits from Google for Nonprofits (G4NP). We then searched the names of organizations on Google and fetched the first result. The link and description are processed based on the Google search results.
+
 ## Technology Stack
+Frontend:
+- [Figma](https://www.figma.com/): UI design sketches
+- [Material Design](https://material.io/) - Design system for the frontend
+- [UIKit](https://getuikit.com/docs/introduction) - CSS and Javascript framework
+
+Backend:
+- [Apache Maven](https://maven.apache.org/): Build and deploy web app
+- [Google Cloud Platform (GCP)](https://cloud.google.com/)
+  - [App Engine (Java 8)](https://cloud.google.com/appengine/docs/standard/java): Hosts web servlet
+  - [Cloud Natural Language](https://cloud.google.com/natural-language): Classify nonprofit category from text
+  - [Cloud SQL for MySQL](https://cloud.google.com/sql/docs/mysql): Database storing organization and user info
+- [Gson](https://github.com/google/gson): Java library for sending and reading information in JSON format
+- [MySQL](https://www.mysql.com/): Relational database to store data and make queries
+- [Protobuf](https://developers.google.com/protocol-buffers): language independent communication
+ 
+Machine Learning and Scraping:
+- [Beautiful Soup](https://www.crummy.com/software/BeautifulSoup/bs4/doc/): Scraping
+- [Nltk](https://www.nltk.org/): natural language (stopwords, word stems)
+- [Numpy](https://numpy.org/doc/stable/reference/): Python array operations
+- [Pandas](https://pandas.pydata.org/docs/): Dataframe in Python
+- [Scikit-learn](https://scikit-learn.org/stable/): k-Means, k-NN machine learning implementations
+- [Selenium](https://www.selenium.dev/documentation/en/webdriver/): Web driver for scraping
+- [TensorFlow](https://www.tensorflow.org/): Universal sentence encoder
