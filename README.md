@@ -3,14 +3,14 @@
 ## Objective
 The Activism Platform organizes and promotes activism by connecting users to nonprofit organizations:
   - Promote accessibility with searching for organizations feature
-  - Promote impact and reach with recommending similar organizations feature
+  - Promote impact and reach with recommending organizations feature
   - Promote relevancy with crowdsourcing from users feature
 
 ![Alt Text](readme/search.gif)
 
 
 ## STEP Internship
-The web app is our capstone project for our [Google STEP Internship](https://buildyourfuture.withgoogle.com/programs/step/). This internship offers first and second-year undergraduate students the opportunity to work on a software project alongside other STEP interns and full-time Googlers, and provides the chance to bridge the gap between academic understanding and practical professional experience.
+This web app is our capstone project for our [Google STEP Internship](https://buildyourfuture.withgoogle.com/programs/step/). This internship offers first and second-year undergraduate students the opportunity to work on a software project alongside other STEP interns and full-time Googlers, and provides the chance to bridge the gap between academic understanding and practical professional experience.
 
 
 ## Table of Contents
@@ -39,13 +39,13 @@ Here are some of the main features of our web app
 Our searching functionality helps make organizations more accessible to users. You can search by keyword or by category.
 
 #### Search by Keyword
-Simply type in a keyword or key phrase of your interest in the search box and hit enter or click the search icon. It will then take you to the results page. You can search from any page of our website by clicking on the search icon on the top navigation bar.
+Simply type a keyword or key phrase of your interest in the search box and hit enter or click the search icon. It will then take you to the results page. You can search from any page of our website by clicking on the search icon located in the top navigation bar.
 
 ![Alt Text](readme/search.gif)
 
 
 #### Search by Category
-Interested in a category of organizations? We got you! Powered by the [Google Cloud Natural Language](https://cloud.google.com/natural-language) Content classification, we have grouped organizations by their names and mission statements for your convenience. Click on the arrow on the side navigation bar to explore the categories, and click on a category's text to see organizations in that category.
+Interested in a category of organizations? We got you! Powered by the [Google Cloud Natural Language](https://cloud.google.com/natural-language) Content Classification, we have grouped organizations by their names and mission statements for your convenience. Click on the arrow on the side navigation bar to explore the categories, and click on a category's text to see organizations in that category.
 
 ![Alt Text](readme/category.gif)
 
@@ -65,8 +65,8 @@ Believe it or not, we have collected information on thousands of organizations f
 ### Machine Learning
 We use Machine Learning (ML) to recommend organizations that a user may like to promote impact and reach of nonprofits.
 #### Text Similarity
-We assigned each organization four other nonprofits that are "Like this." We achieved so with text similarity analysis on the names and mission statements of all of the organizations in our database. Here is our process for text similarity:
-1. Remove stopwords (a, the, is etc.), number, and punctuations from sentences, and convert all text to lowercase
+We assigned each organization four other nonprofits that are "Like this." We achieved so with text similarity analysis based on the names and mission statements of all the organizations in our database. Here is our process for text similarity:
+1. Remove stopwords (a, the, is etc.), numbers, and punctuations from sentences, and convert all text to lowercase
 2. Lemmatize the sentences by grouping inflected forms of words together (i.e. "likes" is the same as "like")
 3. Embeds sentences into weighted vectors with the [TensorFlow Universal Sentence Encoder](https://tfhub.dev/google/universal-sentence-encoder/4)
 4. Train a k-Nearest Neighbor (k-NN) classifier on the weighted word vectors
@@ -78,10 +78,10 @@ We assigned each organization four other nonprofits that are "Like this." We ach
 #### Collaborative Filter
 We can also make very personalized recommendations to users based on their ratings of organizations and other users' ratings. The idea is that people of similar interests are probably going to like the same organizations. Our collaborative filter not only captures the similarity among users, but also utilizes the [text similarity](#Text-Similarity) results from the previous section. Here is our workflow:
 1. Fetch the user ratings: thumbs up is stored as 1.0 and thumbs down is stored as -1.0
-2. Generate matrix with (number of organizations) rows and (number of users) columns
+2. Generate matrix with (number of organizations) rows and (number of users) columns from user ratings
 3. Fill unrated organizations in the matrix with ratings of similar (text similarity) organizations from the same user
 4. Run Singular Value Decomposition (SVD) on the filled matrix, and for dimensionality reduction, only keep k most significant singular values
-5. Recompose a matrix as our prediction
+5. Recompose a matrix from SVD output as our prediction
 6. Find three new organizations with the highest predited ratings to recommend to each user
  
 ![Alt Text](readme/recommend.png)
@@ -90,7 +90,7 @@ We can also make very personalized recommendations to users based on their ratin
 ### Crowdsourcing
 Our web app promotes relevancy with a crowdsourcing feature along with admin tools to moderate user uploaded content.
 #### Uploading
-Know an organization that is not yet in our database? Please contribute! You can enter the organization's name, website link, and mission statement in our upload page.
+Know an organization that is not yet in our database? Please contribute! You can enter the organization's name, website link, and mission statement on our upload page.
 
 ![Alt Text](readme/crowdsource.png)
 
