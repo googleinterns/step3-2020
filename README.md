@@ -9,8 +9,13 @@ The Activism Platform organizes and promotes activism by connecting users to non
 ![Alt Text](readme/search.gif)
 
 
+## STEP Internship
+The web app is our capstone project for our [Google STEP Internship](https://buildyourfuture.withgoogle.com/programs/step/). This internship offers first and second-year undergraduate students the opportunity to work on a software project alongside other STEP interns and full-time Googlers, and provides the chance to bridge the gap between academic understanding and practical professional experience.
+
+
 ## Table of Contents
 - [Objective](#Objective)
+- [STEP Internship](#STEP-Internship)
 - [Features](#Features)
   - [Searching and Ranking](#Searching-and-Ranking)
     - [Search by Keyword](#Search-by-Keyword)
@@ -24,6 +29,8 @@ The Activism Platform organizes and promotes activism by connecting users to non
     - [Uploading](#Uploading)
     - [Moderating](#Moderating)
 - [Technology Stack](#Technology-Stack)
+- [Authors](#Authors)
+- [Acknowledgements](#Acknowledgements)
 
 
 ## Features
@@ -121,3 +128,17 @@ Machine Learning and Scraping:
 - [Scikit-learn](https://scikit-learn.org/stable/): k-Means, k-NN machine learning implementations
 - [Selenium](https://www.selenium.dev/documentation/en/webdriver/): Web driver for scraping
 - [TensorFlow](https://www.tensorflow.org/): Universal sentence encoder
+ 
+
+## Authors
+- **Iris Beckham** - [GitHub](https://github.com/iris-beckham) - [LinkedIn](https://www.linkedin.com/in/iris-beckham-91282518b/) - *Frontend*
+- **Tony Pan** - [GitHub](https://github.com/tonypan2000) - [LinkedIn](https://www.linkedin.com/in/tony-pan/) - *Data Acquisition and Machine Learning*
+- **Elijah Rodriguez** - [GitHub](https://github.com/hajiler) - [LinkedIn](https://www.linkedin.com/in/elijahrrb/) - *Backend*
+
+![Alt Text](readme/about.png)
+
+
+## Acknowledgements
+A big thank you to the following people, groups, and organizations that have helped us with this project:
+- Gold Intelligence, Attribution, Google Ads for hosting us and improving Machine Learning performance.
+- Google for Nonprofits (G4NP) for providing data, legal advice, and suggestions on how to use and present data to users.
